@@ -36,7 +36,7 @@
     /* Top Navigation */
     .sidebar {
       width: 100%;
-      height: 56px;
+      height: 64px;
       border-bottom: var(--line);
       padding: 0;
       position: fixed;
@@ -120,7 +120,7 @@
 
     main {
       width: 100%;
-      margin-top: 56px;
+      margin-top: 64px;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
@@ -506,19 +506,74 @@
       background-image: repeating-linear-gradient(
         45deg,
         transparent,
-        transparent 100px,
-        rgba(255,184,0,.05) 100px,
-        rgba(255,184,0,.05) 101px
+        transparent 80px,
+        rgba(255,184,0,.08) 80px,
+        rgba(255,184,0,.08) 82px
       );
       padding: 80px 44px;
       position: relative;
     }
-    .hero-content { max-width: 900px; margin: 0 auto; }
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .hero-left { }
+    .hero-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .preview-card {
+      background: var(--white);
+      border: var(--line);
+      padding: 28px;
+      width: 100%;
+      max-width: 350px;
+    }
+    .preview-card-header {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--secondary);
+      margin-bottom: 16px;
+    }
+    .preview-card h3 {
+      margin: 0 0 16px;
+      font-family: var(--headline);
+      font-size: 36px;
+      line-height: .95;
+      text-transform: uppercase;
+      font-weight: 900;
+    }
+    .preview-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .preview-bullets li {
+      padding: 8px 0 8px 20px;
+      font-size: 13px;
+      color: var(--secondary);
+      position: relative;
+      line-height: 1.6;
+    }
+    .preview-bullets li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      font-weight: 800;
+      color: var(--yellow);
+    }
     .hero-badge {
       display: inline-block;
       background: var(--yellow);
       border: var(--line);
-      padding: 10px 16px;
+      padding: 12px 18px;
       border-radius: 20px;
       font-size: 11px;
       font-weight: 800;
@@ -527,10 +582,10 @@
       margin-bottom: 32px;
     }
     .hero-headline {
-      margin: 0 0 24px;
+      margin: 0 0 28px;
       font-family: var(--headline);
-      font-size: 72px;
-      line-height: .95;
+      font-size: 96px;
+      line-height: .88;
       text-transform: uppercase;
       font-weight: 900;
       letter-spacing: -.02em;
@@ -538,9 +593,9 @@
     .hero-description {
       margin: 0 0 40px;
       font-size: 16px;
-      line-height: 1.7;
+      line-height: 1.8;
       color: var(--secondary);
-      max-width: 700px;
+      max-width: 600px;
     }
     .hero-buttons {
       display: flex;
@@ -589,6 +644,84 @@
       background: var(--white);
     }
 
+    /* How It Works Section */
+    .steps-section {
+      border-top: var(--line);
+      border-bottom: var(--line);
+      padding: 60px 44px;
+      background: var(--white);
+    }
+    .steps-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 44px;
+    }
+    .step {
+      text-align: center;
+    }
+    .step-number {
+      font-family: var(--headline);
+      font-size: 64px;
+      font-weight: 900;
+      color: var(--yellow);
+      line-height: 1;
+      margin-bottom: 16px;
+      letter-spacing: -.02em;
+    }
+    .step h4 {
+      margin: 0 0 12px;
+      font-family: var(--headline);
+      font-size: 20px;
+      text-transform: uppercase;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .step p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--secondary);
+      line-height: 1.6;
+    }
+
+    /* Stats Section */
+    .stats-section {
+      background: var(--white);
+      border: var(--line);
+      border-bottom: 0;
+      padding: 44px;
+    }
+    .stats-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .stat-item {
+      padding: 24px;
+      border: var(--line);
+      background: var(--white);
+      text-align: center;
+    }
+    .stat-number {
+      font-family: var(--headline);
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--black);
+      line-height: 1;
+      margin-bottom: 8px;
+      letter-spacing: -.02em;
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--secondary);
+    }
+
     .rollout-section {
       background: var(--yellow);
       border: var(--line);
@@ -622,6 +755,16 @@
     .feature-box {
       padding: 44px;
       border-right: var(--line);
+      position: relative;
+    }
+    .feature-box:first-child::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--yellow);
     }
     .feature-box:last-child {
       border-right: 0;
@@ -645,18 +788,24 @@
       list-style: none;
       padding: 0;
       margin: 0;
+      counter-reset: item;
     }
     .feature-box li {
-      padding: 8px 0 8px 20px;
+      padding: 12px 0 12px 32px;
       font-size: 14px;
       color: var(--secondary);
       position: relative;
+      counter-increment: item;
+      line-height: 1.6;
     }
     .feature-box li::before {
-      content: '•';
+      content: counter(item);
       position: absolute;
       left: 0;
       font-weight: 800;
+      color: var(--yellow);
+      font-family: var(--headline);
+      font-size: 16px;
     }
 
     /* Modal */
@@ -868,6 +1017,10 @@
       .features-section { grid-template-columns: 1fr; }
       .feature-box { border-right: 0; border-bottom: var(--line); padding: 32px 28px; }
       .feature-box:last-child { border-bottom: 0; }
+      .hero-content { grid-template-columns: 1fr; gap: 40px; }
+      .hero-right { justify-content: flex-start; }
+      .steps-container { grid-template-columns: 1fr; }
+      .stats-container { grid-template-columns: 1fr; }
       .quiz-question h3 { font-size: 18px; }
       .result-header h2 { font-size: 32px; }
     }
@@ -894,18 +1047,71 @@
       <!-- Hero Section -->
       <section class="hero-section">
         <div class="hero-content">
-          <div class="hero-badge">20-QUESTION IMPLEMENTATION DIAGNOSTIC</div>
-          <h1 class="hero-headline">Stop guessing where AI fits in your construction business.</h1>
-          <p class="hero-description">In about three minutes, answer practical questions about bids, RFIs, change orders, field reports, billing, documents, and follow-up — then get a ranked recommendation for the first agent your team should actually implement.</p>
-          <div class="hero-buttons">
-            <button class="hero-btn primary" id="heroStartQuiz">Find my first agent →</button>
-            <button class="hero-btn secondary" id="workflowAuditBtn">Do a free workflow audit</button>
+          <div class="hero-left">
+            <div class="hero-badge">20-QUESTION IMPLEMENTATION DIAGNOSTIC</div>
+            <h1 class="hero-headline">Stop guessing where AI fits in your construction business.</h1>
+            <p class="hero-description">In about three minutes, answer practical questions about bids, RFIs, change orders, field reports, billing, documents, and follow-up — then get a ranked recommendation for the first agent your team should actually implement.</p>
+            <div class="hero-buttons">
+              <button class="hero-btn primary" id="heroStartQuiz">Find my first agent →</button>
+              <button class="hero-btn secondary" id="workflowAuditBtn">Do a free workflow audit</button>
+            </div>
+            <div class="hero-tags">
+              <span class="tag">3 MINUTE DIAGNOSTIC</span>
+              <span class="tag">9 AGENT PATHS</span>
+              <span class="tag">HUMAN APPROVAL FIRST</span>
+              <span class="tag">BUILT FOR CONTRACTORS</span>
+            </div>
           </div>
-          <div class="hero-tags">
-            <span class="tag">3 MINUTE DIAGNOSTIC</span>
-            <span class="tag">9 AGENT PATHS</span>
-            <span class="tag">HUMAN APPROVAL FIRST</span>
-            <span class="tag">BUILT FOR CONTRACTORS</span>
+          <div class="hero-right">
+            <div class="preview-card">
+              <div class="preview-card-header">Your result</div>
+              <h3>PM Second Brain</h3>
+              <ul class="preview-bullets">
+                <li>Summarizes emails & meetings</li>
+                <li>Tracks decisions & blockers</li>
+                <li>Creates weekly updates</li>
+                <li>Flags overdue tasks</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works Section -->
+      <section class="steps-section">
+        <div class="steps-container">
+          <div class="step">
+            <div class="step-number">01</div>
+            <h4>Answer 20 questions</h4>
+            <p>Tell us about your biggest workflow pain points in about 3 minutes.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">02</div>
+            <h4>See your score update</h4>
+            <p>Watch in real-time as each answer refines your agent recommendation.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">03</div>
+            <h4>Get your recommendation</h4>
+            <p>See the best agent to implement first, plus a secondary option and workflow.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="stats-section">
+        <div class="stats-container">
+          <div class="stat-item">
+            <div class="stat-number">9</div>
+            <div class="stat-label">Agent Types Scored</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">20</div>
+            <div class="stat-label">Workflow Questions</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Minute Diagnostic</div>
           </div>
         </div>
       </section>
