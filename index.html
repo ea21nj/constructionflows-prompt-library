@@ -1401,10 +1401,8 @@ const agents = [
     }
 
     // Quiz event listeners
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('quizSubmit').addEventListener('click', submitQuiz);
-      document.getElementById('quizRetake').addEventListener('click', retakeQuiz);
-    });
+    document.getElementById('quizSubmit').addEventListener('click', submitQuiz);
+    document.getElementById('quizRetake').addEventListener('click', retakeQuiz);
 
     // Initialize
     renderAgentFilters();
