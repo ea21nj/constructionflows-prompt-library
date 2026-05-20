@@ -594,10 +594,6 @@
       border: var(--line);
       border-top: 0;
       padding: 56px 44px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 44px;
-      align-items: center;
     }
     .rollout-left h2 {
       margin: 0 0 16px;
@@ -613,29 +609,7 @@
       font-size: 16px;
       line-height: 1.7;
       color: var(--black);
-      max-width: 500px;
-    }
-    .rollout-right {
-      display: flex;
-      justify-content: flex-end;
-    }
-    .rollout-btn {
-      padding: 16px 32px;
-      background: var(--black);
-      color: var(--white);
-      border: var(--line);
-      border-color: var(--black);
-      font-family: var(--body);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      cursor: pointer;
-      transition: all 120ms ease;
-    }
-    .rollout-btn:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 4px 4px 0 var(--yellow);
+      max-width: 700px;
     }
 
     .features-section {
@@ -890,8 +864,7 @@
       .hero-headline { font-size: 44px; }
       .hero-buttons { flex-direction: column; }
       .hero-btn { width: 100%; }
-      .rollout-section { grid-template-columns: 1fr; gap: 32px; padding: 44px 28px; }
-      .rollout-right { justify-content: flex-start; }
+      .rollout-section { padding: 44px 28px; }
       .features-section { grid-template-columns: 1fr; }
       .feature-box { border-right: 0; border-bottom: var(--line); padding: 32px 28px; }
       .feature-box:last-child { border-bottom: 0; }
@@ -926,7 +899,6 @@
           <p class="hero-description">In about three minutes, answer practical questions about bids, RFIs, change orders, field reports, billing, documents, and follow-up — then get a ranked recommendation for the first agent your team should actually implement.</p>
           <div class="hero-buttons">
             <button class="hero-btn primary" id="heroStartQuiz">Find my first agent →</button>
-            <button class="hero-btn secondary">Build my first agent</button>
             <button class="hero-btn secondary" id="workflowAuditBtn">Do a free workflow audit</button>
           </div>
           <div class="hero-tags">
@@ -943,9 +915,6 @@
         <div class="rollout-left">
           <h2>Your result becomes a rollout plan.</h2>
           <p>Not a generic score. You'll see the agent to start with, why it fits, and the first workflow to test with your team.</p>
-        </div>
-        <div class="rollout-right">
-          <button class="rollout-btn">Build my first agent</button>
         </div>
       </section>
 
