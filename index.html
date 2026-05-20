@@ -493,6 +493,19 @@
       transform: scaleX(1);
     }
 
+    /* Home */
+    .home-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .hero-content h1 { margin: 0 0 16px; font-family: var(--headline); font-size: 52px; line-height: .95; text-transform: uppercase; }
+    .hero-subtitle { margin: 0 0 20px; font-size: 24px; font-weight: 600; color: var(--secondary); }
+    .hero-description { margin: 0 0 32px; font-size: 16px; line-height: 1.7; color: var(--secondary); }
+    .hero-cta { padding: 16px 32px; background: var(--yellow); border: var(--line); font-family: var(--body); font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: all 120ms ease; }
+    .hero-cta:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
+    .hero-features { display: flex; flex-direction: column; gap: 20px; }
+    .feature { display: flex; gap: 16px; padding: 20px; border: var(--line); background: #FAFAFA; }
+    .feature-icon { font-size: 24px; font-weight: 800; color: var(--yellow); min-width: 28px; text-align: center; }
+    .feature strong { display: block; font-size: 15px; margin-bottom: 4px; }
+    .feature p { margin: 0; font-size: 13px; color: var(--secondary); }
+
     /* Quiz */
     .quiz-wrap { max-width: 740px; }
     .quiz-progress { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--secondary); margin-bottom: 28px; }
@@ -564,6 +577,10 @@
       .prompt-card, .agent-card, .discovery-card { border-right: 0; border-bottom: var(--line); }
       .prompt-card:nth-child(2n) { border-right: 0; }
       .prompt-card:nth-last-child(-n+2) { border-bottom: var(--line); }
+      .home-hero { grid-template-columns: 1fr; gap: 40px; }
+      .hero-content h1 { font-size: 38px; }
+      .hero-subtitle { font-size: 18px; }
+      .hero-description { font-size: 14px; }
       .quiz-question h3 { font-size: 18px; }
       .result-header h2 { font-size: 32px; }
     }
@@ -576,16 +593,51 @@
       <span>ConstructionFlows</span>
     </div>
     <div class="sidebar-nav">
-      <a href="#" data-face="agents" class="nav-link active">10 Agents</a>
+      <a href="#" data-face="home" class="nav-link active">Home</a>
+      <a href="#" data-face="quiz" class="nav-link">Agent Quiz</a>
+      <a href="#" data-face="agents" class="nav-link">10 Agents</a>
       <a href="#" data-face="discovery" class="nav-link">Discovery</a>
       <a href="#" data-face="stack" class="nav-link">Tech Stack</a>
       <a href="#" data-face="about" class="nav-link">About</a>
-      <a href="#" data-face="quiz" class="nav-link">Agent Quiz</a>
     </div>
   </nav>
 
   <main>
-    <div class="face active" id="face-agents">
+    <div class="face active" id="face-home">
+      <div class="home-hero">
+        <div class="hero-content">
+          <h1>Agent Fit Quiz</h1>
+          <p class="hero-subtitle">Score the workflows that are costing your team the most time.</p>
+          <p class="hero-description">Answer 20 quick questions about your construction operations. Your results update as you go, but the final recommendation appears after all 20 questions.</p>
+          <button class="hero-cta" id="heroStartQuiz">Start the quiz →</button>
+        </div>
+        <div class="hero-features">
+          <div class="feature">
+            <span class="feature-icon">✓</span>
+            <div>
+              <strong>20 quick questions</strong>
+              <p>About your team's pain points and workflows</p>
+            </div>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">✓</span>
+            <div>
+              <strong>Real-time results</strong>
+              <p>See which agent fits as you answer</p>
+            </div>
+          </div>
+          <div class="feature">
+            <span class="feature-icon">✓</span>
+            <div>
+              <strong>Personalized recommendation</strong>
+              <p>Primary and secondary agent suggestions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="face" id="face-agents">
       <h1>10 agent ideas</h1>
       <p>Click any agent to see full positioning, workflow, tracker fields, and implementation details.</p>
       <div class="agent-filters" id="agentFilters"></div>
@@ -1578,6 +1630,11 @@ const agents = [
         submitBtn.textContent = 'Send my info →';
       }
     }
+
+    // Home button
+    document.getElementById('heroStartQuiz').addEventListener('click', () => {
+      document.querySelector('[data-face="quiz"]').click();
+    });
 
     // Quiz event listeners
     document.getElementById('quizPrev').addEventListener('click', goToPrevious);
