@@ -493,6 +493,43 @@
       transform: scaleX(1);
     }
 
+    /* Quiz */
+    .quiz-wrap { max-width: 740px; }
+    .quiz-progress { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--secondary); margin-bottom: 28px; }
+    .quiz-progress-bar { height: 4px; background: #eee; border: var(--line); margin-bottom: 32px; }
+    .quiz-progress-bar-fill { height: 100%; background: var(--yellow); transition: width 300ms ease; }
+    .quiz-question { margin-bottom: 36px; padding: 24px; border: var(--line); background: var(--white); }
+    .quiz-question p.q-label { margin: 0 0 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--secondary); }
+    .quiz-question h3 { margin: 0 0 20px; font-size: 22px; line-height: 1.1; }
+    .quiz-option { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: var(--line); margin-bottom: 8px; cursor: pointer; transition: background 120ms ease; background: var(--white); }
+    .quiz-option:last-child { margin-bottom: 0; }
+    .quiz-option:hover { background: #F5F5F5; }
+    .quiz-option.selected { background: var(--yellow); font-weight: 600; }
+    .quiz-option-letter { font-family: var(--headline); font-size: 18px; font-weight: 800; min-width: 24px; }
+    .quiz-option-text { font-size: 14px; line-height: 1.4; }
+    .quiz-submit { margin-top: 32px; padding: 16px 28px; background: var(--yellow); border: var(--line); font-family: var(--body); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: all 120ms ease; }
+    .quiz-submit:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
+    .quiz-submit:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .quiz-result { display: none; }
+    .quiz-result.show { display: block; }
+    .result-header { padding: 32px; background: var(--yellow); border: var(--line); margin-bottom: 0; }
+    .result-header .result-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
+    .result-header h2 { margin: 0; font-family: var(--headline); font-size: 42px; line-height: .95; text-transform: uppercase; }
+    .result-body { padding: 32px; border: var(--line); border-top: 0; margin-bottom: 24px; }
+    .result-body p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin: 0 0 20px; }
+    .result-bullets { list-style: none; padding: 0; margin: 0 0 24px; }
+    .result-bullets li { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; color: var(--secondary); display: flex; gap: 10px; }
+    .result-bullets li::before { content: '→'; font-weight: 700; color: var(--black); flex-shrink: 0; }
+    .result-workflow { background: #F5F5F5; border: var(--line); padding: 20px; margin-top: 20px; }
+    .result-workflow strong { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+    .result-workflow p { margin: 0; font-size: 13px; color: var(--secondary); line-height: 1.6; }
+    .result-secondary { padding: 20px; border: var(--line); background: #FAFAFA; margin-bottom: 24px; }
+    .result-secondary .sec-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--secondary); margin-bottom: 6px; }
+    .result-secondary h3 { margin: 0 0 8px; font-size: 20px; }
+    .result-secondary p { margin: 0; font-size: 13px; color: var(--secondary); line-height: 1.6; }
+    .result-retake { padding: 12px 20px; border: var(--line); background: var(--white); font-family: var(--body); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: all 120ms ease; }
+    .result-retake:hover { background: var(--yellow); }
+
 @media (max-width: 900px) {
       .sidebar {
         width: 100%;
@@ -513,6 +550,8 @@
       .prompt-card, .agent-card, .discovery-card { border-right: 0; border-bottom: var(--line); }
       .prompt-card:nth-child(2n) { border-right: 0; }
       .prompt-card:nth-last-child(-n+2) { border-bottom: var(--line); }
+      .quiz-question h3 { font-size: 18px; }
+      .result-header h2 { font-size: 32px; }
     }
   </style>
 </head>
@@ -527,6 +566,7 @@
       <a href="#" data-face="discovery" class="nav-link">Discovery</a>
       <a href="#" data-face="stack" class="nav-link">Tech Stack</a>
       <a href="#" data-face="about" class="nav-link">About</a>
+      <a href="#" data-face="quiz" class="nav-link">Agent Quiz</a>
     </div>
   </nav>
 
@@ -648,6 +688,31 @@
 
       <h3>Where to start</h3>
       <p>1. Browse the 10 agents. 2. Answer discovery questions. 3. Pick one agent. 4. Review the tech stack. 5. Build it using tools you already have.</p>
+    </div>
+
+    <div class="face" id="face-quiz">
+      <div class="quiz-wrap">
+        <h1>Agent Fit Quiz</h1>
+        <p>20 questions to find the right AI agent for your construction workflow. Takes about 3 minutes.</p>
+
+        <!-- Quiz form state -->
+        <div id="quizForm">
+          <div class="quiz-progress-bar"><div class="quiz-progress-bar-fill" id="quizProgressFill" style="width:0%"></div></div>
+          <div id="quizQuestions"></div>
+          <button class="quiz-submit" id="quizSubmit" disabled>See my results →</button>
+        </div>
+
+        <!-- Results state (hidden until submit) -->
+        <div class="quiz-result" id="quizResult">
+          <div class="result-header">
+            <div class="result-label">Your best first agent</div>
+            <h2 id="resultTitle"></h2>
+          </div>
+          <div class="result-body" id="resultBody"></div>
+          <div class="result-secondary" id="resultSecondary"></div>
+          <button class="result-retake" id="quizRetake">Retake quiz</button>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -863,6 +928,241 @@ const agents = [
       }
     ];
 
+    // Quiz data
+    const quizQuestions = [
+      { q: "Q1. Your biggest pain point right now?", options: [
+        { label: "A", text: "Bid estimates take forever to pull together", agents: ["estimator"] },
+        { label: "B", text: "We miss change order opportunities on site", agents: ["changeOrder"] },
+        { label: "C", text: "Field teams don't report progress clearly", agents: ["fieldReport"] },
+        { label: "D", text: "RFI/submittal tracking falls through cracks", agents: ["rfiSubmittal"] }
+      ]},
+      { q: "Q2. When it comes to estimating, what's most painful?", options: [
+        { label: "A", text: "Pulling historical costs from past projects", agents: ["estimator"] },
+        { label: "B", text: "Formatting takeoffs for subcontractors", agents: ["estimator"] },
+        { label: "C", text: "Sales doesn't have the data they need for quick bids", agents: ["crm"] },
+        { label: "D", text: "We don't have cost tracking process for lessons learned", agents: ["knowledge"] }
+      ]},
+      { q: "Q3. Change orders — what's the biggest headache?", options: [
+        { label: "A", text: "We miss changes happening on site", agents: ["changeOrder"] },
+        { label: "B", text: "Owners don't approve changes fast enough", agents: ["changeOrder"] },
+        { label: "C", text: "We forget to add them to the pay app", agents: ["billing"] },
+        { label: "D", text: "Subs claim changes we didn't approve", agents: ["changeOrder"] }
+      ]},
+      { q: "Q4. Field reporting — how does it work now?", options: [
+        { label: "A", text: "Foremen send daily emails—no consistency", agents: ["fieldReport"] },
+        { label: "B", text: "We use a spreadsheet, manually updated", agents: ["fieldReport"] },
+        { label: "C", text: "We don't really track field progress formally", agents: ["fieldReport"] },
+        { label: "D", text: "Photos and notes are scattered across phones", agents: ["fieldReport"] }
+      ]},
+      { q: "Q5. RFIs and submittals — what's broken?", options: [
+        { label: "A", text: "We don't track deadlines, responses get missed", agents: ["rfiSubmittal"] },
+        { label: "B", text: "Responses go into email; we can't find them later", agents: ["rfiSubmittal"] },
+        { label: "C", text: "Subs submit incomplete submittals; we reject them", agents: ["rfiSubmittal"] },
+        { label: "D", text: "GC RFIs come in; we don't respond in time", agents: ["rfiSubmittal"] }
+      ]},
+      { q: "Q6. Schedule — what's the biggest issue?", options: [
+        { label: "A", text: "We don't see risk until it's too late", agents: ["schedule"] },
+        { label: "B", text: "Schedule changes don't get communicated to teams", agents: ["schedule"] },
+        { label: "C", text: "We miss critical path impacts from delays", agents: ["schedule"] },
+        { label: "D", text: "Schedule updates are manual and slow", agents: ["schedule"] }
+      ]},
+      { q: "Q7. When you lose time/money, why?", options: [
+        { label: "A", text: "Bids were too low—we missed costs", agents: ["estimator"] },
+        { label: "B", text: "Changes approved but not charged back", agents: ["changeOrder"] },
+        { label: "C", text: "Retainage delays cash flow", agents: ["billing"] },
+        { label: "D", text: "Schedule delays balloon labor/overhead", agents: ["schedule"] }
+      ]},
+      { q: "Q8. Your biggest customer-facing pain?", options: [
+        { label: "A", text: "Slow turn on quotes", agents: ["crm", "estimator"] },
+        { label: "B", text: "Poor communication about status/changes", agents: ["crm", "fieldReport"] },
+        { label: "C", text: "Late invoices/payment follow-up", agents: ["billing"] },
+        { label: "D", text: "Unclear change order process", agents: ["changeOrder"] }
+      ]},
+      { q: "Q9. Inside your team, what slows decisions?", options: [
+        { label: "A", text: "PMs don't have access to pricing history", agents: ["estimator", "knowledge"] },
+        { label: "B", text: "No clear SOP for handling RFIs", agents: ["rfiSubmittal", "knowledge"] },
+        { label: "C", text: "Field data isn't shared with office", agents: ["fieldReport", "pm"] },
+        { label: "D", text: "Leadership has to weigh in on routine decisions", agents: ["pm"] }
+      ]},
+      { q: "Q10. Which operational area is most 'manual'?", options: [
+        { label: "A", text: "Estimating & bid prep", agents: ["estimator"] },
+        { label: "B", text: "Project documentation & record-keeping", agents: ["knowledge", "fieldReport"] },
+        { label: "C", text: "Vendor management & quoting", agents: ["crm"] },
+        { label: "D", text: "Invoice tracking & payment follow-up", agents: ["billing"] }
+      ]},
+      { q: "Q11. If you had one extra admin, what would they do?", options: [
+        { label: "A", text: "Pull estimates & format bids", agents: ["estimator"] },
+        { label: "B", text: "Track change orders & coordinate approvals", agents: ["changeOrder"] },
+        { label: "C", text: "Manage daily reports & field updates", agents: ["fieldReport"] },
+        { label: "D", text: "Follow up on invoices & AR", agents: ["billing"] }
+      ]},
+      { q: "Q12. Your teams biggest complaint?", options: [
+        { label: "A", text: "Too many emails from scattered sources", agents: ["pm", "crm"] },
+        { label: "B", text: "Can't find info when they need it", agents: ["knowledge"] },
+        { label: "C", text: "Reporting takes away from actual work", agents: ["fieldReport"] },
+        { label: "D", text: "No visibility into project status", agents: ["fieldReport", "pm"] }
+      ]},
+      { q: "Q13. What would save the most time?", options: [
+        { label: "A", text: "Faster estimate turnaround", agents: ["estimator"] },
+        { label: "B", text: "Auto-tracking RFI/submittal status", agents: ["rfiSubmittal"] },
+        { label: "C", text: "Automatic field report summarization", agents: ["fieldReport"] },
+        { label: "D", text: "One-click invoice follow-up", agents: ["billing"] }
+      ]},
+      { q: "Q14. On a typical project, what surprises you?", options: [
+        { label: "A", text: "Costs come in over estimate", agents: ["estimator", "changeOrder"] },
+        { label: "B", text: "Schedule impacts from scope changes", agents: ["schedule", "changeOrder"] },
+        { label: "C", text: "Retainage doesn't get released on time", agents: ["billing"] },
+        { label: "D", text: "Change order approvals take forever", agents: ["changeOrder"] }
+      ]},
+      { q: "Q15. Who complains most about your current setup?", options: [
+        { label: "A", text: "Sales / estimating team", agents: ["estimator"] },
+        { label: "B", text: "Field superintendents", agents: ["fieldReport", "pm"] },
+        { label: "C", text: "Accounting / finance", agents: ["billing"] },
+        { label: "D", text: "Senior management", agents: ["pm", "knowledge"] }
+      ]},
+      { q: "Q16. If you had data from this area, what could you fix?", options: [
+        { label: "A", text: "Historical bid accuracy & cost trends", agents: ["estimator", "knowledge"] },
+        { label: "B", text: "Which vendors/subs perform best", agents: ["crm"] },
+        { label: "C", text: "Why projects go over budget", agents: ["changeOrder", "pm"] },
+        { label: "D", text: "Payment collection patterns", agents: ["billing"] }
+      ]},
+      { q: "Q17. What's causing you to lose bids?", options: [
+        { label: "A", text: "Slow turnaround on quotes", agents: ["estimator", "crm"] },
+        { label: "B", text: "Pricing isn't competitive enough", agents: ["estimator"] },
+        { label: "C", text: "Customers don't remember your past work", agents: ["crm", "knowledge"] },
+        { label: "D", text: "Poor follow-up from sales", agents: ["crm"] }
+      ]},
+      { q: "Q18. Compliance & documentation — what's at risk?", options: [
+        { label: "A", text: "Missing backup for invoiced items", agents: ["billing", "fieldReport"] },
+        { label: "B", text: "Change order paper trail is weak", agents: ["changeOrder"] },
+        { label: "C", text: "RFI responses aren't documented", agents: ["rfiSubmittal"] },
+        { label: "D", text: "We can't defend our billing if questioned", agents: ["billing"] }
+      ]},
+      { q: "Q19. When projects wrap up, what happens?", options: [
+        { label: "A", text: "Final billing takes weeks to issue", agents: ["billing"] },
+        { label: "B", text: "Lessons learned get lost", agents: ["knowledge"] },
+        { label: "C", text: "We don't capture what went well for next time", agents: ["knowledge"] },
+        { label: "D", text: "Outstanding retainage sits unpaid", agents: ["billing"] }
+      ]},
+      { q: "Q20. What would make your job easier in 6 months?", options: [
+        { label: "A", text: "A system that learns from past projects", agents: ["knowledge", "estimator"] },
+        { label: "B", text: "One place to find all project info", agents: ["knowledge", "pm"] },
+        { label: "C", text: "Faster, more accurate bids", agents: ["estimator"] },
+        { label: "D", text: "Subs submitting complete info the first time", agents: ["rfiSubmittal"] }
+      ]}
+    ];
+
+    const quizResults = {
+      estimator: {
+        title: "Estimator Copilot",
+        description: "Automate bid prep, cost lookups, and pricing accuracy. The Estimator Agent pulls historical costs, formats takeoffs, and flags scope gaps—turning bid week from chaos into a 2-day sprint.",
+        bullets: [
+          "Pull historical costs in seconds, not hours",
+          "Auto-format takeoffs for subcontractors",
+          "Flag scope gaps before subs bid it wrong",
+          "Track bid accuracy to improve estimating",
+          "Help sales turn quotes faster"
+        ],
+        workflow: "When a bid request comes in, agent reviews past projects, suggests line items and pricing, formats the takeoff for subs, and flags any unusual scope."
+      },
+      pm: {
+        title: "PM Second Brain",
+        description: "A project management co-pilot that centralizes decisions, tracks conversations, flags risks, and keeps the team aligned. Less time in email, more time on the site.",
+        bullets: [
+          "One place for all project conversations & decisions",
+          "Automatic risk flagging (schedule, scope, budget)",
+          "Status summaries without asking each person",
+          "Vendor/sub coordination in one place",
+          "Clear ownership & accountability"
+        ],
+        workflow: "Agent monitors emails, RFIs, field reports, and schedule changes, surfacing risks and syncing the team on what's changed."
+      },
+      changeOrder: {
+        title: "Change Order Evidence Agent",
+        description: "Capture changes as they happen on site, build defensible CO records, and track approvals. No more 'you said/I said' disputes with owners.",
+        bullets: [
+          "Capture scope changes as they happen",
+          "Draft CO language automatically",
+          "Track owner approval status",
+          "Link to photos, emails, RFI responses",
+          "Create defensible paper trail"
+        ],
+        workflow: "Field crew flags a change. Agent drafts the CO, links supporting docs, tracks owner response, and flags if approval is delayed."
+      },
+      fieldReport: {
+        title: "Field Report Agent",
+        description: "Transform scattered field notes, photos, and voice memos into clear daily/weekly reports. No more hand-holding superintendents on paperwork.",
+        bullets: [
+          "Summarize field updates into formal reports",
+          "Extract progress metrics automatically",
+          "Flag safety or schedule concerns",
+          "Organize photos by date & location",
+          "Create project record for closeout"
+        ],
+        workflow: "Foreman sends a photo, voice note, or quick update. Agent organizes it, flags risks, and includes it in the daily report."
+      },
+      rfiSubmittal: {
+        title: "RFI / Submittal Agent",
+        description: "Automate RFI tracking, submittal checklists, and response deadlines. Stop losing submittals in email and missing GC deadlines.",
+        bullets: [
+          "Auto-track RFI & submittal deadlines",
+          "Remind subs when submittals are incomplete",
+          "Flag overdue responses from GC/owner",
+          "Organize submittals by trade and type",
+          "Create a searchable submittal log"
+        ],
+        workflow: "GC sends RFI. Agent logs it, sets deadline, reminds subs to respond, flags delays, and stores the response for future reference."
+      },
+      schedule: {
+        title: "Schedule Risk Agent",
+        description: "Spot schedule risks before they become crises. Track critical path impacts, delay causes, and mitigation steps in one place.",
+        bullets: [
+          "Flag critical path changes automatically",
+          "Identify delay risks before they hit",
+          "Track which delays are owner-caused vs. us",
+          "Suggest mitigation (overtime, parallel work)",
+          "Create weekly schedule-impact reports"
+        ],
+        workflow: "PM updates schedule. Agent checks for critical path impacts, compares to baseline, flags risks, and suggests recovery."
+      },
+      crm: {
+        title: "CRM / Follow-Up Agent",
+        description: "Track prospects, follow up on quotes, and know exactly who to call and when. Never lose a lead to a missed email again.",
+        bullets: [
+          "Auto-log all customer conversations & quotes",
+          "Remind you when follow-up is due",
+          "Track quote-to-win rate by customer",
+          "Organize vendor quotes for future jobs",
+          "Flag at-risk customers for retention"
+        ],
+        workflow: "Sales sends a proposal or call note. Agent logs it, sets follow-up, tracks if quote is accepted/rejected, and reminds when it's time to touch base."
+      },
+      billing: {
+        title: "AIA Billing / Pay App Agent",
+        description: "Automate pay app tracking, retainage monitoring, and payment follow-up. Improve cash flow and reduce late invoices by weeks.",
+        bullets: [
+          "Build pay apps automatically from project data",
+          "Track retainage and flag when it's releasable",
+          "Auto-remind on overdue payments",
+          "Flag missing backup documents before submission",
+          "Create AR aging reports"
+        ],
+        workflow: "Billing period opens. Agent builds the pay app draft, flags missing docs, tracks submission, reminds on approval, and follows up on payment."
+      },
+      knowledge: {
+        title: "Project Knowledge / Archiver Agent",
+        description: "Capture decisions, lessons learned, and SOPs so new hires don't have to interrupt the owner. Build company memory.",
+        bullets: [
+          "Auto-save important decisions & lessons learned",
+          "Build SOP drafts from project workflows",
+          "Answer questions from company knowledge base",
+          "Organize templates by project type",
+          "Create onboarding guides for new hires"
+        ],
+        workflow: "PM finishes a project. Agent asks what worked, what didn't, and saves the lessons. Next time a similar project comes up, that knowledge is available."
+      }
+    };
+
     // Render agents
     let activeFilter = null;
 
@@ -1005,10 +1305,112 @@ const agents = [
       `).join('');
     }
 
+    // Quiz functions
+    function renderQuizFace() {
+      const quizContainer = document.getElementById('quizQuestions');
+      quizContainer.innerHTML = quizQuestions.map((q, idx) => `
+        <div class="quiz-question">
+          <p class="q-label">Question ${idx + 1} of 20</p>
+          <h3>${q.q}</h3>
+          ${q.options.map(opt => `
+            <div class="quiz-option" data-question="${idx}" data-agents="${opt.agents.join(',')}">
+              <span class="quiz-option-letter">${opt.label}</span>
+              <span class="quiz-option-text">${opt.text}</span>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+
+      // Attach click handlers
+      document.querySelectorAll('.quiz-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const questionIdx = parseInt(option.dataset.question);
+          document.querySelectorAll(`[data-question="${questionIdx}"]`).forEach(o => o.classList.remove('selected'));
+          option.classList.add('selected');
+          updateQuizProgress();
+        });
+      });
+
+      updateQuizProgress();
+    }
+
+    function updateQuizProgress() {
+      const totalQuestions = quizQuestions.length;
+      const answered = document.querySelectorAll('.quiz-option.selected').length;
+      const progressPercent = (answered / totalQuestions) * 100;
+      document.getElementById('quizProgressFill').style.width = progressPercent + '%';
+      document.getElementById('quizSubmit').disabled = answered < totalQuestions;
+    }
+
+    function submitQuiz() {
+      const scores = {};
+
+      // Initialize scores for all agents
+      Object.keys(quizResults).forEach(key => {
+        scores[key] = 0;
+      });
+
+      // Tally scores from selected answers
+      document.querySelectorAll('.quiz-option.selected').forEach(option => {
+        const agents = option.dataset.agents.split(',');
+        agents.forEach(agent => {
+          scores[agent]++;
+        });
+      });
+
+      // Sort agents by score
+      const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+      const primaryAgent = sorted[0][0];
+      const secondaryAgent = sorted[1][0];
+
+      showQuizResults(primaryAgent, secondaryAgent);
+    }
+
+    function showQuizResults(primary, secondary) {
+      const primaryData = quizResults[primary];
+      const secondaryData = quizResults[secondary];
+
+      document.getElementById('resultTitle').textContent = primaryData.title;
+
+      document.getElementById('resultBody').innerHTML = `
+        <p>${primaryData.description}</p>
+        <ul class="result-bullets">
+          ${primaryData.bullets.map(bullet => `<li>${bullet}</li>`).join('')}
+        </ul>
+        <div class="result-workflow">
+          <strong>In Practice</strong>
+          <p>${primaryData.workflow}</p>
+        </div>
+      `;
+
+      document.getElementById('resultSecondary').innerHTML = `
+        <div class="sec-label">Strong Secondary Fit</div>
+        <h3>${secondaryData.title}</h3>
+        <p>${secondaryData.description}</p>
+      `;
+
+      document.getElementById('quizForm').style.display = 'none';
+      document.getElementById('quizResult').classList.add('show');
+    }
+
+    function retakeQuiz() {
+      document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+      updateQuizProgress();
+      document.getElementById('quizForm').style.display = 'block';
+      document.getElementById('quizResult').classList.remove('show');
+    }
+
+    // Quiz event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('quizSubmit').addEventListener('click', submitQuiz);
+      document.getElementById('quizRetake').addEventListener('click', retakeQuiz);
+    });
+
     // Initialize
     renderAgentFilters();
     renderAgentCards();
     renderDiscoveryCards();
+    renderQuizFace();
   </script>
 </body>
 </html>
