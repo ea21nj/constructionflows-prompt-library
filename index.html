@@ -1367,27 +1367,6 @@
       });
     });
 
-    // Preview card agent cycling
-    let previewIndex = 0;
-
-    function updatePreviewCard() {
-      const nameEl = document.getElementById('previewAgentName');
-      const bulletsEl = document.getElementById('previewAgentBullets');
-
-      if (!nameEl || !bulletsEl || !agents || agents.length === 0) return;
-
-      const agent = agents[previewIndex];
-      nameEl.textContent = agent.name;
-
-      const bullets = agent.whatItDoes.slice(0, 4).map(item => `<li>${item}</li>`).join('');
-      bulletsEl.innerHTML = bullets;
-
-      previewIndex = (previewIndex + 1) % agents.length;
-    }
-
-    updatePreviewCard();
-    setInterval(updatePreviewCard, 4000);
-
     // Agent data
 const agents = [
       {
@@ -1571,6 +1550,27 @@ const agents = [
         approvalGates: ["Final SOP approval", "Policy decisions", "Customer-specific rules", "Sensitive financial/contract info"]
       }
     ];
+
+    // Preview card agent cycling
+    let previewIndex = 0;
+
+    function updatePreviewCard() {
+      const nameEl = document.getElementById('previewAgentName');
+      const bulletsEl = document.getElementById('previewAgentBullets');
+
+      if (!nameEl || !bulletsEl || !agents || agents.length === 0) return;
+
+      const agent = agents[previewIndex];
+      nameEl.textContent = agent.name;
+
+      const bullets = agent.whatItDoes.slice(0, 4).map(item => `<li>${item}</li>`).join('');
+      bulletsEl.innerHTML = bullets;
+
+      previewIndex = (previewIndex + 1) % agents.length;
+    }
+
+    updatePreviewCard();
+    setInterval(updatePreviewCard, 4000);
 
     // Quiz data
     const quizQuestions = [
