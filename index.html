@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConstructionFlows Prompt Library</title>
+  <meta name="description" content="A practical AI prompt library for construction estimating, RFIs, submittals, change orders, daily reports, and schedule reviews." />
+  <meta property="og:title" content="ConstructionFlows Prompt Library" />
+  <meta property="og:description" content="Field-tested AI prompts for contractors, PMs, estimators, and project admins." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --ink: #171717;
+      --muted: #4d4d4d;
+      --soft: #666666;
+      --line: rgba(0, 0, 0, 0.08);
+      --surface: #fafafa;
+      --blue: #0a72ef;
+      --pink: #de1d8d;
+      --red: #ff5b4f;
+      --green: #0d9f6e;
+      --yellow: #b7791f;
+      --shadow-card: rgba(0,0,0,0.08) 0px 0px 0px 1px, rgba(0,0,0,0.04) 0px 2px 2px, rgba(0,0,0,0.04) 0px 8px 8px -8px, #fafafa 0px 0px 0px 1px;
+      --shadow-ring: rgba(0,0,0,0.08) 0px 0px 0px 1px;
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "liga" 1;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255,255,255,0.84);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow-ring);
+    }
+    .nav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 14px 22px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+      white-space: nowrap;
+    }
+    .logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #171717;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      box-shadow: var(--shadow-ring);
+    }
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .nav-links a:hover { color: var(--ink); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
+      border: 0;
+      font-family: inherit;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-dark { background: var(--ink); color: #fff; box-shadow: var(--shadow-ring); }
+    .btn-light { background: #fff; color: var(--ink); box-shadow: rgb(235,235,235) 0px 0px 0px 1px; }
+    .btn-copy { padding: 8px 10px; font-size: 12px; background: #fff; color: var(--ink); box-shadow: rgb(235,235,235) 0px 0px 0px 1px; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 92px 22px 80px;
+      border-bottom: 1px solid #ebebeb;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -180px -20% auto;
+      height: 420px;
+      background: radial-gradient(circle at 25% 40%, rgba(10,114,239,0.14), transparent 34%), radial-gradient(circle at 58% 22%, rgba(222,29,141,0.10), transparent 32%), radial-gradient(circle at 78% 55%, rgba(255,91,79,0.12), transparent 28%);
+      filter: blur(10px);
+      pointer-events: none;
+    }
+    .hero-inner { max-width: 1120px; margin: 0 auto; position: relative; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #ebf5ff;
+      color: #0068d6;
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: rgba(0,0,0,0.04) 0 0 0 1px;
+      margin-bottom: 22px;
+    }
+    h1 {
+      margin: 0;
+      max-width: 900px;
+      font-size: clamp(48px, 8vw, 86px);
+      line-height: 0.95;
+      letter-spacing: clamp(-4px, -0.06em, -2.2px);
+      font-weight: 600;
+      text-wrap: balance;
+    }
+    .hero-copy {
+      max-width: 760px;
+      margin: 26px 0 0;
+      color: var(--muted);
+      font-size: clamp(18px, 2vw, 22px);
+      line-height: 1.65;
+      text-wrap: pretty;
+    }
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 34px; }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      margin-top: 56px;
+      align-items: stretch;
+    }
+    .terminal-card, .stat-card, .prompt-card, .offer-card {
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+    }
+    .terminal-card { padding: 18px; min-height: 320px; }
+    .terminal-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid #ebebeb; }
+    .dots { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #d4d4d4; }
+    .dot:nth-child(1) { background: var(--red); } .dot:nth-child(2) { background: #f5b547; } .dot:nth-child(3) { background: var(--green); }
+    .mono { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--soft); }
+    pre {
+      margin: 16px 0 0;
+      white-space: pre-wrap;
+      font-family: 'Geist Mono', monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #2c2c2c;
+    }
+    .side-stats { display: grid; gap: 18px; }
+    .stat-card { padding: 22px; }
+    .stat-num { font-size: 42px; font-weight: 600; letter-spacing: -2px; line-height: 1; }
+    .stat-label { margin-top: 10px; color: var(--muted); line-height: 1.5; }
+
+    section { padding: 84px 22px; }
+    .section-inner { max-width: 1120px; margin: 0 auto; }
+    .section-kicker {
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--soft);
+      letter-spacing: 0.04em;
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1;
+      letter-spacing: clamp(-2.8px, -0.05em, -1.4px);
+      font-weight: 600;
+      text-wrap: balance;
+    }
+    .section-copy {
+      max-width: 720px;
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
+    }
+
+    .pill-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .pill { border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-ring); background: #fff; }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 36px;
+    }
+    .workflow-card { padding: 24px; background: #fff; border-radius: var(--radius); box-shadow: var(--shadow-card); }
+    .workflow-card h3 { margin: 10px 0 8px; font-size: 24px; line-height: 1.15; letter-spacing: -0.9px; }
+    .workflow-card p { margin: 0; color: var(--muted); line-height: 1.65; }
+    .kicker-blue { color: var(--blue); } .kicker-pink { color: var(--pink); } .kicker-red { color: var(--red); }
+
+    .tabs { margin-top: 38px; }
+    .tab-list { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tab {
+      background: #fff;
+      color: var(--muted);
+      box-shadow: var(--shadow-ring);
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 13px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .tab.active { background: var(--ink); color: #fff; }
+    .prompt-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .prompt-card { padding: 20px; display: flex; flex-direction: column; gap: 12px; min-height: 260px; }
+    .prompt-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
+    .prompt-card h3 { margin: 0; font-size: 20px; line-height: 1.2; letter-spacing: -0.5px; }
+    .prompt-card p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .prompt-box {
+      flex: 1;
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 13px;
+      font-family: 'Geist Mono', monospace;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #333;
+      box-shadow: rgba(0,0,0,0.06) 0 0 0 1px inset;
+      white-space: pre-wrap;
+    }
+
+    .offers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 36px; }
+    .offer-card { padding: 24px; }
+    .offer-card h3 { margin: 0 0 10px; font-size: 22px; letter-spacing: -0.7px; }
+    .offer-card ul { margin: 16px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+
+    .lead-magnet {
+      background: #171717;
+      color: #fff;
+      border-radius: 20px;
+      padding: clamp(28px, 5vw, 54px);
+      display: grid;
+      grid-template-columns: 1fr 0.8fr;
+      gap: 32px;
+      align-items: center;
+      box-shadow: rgba(0,0,0,0.18) 0 18px 60px -28px;
+    }
+    .lead-magnet h2 { color: #fff; }
+    .lead-magnet p { color: rgba(255,255,255,0.72); font-size: 18px; line-height: 1.65; }
+    .download-card {
+      background: #fff;
+      color: var(--ink);
+      border-radius: 14px;
+      padding: 20px;
+    }
+    .download-card ul { padding-left: 18px; margin: 14px 0 0; color: var(--muted); line-height: 1.7; }
+
+    .footer { padding: 36px 22px; border-top: 1px solid #ebebeb; color: var(--muted); }
+    .footer-inner { max-width: 1120px; margin: 0 auto; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 14px; }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #171717;
+      color: #fff;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 100;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hero-grid, .lead-magnet { grid-template-columns: 1fr; }
+      .workflow, .offers { grid-template-columns: 1fr; }
+      .prompt-grid { grid-template-columns: 1fr; }
+      section { padding: 64px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top"><span class="logo">CF</span><span>ConstructionFlows</span></a>
+      <div class="nav-links">
+        <a href="#library">Prompt library</a>
+        <a href="#workflows">Workflows</a>
+        <a href="#offers">Use cases</a>
+        <a class="btn btn-dark" href="#download">Get the starter pack</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="badge">AI drafts. Contractors approve.</div>
+        <h1>The prompt library for construction paperwork that actually matters.</h1>
+        <p class="hero-copy">A practical AI system for estimating, RFIs, submittals, change orders, daily reports, and schedule reviews — built for contractors who need fewer missed details, cleaner documentation, and faster follow-up.</p>
+        <div class="hero-actions">
+          <a class="btn btn-dark" href="#library">Explore prompts</a>
+          <a class="btn btn-light" href="#download">Download starter pack</a>
+        </div>
+
+        <div class="hero-grid">
+          <div class="terminal-card" aria-label="Example prompt preview">
+            <div class="terminal-top">
+              <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <span class="mono">prompt-library/constructionflows</span>
+            </div>
+            <pre>Act as a senior estimator reviewing a bid package.
+
+Use only the provided drawings, specs, and scope notes.
+Return:
+1. Scope summary
+2. Missing information
+3. Possible exclusions
+4. RFI questions
+5. Risk level by item
+
+Do not invent quantities, prices, or contract obligations.</pre>
+          </div>
+          <div class="side-stats">
+            <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Core construction workflows covered end-to-end.</div></div>
+            <div class="stat-card"><div class="stat-num">70+</div><div class="stat-label">Prompt patterns for PMs, estimators, supers, and project admins.</div></div>
+            <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Black-box decisions. The library is designed for human review.</div></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="workflows">
+      <div class="section-inner">
+        <div class="section-kicker">Workflow-first AI</div>
+        <h2>Built around the moments where contractors lose time, money, and context.</h2>
+        <p class="section-copy">The library turns messy project information into structured drafts, logs, summaries, follow-ups, and checklists. It is not a replacement for PM judgment, estimating experience, or contract review.</p>
+        <div class="workflow">
+          <article class="workflow-card"><div class="mono kicker-blue">Estimate</div><h3>Bid smarter</h3><p>Summarize bid packages, find scope gaps, generate RFIs, draft exclusions, and prepare proposal language before the deadline hits.</p></article>
+          <article class="workflow-card"><div class="mono kicker-pink">Control</div><h3>Protect the record</h3><p>Turn field notes, emails, RFIs, and daily reports into clean change-event narratives with backup checklists.</p></article>
+          <article class="workflow-card"><div class="mono kicker-red">Report</div><h3>Follow up faster</h3><p>Create daily reports, schedule risk briefs, submittal aging reviews, and weekly dashboards from project noise.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="library">
+      <div class="section-inner">
+        <div class="section-kicker">Copy-paste prompt library</div>
+        <h2>Prompts for the six construction workflows worth automating first.</h2>
+        <p class="section-copy">Each prompt is intentionally constrained: use provided documents, cite sources when available, list missing information, and flag items requiring human review.</p>
+
+        <div class="tabs" data-tabs>
+          <div class="tab-list" role="tablist" aria-label="Prompt categories">
+            <button class="tab active" data-tab="estimating">Estimating</button>
+            <button class="tab" data-tab="rfis">RFIs</button>
+            <button class="tab" data-tab="submittals">Submittals</button>
+            <button class="tab" data-tab="changes">Change orders</button>
+            <button class="tab" data-tab="daily">Daily reports</button>
+            <button class="tab" data-tab="schedule">Schedule reviews</button>
+          </div>
+          <div class="prompt-grid" id="promptGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="offers">
+      <div class="section-inner">
+        <div class="section-kicker">Where this becomes a service</div>
+        <h2>Package the prompt library into implementation offers.</h2>
+        <p class="section-copy">The strongest GTM wedge is not selling “AI prompts.” It is installing repeatable documentation workflows that contractors can trust.</p>
+        <div class="offers">
+          <article class="offer-card"><h3>Estimator Copilot Setup</h3><p>For specialty contractors drowning in bids.</p><ul><li>Bid package summary</li><li>Scope gap prompts</li><li>RFI and clarification drafts</li><li>Proposal/exclusion templates</li></ul></article>
+          <article class="offer-card"><h3>PM Second Brain</h3><p>For teams buried in meetings and follow-ups.</p><ul><li>Meeting notes to action items</li><li>RFI/submittal aging reviews</li><li>Weekly risk dashboard</li><li>Owner update drafts</li></ul></article>
+          <article class="offer-card"><h3>Change Order Evidence System</h3><p>For contractors losing margin in the record.</p><ul><li>Field notes to change events</li><li>Backup checklists</li><li>Delay narratives</li><li>Follow-up emails</li></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="download">
+      <div class="section-inner">
+        <div class="lead-magnet">
+          <div>
+            <div class="section-kicker" style="color: rgba(255,255,255,.58);">Starter pack</div>
+            <h2>Start with the ten prompts contractors will use every week.</h2>
+            <p>Use the landing page as the front door for ConstructionFlows: a lead magnet, a YouTube CTA, or the first asset in a contractor AI setup sprint.</p>
+            <div class="hero-actions"><a class="btn btn-light" href="#library">Preview the library</a><a class="btn btn-dark" style="background:#fff;color:#171717" href="mailto:hello@constructionflows.com?subject=ConstructionFlows%20Prompt%20Library">Request the full library</a></div>
+          </div>
+          <div class="download-card">
+            <strong>Starter pack includes</strong>
+            <ul>
+              <li>Bid package summary</li>
+              <li>Scope gap detector</li>
+              <li>RFI draft from unclear scope</li>
+              <li>Submittal requirements extraction</li>
+              <li>Change order narrative</li>
+              <li>Daily report from rough notes</li>
+              <li>Schedule risk review</li>
+              <li>Weekly project dashboard</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span>© ConstructionFlows. Practical AI workflows for contractors.</span>
+      <span>Built for estimators, PMs, supers, and project admins.</span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">Prompt copied</div>
+
+  <script>
+    const prompts = {
+      estimating: [
+        { title: 'Bid package summary', desc: 'Turn bid docs into a clean estimating brief.', text: 'Act as a senior construction estimator. Review the bid package information below and create: project overview, scope summary, bid due date, required forms, relevant specs/drawings, addenda, inclusions, exclusions, questions, and bid/no-bid considerations. Do not invent missing information.' },
+        { title: 'Scope gap detector', desc: 'Compare specs, drawings, and scope sheets for missing responsibility.', text: 'Act as a senior estimator. Compare our scope notes, spec requirements, drawing notes, and GC scope sheet. Identify missing scope, duplicated scope, unclear trade responsibility, RFI questions, suggested exclusions, and risk level for each issue.' },
+        { title: 'Proposal draft', desc: 'Create a professional proposal from estimate notes.', text: 'Act as a construction estimator writing a bid proposal. Use the project name, client, trade, estimate notes, inclusions, exclusions, and alternates. Output scope of work, included items, exclusions, qualifications, alternates, schedule notes, price placeholder, validity period, and closing language.' },
+        { title: 'Addendum impact review', desc: 'Find scope and pricing impacts from new addenda.', text: 'Act as a senior estimator reviewing an addendum. Compare original bid scope against addendum text/drawing changes. Return change summary, items affecting our trade, added/deleted scope, changed details, schedule impacts, pricing direction, questions, and estimate sections to update.' }
+      ],
+      rfis: [
+        { title: 'Draft an RFI', desc: 'Convert unclear scope into a formal RFI.', text: 'Act as a construction PM drafting an RFI. Given the issue, project context, and drawing/spec references, write a concise RFI with title, question, background, references, suggested resolution if appropriate, cost/schedule impact placeholder, and needed response date.' },
+        { title: 'RFI response summary', desc: 'Turn a response into actions for office and field.', text: 'Act as a construction PM summarizing an RFI response. Return direct answer, required action, scope impact, cost impact, schedule impact, affected trades, documents affected, follow-up needed, and a plain-English field crew summary.' },
+        { title: 'RFI log review', desc: 'Find overdue, risky, and high-impact RFIs.', text: 'Act as a project controls manager reviewing an RFI log. Identify open RFIs, overdue RFIs, cost/schedule impacts, items waiting on design team or GC, repeated themes, top five escalations, and a follow-up email draft.' },
+        { title: 'RFI quality check', desc: 'Review an RFI before it creates confusion.', text: 'Act as a senior PM reviewing an RFI before submission. Score it 1–10 for clarity and completeness, identify missing references, liability concerns, specificity issues, suggested revisions, and items to verify before sending.' }
+      ],
+      submittals: [
+        { title: 'Requirements extraction', desc: 'Pull every submittal requirement from specs.', text: 'Act as a submittal manager. Review the spec section and extract product data, shop drawings, samples, calculations, certificates, test reports, warranties, closeout submittals, mockups, timing requirements, dependencies, and submittal log notes.' },
+        { title: 'Build a submittal log', desc: 'Create a structured submittal log from specs.', text: 'Act as a project engineer building a submittal log. Create fields for submittal number, spec section, title, type, responsible party, required date, needed approval date, status, reviewer, priority, and notes. Flag procurement or schedule risks.' },
+        { title: 'Completeness review', desc: 'Check a package before it goes out.', text: 'Act as a submittal manager reviewing a package. Compare requirements to submitted contents. Return complete items, missing items, unclear items, deviations, compliance issues, clarification needs, recommended status, and vendor comments.' },
+        { title: 'Submittal aging review', desc: 'Find overdue approvals and procurement blockers.', text: 'Act as a project controls manager reviewing submittal aging. Identify overdue submittals, next-seven-day items, vendor/GC/design bottlenecks, procurement blockers, high-risk submittals, escalations, and follow-up email drafts.' }
+      ],
+      changes: [
+        { title: 'Change order narrative', desc: 'Create a factual narrative from evidence.', text: 'Act as a construction PM writing a change order narrative. Include background, original contract condition, changed condition or directive, work required, why it is outside original scope, cost/schedule placeholders, supporting references, and reservation language if appropriate.' },
+        { title: 'Backup checklist', desc: 'Identify evidence needed for approval.', text: 'Act as a project controls manager. For this change event, list required backup: contract reference, drawing/spec reference, RFI/directive, authorization, field photos, daily reports, labor tickets, invoices, equipment, vendor quotes, schedule support, pricing worksheet, and signatures.' },
+        { title: 'Field notes to change event', desc: 'Turn rough notes into a change record.', text: 'Act as a construction PM. Convert rough field notes and photo descriptions into a potential change event with title, description, date/time/location, parties involved, possible cause, cost/schedule impact, documentation needed, questions, and draft notice email.' },
+        { title: 'Change order log review', desc: 'Prioritize aging and disputed COs.', text: 'Act as a project controls manager reviewing a CO log. Analyze pending, approved, disputed, aging, unpriced, missing-backup, awaiting-response items, schedule impacts, exposure by status, top escalations, and follow-up emails.' }
+      ],
+      daily: [
+        { title: 'Daily report from notes', desc: 'Clean up rough field notes into a report.', text: 'Act as a superintendent preparing a daily report. Use project, date, weather, manpower, work performed, deliveries, inspections, issues, delays, and photo notes. Output work completed, safety observations, RFIs/submittals/change items, and next-day plan.' },
+        { title: 'Voice notes to daily report', desc: 'Convert dictated notes into documentation.', text: 'Act as a superintendent assistant. Convert the voice transcript into a clean daily report, action items, PM follow-ups, possible change-order items, safety notes, and missing information. Do not add facts not in the notes.' },
+        { title: 'Daily report risk scan', desc: 'Find issues hiding in field reports.', text: 'Act as a senior PM reviewing a daily report for risk. Identify potential change events, schedule delays, safety concerns, quality concerns, coordination issues, missing documentation, photo needs, RFI/email follow-ups, and action items.' },
+        { title: 'Weekly daily-report summary', desc: 'Turn a week of reports into a PM update.', text: 'Act as a PM summarizing daily reports for the week. Return work completed, manpower trends, schedule progress, delays/issues, safety observations, quality issues, RFIs/submittals/change events, decisions needed, next week plan, and owner-facing summary.' }
+      ],
+      schedule: [
+        { title: 'Schedule summary', desc: 'Explain the schedule in PM-friendly language.', text: 'Act as a construction scheduler. Given a schedule export or lookahead, summarize current phase, major milestones, next two weeks, next 30 days, critical/near-critical work, long-lead items, dependencies, risks, decisions needed, and owner summary.' },
+        { title: 'Lookahead review', desc: 'Find conflicts before the weekly meeting.', text: 'Act as a superintendent reviewing a lookahead schedule. Identify planned work, trade stacking, missing predecessor work, material/equipment needs, inspection needs, access constraints, safety concerns, RFIs/submittals blocking work, and coordination questions.' },
+        { title: 'Schedule risk review', desc: 'Spot delays, weak logic, and procurement risks.', text: 'Act as a senior scheduler. Review schedule data and notes. Identify activities at risk, missing dependencies, unrealistic durations, trade conflicts, procurement risks, RFI/submittal risks, site/weather/access risks, escalations, mitigation actions, and executive summary.' },
+        { title: 'Delay narrative draft', desc: 'Create a factual delay narrative.', text: 'Act as a construction PM drafting a factual schedule delay narrative. Include background, original planned work, cause of delay, date delay began, affected activities, mitigation steps, current status, schedule impact, document references, and confirmation needs.' }
+      ]
+    };
+
+    const grid = document.getElementById('promptGrid');
+    const toast = document.getElementById('toast');
+
+    function renderPrompts(category) {
+      grid.innerHTML = prompts[category].map((prompt, index) => `
+        <article class="prompt-card">
+          <div class="prompt-head">
+            <div><h3>${prompt.title}</h3><p>${prompt.desc}</p></div>
+            <button class="btn btn-copy" data-copy="${category}-${index}">Copy</button>
+          </div>
+          <div class="prompt-box" id="${category}-${index}">${prompt.text}</div>
+        </article>
+      `).join('');
+    }
+
+    function showToast() {
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1500);
+    }
+
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        renderPrompts(tab.dataset.tab);
+      });
+    });
+
+    document.addEventListener('click', async (event) => {
+      const button = event.target.closest('[data-copy]');
+      if (!button) return;
+      const text = document.getElementById(button.dataset.copy).innerText;
+      await navigator.clipboard.writeText(text);
+      showToast();
+    });
+
+    renderPrompts('estimating');
+  </script>
+</body>
+</html>
