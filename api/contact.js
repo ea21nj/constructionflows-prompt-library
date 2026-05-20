@@ -3,10 +3,15 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, phone, company, agentFit } = req.body;
+  const { name, email, phone, company, agentFit, type } = req.body;
 
   // Validate required fields
-  if (!name || !email || !company) {
+  if (!name || !email) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  // Different validation based on type
+  if (type !== 'workflow-audit' && !company) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
@@ -20,6 +25,33 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, message: 'Thanks! We\'ll be in touch soon.' });
     }
 
+    // Prepare email content based on type
+    let subject, htmlContent;
+
+    if (type === 'workflow-audit') {
+      subject = `Workflow Audit Request: ${name}`;
+      htmlContent = `
+        <h2>Workflow Audit Request</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        <hr>
+        <p style="font-size: 12px; color: #666;">This person requested a free workflow audit. Reply directly to this email to schedule.</p>
+      `;
+    } else {
+      subject = `New Quiz Submission: ${name} - ${company}`;
+      htmlContent = `
+        <h2>New Quiz Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
+        <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+        <p><strong>Company:</strong> ${company}</p>
+        <p><strong>Agent Fit:</strong> ${agentFit}</p>
+        <hr>
+        <p style="font-size: 12px; color: #666;">Reply directly to this email to respond to ${name}</p>
+      `;
+    }
+
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -30,17 +62,8 @@ export default async function handler(req, res) {
         from: 'onboarding@resend.dev',
         to: 'hello@constructionflows.com',
         replyTo: email,
-        subject: `New Quiz Submission: ${name} - ${company}`,
-        html: `
-          <h2>New Quiz Submission</h2>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-          <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-          <p><strong>Company:</strong> ${company}</p>
-          <p><strong>Agent Fit:</strong> ${agentFit}</p>
-          <hr>
-          <p style="font-size: 12px; color: #666;">Reply directly to this email to respond to ${name}</p>
-        `
+        subject: subject,
+        html: htmlContent
       })
     });
 

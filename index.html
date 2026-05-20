@@ -685,6 +685,136 @@
       font-weight: 800;
     }
 
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,.5);
+      cursor: pointer;
+    }
+
+    .modal-content {
+      position: relative;
+      background: var(--white);
+      border: var(--line);
+      padding: 44px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      border: var(--line);
+      background: var(--white);
+      font-size: 24px;
+      font-weight: 300;
+      cursor: pointer;
+      transition: all 120ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .modal-close:hover {
+      background: var(--yellow);
+    }
+
+    .modal-content h2 {
+      margin: 0 0 8px;
+      font-family: var(--headline);
+      font-size: 32px;
+      text-transform: uppercase;
+      line-height: .95;
+    }
+
+    .modal-content > p {
+      margin: 0 0 28px;
+      font-size: 14px;
+      color: var(--secondary);
+    }
+
+    .audit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .form-group input {
+      padding: 12px 14px;
+      border: var(--line);
+      font-family: var(--body);
+      font-size: 14px;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      background: #F5F5F5;
+    }
+
+    .audit-submit {
+      padding: 14px 20px;
+      background: var(--yellow);
+      border: var(--line);
+      font-family: var(--body);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+
+    .audit-submit:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .audit-submit:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
     /* Quiz */
     .quiz-wrap { max-width: 740px; }
     .quiz-progress { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--secondary); margin-bottom: 28px; }
@@ -797,7 +927,7 @@
           <div class="hero-buttons">
             <button class="hero-btn primary" id="heroStartQuiz">Find my first agent →</button>
             <button class="hero-btn secondary">Build my first agent</button>
-            <button class="hero-btn secondary">Do a free workflow audit</button>
+            <button class="hero-btn secondary" id="workflowAuditBtn">Do a free workflow audit</button>
           </div>
           <div class="hero-tags">
             <span class="tag">3 MINUTE DIAGNOSTIC</span>
@@ -953,6 +1083,28 @@
 
       <h3>Where to start</h3>
       <p>1. Browse the 10 agents. 2. Answer discovery questions. 3. Pick one agent. 4. Review the tech stack. 5. Build it using tools you already have.</p>
+    </div>
+
+    <!-- Workflow Audit Modal -->
+    <div class="modal" id="auditModal">
+      <div class="modal-overlay" id="auditModalOverlay"></div>
+      <div class="modal-content">
+        <button class="modal-close" id="auditModalClose">×</button>
+        <h2>Schedule a Free Workflow Audit</h2>
+        <p>Share your info and we'll reach out to schedule a time that works for you.</p>
+        <form id="auditForm" class="audit-form">
+          <div class="form-group">
+            <label for="auditName">Name</label>
+            <input type="text" id="auditName" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="auditEmail">Email</label>
+            <input type="email" id="auditEmail" name="email" required />
+          </div>
+          <button type="submit" class="audit-submit">Schedule audit →</button>
+          <div id="auditMessage" style="display:none; margin-top:12px; padding:12px; border:var(--line); text-align:center; font-size:14px;"></div>
+        </form>
+      </div>
     </div>
 
     <div class="face" id="face-quiz">
@@ -1774,6 +1926,62 @@ const agents = [
       renderCurrentQuestion();
     }
 
+    // Audit form handler
+    async function handleAuditSubmit(e) {
+      e.preventDefault();
+      const submitBtn = document.querySelector('#auditForm button[type="submit"]');
+      const messageDiv = document.getElementById('auditMessage');
+
+      const formData = {
+        name: document.getElementById('auditName').value,
+        email: document.getElementById('auditEmail').value,
+        type: 'workflow-audit'
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Scheduling...';
+
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          messageDiv.style.display = 'block';
+          messageDiv.style.background = '#F0F9FF';
+          messageDiv.style.borderColor = '#4CAF50';
+          messageDiv.style.color = '#2E7D32';
+          messageDiv.textContent = '✓ Thanks! We\'ll reach out soon to schedule your audit.';
+          document.getElementById('auditForm').reset();
+          setTimeout(() => {
+            document.getElementById('auditModal').classList.remove('show');
+          }, 2000);
+        } else {
+          messageDiv.style.display = 'block';
+          messageDiv.style.background = '#FFF3E0';
+          messageDiv.style.borderColor = '#F57C00';
+          messageDiv.style.color = '#E65100';
+          messageDiv.textContent = '✕ ' + (data.error || 'Failed to schedule. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Schedule audit →';
+        }
+      } catch (error) {
+        messageDiv.style.display = 'block';
+        messageDiv.style.background = '#FFF3E0';
+        messageDiv.style.borderColor = '#F57C00';
+        messageDiv.style.color = '#E65100';
+        messageDiv.textContent = '✕ Error scheduling audit. Please try again.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Schedule audit →';
+      }
+    }
+
     // Contact form handler
     async function handleContactSubmit(e) {
       e.preventDefault();
@@ -1830,10 +2038,26 @@ const agents = [
       }
     }
 
-    // Home button
+    // Home buttons
     document.getElementById('heroStartQuiz').addEventListener('click', () => {
       document.querySelector('[data-face="quiz"]').click();
     });
+
+    document.getElementById('workflowAuditBtn').addEventListener('click', () => {
+      document.getElementById('auditModal').classList.add('show');
+    });
+
+    // Audit modal close
+    document.getElementById('auditModalClose').addEventListener('click', () => {
+      document.getElementById('auditModal').classList.remove('show');
+    });
+
+    document.getElementById('auditModalOverlay').addEventListener('click', () => {
+      document.getElementById('auditModal').classList.remove('show');
+    });
+
+    // Audit form
+    document.getElementById('auditForm').addEventListener('submit', handleAuditSubmit);
 
     // Quiz event listeners
     document.getElementById('quizPrev').addEventListener('click', goToPrevious);
