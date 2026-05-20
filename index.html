@@ -501,33 +501,74 @@
     ol li { margin: 8px 0; }
 
     .stack-section {
-      margin: 32px 0;
-      padding: 24px;
-      border: var(--line);
-      background: #FAFAFA;
+      margin: 40px 0;
+      padding: 0;
+      border: none;
     }
 
     .stack-section h3 {
-      margin-top: 0;
+      margin: 0 0 20px;
       font-size: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--yellow);
+      display: inline-block;
+    }
+
+    .stack-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
     }
 
     .stack-item {
-      margin-bottom: 16px;
+      padding: 20px;
+      border: var(--line);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 180ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stack-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--yellow);
+      transform: scaleY(0);
+      transform-origin: top;
+      transition: transform 180ms ease;
+    }
+
+    .stack-item:hover {
+      border-color: var(--yellow);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .stack-item:hover::before {
+      transform: scaleY(1);
     }
 
     .stack-item strong {
       display: block;
-      margin-bottom: 4px;
-      font-size: 15px;
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 800;
       color: var(--black);
+      text-transform: uppercase;
+      letter-spacing: .03em;
     }
 
     .stack-item p {
       margin: 0;
       color: var(--secondary);
       font-size: 13px;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     /* Active section indicator */
@@ -592,6 +633,17 @@
   </nav>
 
   <main>
+    <div class="hero">
+      <h1>Free AI Prompts for Construction</h1>
+      <p class="hero-subheading">Free, no signup, copy-paste into Claude, ChatGPT, or your AI tool</p>
+      <button class="btn hero-cta" id="heroCtaButton">Copy Prompts</button>
+      <p class="hero-features">70+ prompts • No restrictions • Real construction workflows</p>
+    </div>
+
+    <div class="resource-hints">
+      <p>Also explore <a href="#agents">10 agent templates</a> • <a href="#discovery">Find your best first agent</a> • <a href="#about">Implementation guides</a></p>
+    </div>
+
     <div class="face active" id="face-prompts">
       <h1>Copy-paste prompts</h1>
       <p>70+ construction prompts. Paste into Claude, ChatGPT, or your AI tool. Click to copy.</p>
@@ -628,73 +680,83 @@
 
       <div class="stack-section">
         <h3>1. Agent Frameworks (The Harnesses)</h3>
-        <div class="stack-item">
-          <strong>Hermes</strong>
-          <p>Recommended as the most reliable and flexible "harness" because it allows you to switch models easily and is self-evolving.</p>
-        </div>
-        <div class="stack-item">
-          <strong>Claude Code & OpenAI's Codex</strong>
-          <p>Desktop apps used by the founder to actually build and install the customer agents.</p>
+        <div class="stack-items-grid">
+          <div class="stack-item">
+            <strong>Hermes</strong>
+            <p>Recommended as the most reliable and flexible "harness" because it allows you to switch models easily and is self-evolving.</p>
+          </div>
+          <div class="stack-item">
+            <strong>Claude Code & OpenAI's Codex</strong>
+            <p>Desktop apps used by the founder to actually build and install the customer agents.</p>
+          </div>
         </div>
       </div>
 
       <div class="stack-section">
         <h3>2. Core Models</h3>
-        <div class="stack-item">
-          <strong>GPT 5.5</strong>
-          <p>Identified as the most efficient model for tool calls and general usage.</p>
-        </div>
-        <div class="stack-item">
-          <strong>Opus 4.7</strong>
-          <p>Best for long-horizon coding tasks.</p>
-        </div>
-        <div class="stack-item">
-          <strong>GLM 5.1 or Kimmy</strong>
-          <p>Used for lighter-weight, more affordable open-source tasks.</p>
+        <div class="stack-items-grid">
+          <div class="stack-item">
+            <strong>GPT 5.5</strong>
+            <p>Identified as the most efficient model for tool calls and general usage.</p>
+          </div>
+          <div class="stack-item">
+            <strong>Opus 4.7</strong>
+            <p>Best for long-horizon coding tasks.</p>
+          </div>
+          <div class="stack-item">
+            <strong>GLM 5.1 or Kimmy</strong>
+            <p>Used for lighter-weight, more affordable open-source tasks.</p>
+          </div>
         </div>
       </div>
 
       <div class="stack-section">
         <h3>3. Infrastructure & Memory</h3>
-        <div class="stack-item">
-          <strong>Orgo</strong>
-          <p>A workspace that provides cloud computers (VMs) where agents live. This allows the founder to manage and debug agents remotely in a secure, isolated environment.</p>
-        </div>
-        <div class="stack-item">
-          <strong>Obsidian</strong>
-          <p>Acts as the agent's "second brain." By providing the agent with well-structured markdown files in an Obsidian vault, it gains permanent context on the business, people, and projects.</p>
+        <div class="stack-items-grid">
+          <div class="stack-item">
+            <strong>Orgo</strong>
+            <p>A workspace that provides cloud computers (VMs) where agents live. This allows the founder to manage and debug agents remotely in a secure, isolated environment.</p>
+          </div>
+          <div class="stack-item">
+            <strong>Obsidian</strong>
+            <p>Acts as the agent's "second brain." By providing the agent with well-structured markdown files in an Obsidian vault, it gains permanent context on the business, people, and projects.</p>
+          </div>
         </div>
       </div>
 
       <div class="stack-section">
         <h3>4. Connectivity & Skills</h3>
-        <div class="stack-item">
-          <strong>Composio</strong>
-          <p>A vital connector that gives agents access to thousands of apps (Gmail, Slack, Notion) while handling complex authentication and security.</p>
-        </div>
-        <div class="stack-item">
-          <strong>Agent Mail</strong>
-          <p>Provides each agent with its own dedicated email address to act as a true personal assistant.</p>
-        </div>
-        <div class="stack-item">
-          <strong>MCPs (Model Context Protocol)</strong>
-          <p>Specialized tools like Perplexity MCP (for up-to-date knowledge), Context 7 (for GitHub docs), and XMCP (for Twitter/X insights) are used to give agents the latest information needed for setup.</p>
+        <div class="stack-items-grid">
+          <div class="stack-item">
+            <strong>Composio</strong>
+            <p>A vital connector that gives agents access to thousands of apps (Gmail, Slack, Notion) while handling complex authentication and security.</p>
+          </div>
+          <div class="stack-item">
+            <strong>Agent Mail</strong>
+            <p>Provides each agent with its own dedicated email address to act as a true personal assistant.</p>
+          </div>
+          <div class="stack-item">
+            <strong>MCPs (Model Context Protocol)</strong>
+            <p>Specialized tools like Perplexity MCP (for up-to-date knowledge), Context 7 (for GitHub docs), and XMCP (for Twitter/X insights) are used to give agents the latest information needed for setup.</p>
+          </div>
         </div>
       </div>
 
       <div class="stack-section">
         <h3>5. Customer Management</h3>
-        <div class="stack-item">
-          <strong>Trello</strong>
-          <p>Used as a customer-facing board for request management (e.g., a "to-do" list for new agent skills).</p>
-        </div>
-        <div class="stack-item">
-          <strong>Granola</strong>
-          <p>For meeting notes that automatically sync to Trello.</p>
-        </div>
-        <div class="stack-item">
-          <strong>Loom</strong>
-          <p>For sending video updates to customers regarding agent improvements.</p>
+        <div class="stack-items-grid">
+          <div class="stack-item">
+            <strong>Trello</strong>
+            <p>Used as a customer-facing board for request management (e.g., a "to-do" list for new agent skills).</p>
+          </div>
+          <div class="stack-item">
+            <strong>Granola</strong>
+            <p>For meeting notes that automatically sync to Trello.</p>
+          </div>
+          <div class="stack-item">
+            <strong>Loom</strong>
+            <p>For sending video updates to customers regarding agent improvements.</p>
+          </div>
         </div>
       </div>
     </div>
