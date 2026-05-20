@@ -197,13 +197,48 @@
 
     .btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
 
+    .agent-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 28px;
+      margin-bottom: 28px;
+    }
+
+    .filter-btn {
+      padding: 10px 14px;
+      border: var(--line);
+      background: var(--white);
+      color: var(--black);
+      font-family: var(--body);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+
+    .filter-btn:hover {
+      background: var(--yellow);
+    }
+
+    .filter-btn.active {
+      background: var(--yellow);
+      font-weight: 800;
+    }
+
     .agent-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 0;
-      margin-top: 28px;
+      margin-top: 0;
       border: var(--line);
       background: var(--black);
+    }
+
+    .agent-card.hidden {
+      display: none;
     }
 
     .agent-card {
@@ -459,6 +494,7 @@
     <div class="face" id="face-agents">
       <h1>10 agent ideas</h1>
       <p>Click any agent to see full positioning, workflow, tracker fields, and implementation details.</p>
+      <div class="agent-filters" id="agentFilters"></div>
       <div class="agent-grid" id="agentGrid"></div>
     </div>
 
@@ -742,21 +778,23 @@
     ];
 
     // Render agents
-    function renderAgentCards() {
-      const getCategoryClass = (category) => {
-        const categoryMap = {
-          'Win work': 'win-work',
-          'Run work': 'run-work',
-          'Protect margin': 'protect-margin',
-          'Get paid': 'get-paid',
-          'Build memory': 'build-memory'
-        };
-        return categoryMap[category] || 'default';
-      };
+    let activeFilter = null;
 
+    function getCategoryClass(category) {
+      const categoryMap = {
+        'Win work': 'win-work',
+        'Run work': 'run-work',
+        'Protect margin': 'protect-margin',
+        'Get paid': 'get-paid',
+        'Build memory': 'build-memory'
+      };
+      return categoryMap[category] || 'default';
+    }
+
+    function renderAgentCards(filterCategory = null) {
       const agentGrid = document.getElementById('agentGrid');
       agentGrid.innerHTML = agents.map(agent => `
-        <article class="agent-card" data-agent-id="${agent.id}">
+        <article class="agent-card" data-agent-id="${agent.id}" data-category="${agent.category}">
           <div class="agent-card-header">
             <span class="number">${agent.number}</span>
             <span class="agent-card-badge ${getCategoryClass(agent.category)}">${agent.category}</span>
@@ -768,11 +806,48 @@
         </article>
       `).join('');
 
+      // Apply filter
+      if (filterCategory) {
+        document.querySelectorAll('.agent-card').forEach(card => {
+          if (card.dataset.category !== filterCategory) {
+            card.classList.add('hidden');
+          } else {
+            card.classList.remove('hidden');
+          }
+        });
+      } else {
+        document.querySelectorAll('.agent-card').forEach(card => {
+          card.classList.remove('hidden');
+        });
+      }
+
       document.querySelectorAll('.agent-card').forEach(card => {
         card.addEventListener('click', () => {
           const agentId = parseInt(card.dataset.agentId);
           const agent = agents.find(a => a.id === agentId);
           showAgentModal(agent);
+        });
+      });
+    }
+
+    function renderAgentFilters() {
+      const categories = ['Win work', 'Run work', 'Protect margin', 'Get paid', 'Build memory'];
+      const filtersContainer = document.getElementById('agentFilters');
+      filtersContainer.innerHTML = `
+        <button class="filter-btn active" data-filter="all">All</button>
+        ${categories.map(cat => `
+          <button class="filter-btn" data-filter="${cat}">${cat}</button>
+        `).join('')}
+      `;
+
+      filtersContainer.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          filtersContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+
+          const filterValue = btn.dataset.filter;
+          activeFilter = filterValue === 'all' ? null : filterValue;
+          renderAgentCards(activeFilter);
         });
       });
     }
@@ -880,6 +955,7 @@
 
     // Initialize
     renderPrompts('estimating');
+    renderAgentFilters();
     renderAgentCards();
     renderDiscoveryCards();
   </script>
