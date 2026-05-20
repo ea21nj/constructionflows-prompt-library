@@ -28,36 +28,41 @@
       color: var(--black);
       background: var(--white);
       -webkit-font-smoothing: antialiased;
-      display: flex;
-      min-height: 100vh;
+      display: block;
     }
 
     a { color: inherit; text-decoration: none; }
 
+    /* Top Navigation */
     .sidebar {
-      width: 280px;
-      border-right: var(--line);
-      padding: 28px 0;
+      width: 100%;
+      height: 56px;
+      border-bottom: var(--line);
+      padding: 0;
       position: fixed;
-      height: 100vh;
-      left: 0;
       top: 0;
+      left: 0;
+      right: 0;
       background: var(--white);
-      overflow-y: auto;
-      box-shadow: 1px 0 0 rgba(0,0,0,.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1000;
+      box-shadow: 0 1px 0 rgba(0,0,0,.08);
     }
 
     .sidebar-brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 0 22px 28px;
-      border-bottom: var(--line);
-      margin-bottom: 28px;
+      padding: 0 44px;
+      border: 0;
+      margin: 0;
       font-family: var(--headline);
-      font-size: 18px;
+      font-size: 14px;
       font-weight: 800;
       text-transform: uppercase;
+      letter-spacing: .04em;
     }
 
     .sidebar-logo {
@@ -70,69 +75,64 @@
       font-family: var(--headline);
       font-size: 14px;
       font-weight: 800;
+      flex-shrink: 0;
     }
 
     .sidebar-nav {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 0;
+      padding-right: 44px;
+      align-items: center;
+      height: 100%;
     }
 
     .sidebar-nav a {
-      padding: 14px 22px;
-      border-bottom: var(--line);
-      font-size: 13px;
-      font-weight: 600;
+      padding: 0 18px;
+      border: 0;
+      border-right: var(--line);
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .04em;
+      letter-spacing: .06em;
       cursor: pointer;
-      transition: all 150ms ease;
+      transition: all 120ms ease;
       display: block;
       position: relative;
-      background: var(--white);
-      color: var(--secondary);
-      border-left: 4px solid transparent;
+      background: transparent;
+      color: var(--black);
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    .sidebar-nav a:last-child {
+      border-right: 0;
     }
 
     .sidebar-nav a:hover {
       background: #F5F5F5;
-      color: var(--black);
-      border-left-color: var(--yellow);
     }
 
     .sidebar-nav a.active {
       background: var(--yellow);
-      color: var(--black);
-      font-weight: 800;
-      border-left-color: var(--black);
     }
 
     main {
-      flex: 1;
-      margin-left: 280px;
+      width: 100%;
+      margin-top: 56px;
       display: flex;
       flex-direction: column;
       overflow-y: auto;
-      background: linear-gradient(180deg, #FAFAFA 0%, #FFFFFF 100%);
+      background: var(--white);
     }
 
     main::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 280px;
-      right: 0;
-      height: 2px;
-      background: var(--yellow);
-      z-index: 50;
-      pointer-events: none;
+      display: none;
     }
 
     .face {
       display: none;
-      padding: 54px 44px;
-      max-width: 1120px;
-      margin: 0 auto;
       width: 100%;
       opacity: 0;
       transform: translateY(8px);
@@ -143,6 +143,12 @@
       display: block;
       opacity: 1;
       transform: translateY(0);
+    }
+
+    .face:not(#face-home) {
+      padding: 54px 44px;
+      max-width: 1120px;
+      margin: 0 auto;
     }
 
     .face h1 {
@@ -494,17 +500,190 @@
     }
 
     /* Home */
-    .home-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-    .hero-content h1 { margin: 0 0 16px; font-family: var(--headline); font-size: 52px; line-height: .95; text-transform: uppercase; }
-    .hero-subtitle { margin: 0 0 20px; font-size: 24px; font-weight: 600; color: var(--secondary); }
-    .hero-description { margin: 0 0 32px; font-size: 16px; line-height: 1.7; color: var(--secondary); }
-    .hero-cta { padding: 16px 32px; background: var(--yellow); border: var(--line); font-family: var(--body); font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: all 120ms ease; }
-    .hero-cta:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
-    .hero-features { display: flex; flex-direction: column; gap: 20px; }
-    .feature { display: flex; gap: 16px; padding: 20px; border: var(--line); background: #FAFAFA; }
-    .feature-icon { font-size: 24px; font-weight: 800; color: var(--yellow); min-width: 28px; text-align: center; }
-    .feature strong { display: block; font-size: 15px; margin-bottom: 4px; }
-    .feature p { margin: 0; font-size: 13px; color: var(--secondary); }
+    #face-home { padding: 0; }
+    .hero-section {
+      background: #F5F1E8;
+      background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 100px,
+        rgba(255,184,0,.05) 100px,
+        rgba(255,184,0,.05) 101px
+      );
+      padding: 80px 44px;
+      position: relative;
+    }
+    .hero-content { max-width: 900px; margin: 0 auto; }
+    .hero-badge {
+      display: inline-block;
+      background: var(--yellow);
+      border: var(--line);
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 32px;
+    }
+    .hero-headline {
+      margin: 0 0 24px;
+      font-family: var(--headline);
+      font-size: 72px;
+      line-height: .95;
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+    .hero-description {
+      margin: 0 0 40px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--secondary);
+      max-width: 700px;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .hero-btn {
+      padding: 14px 28px;
+      border: var(--line);
+      font-family: var(--body);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .hero-btn.primary {
+      background: var(--yellow);
+      color: var(--black);
+    }
+    .hero-btn.primary:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+    .hero-btn.secondary {
+      background: var(--white);
+      color: var(--black);
+    }
+    .hero-btn.secondary:hover {
+      background: #F5F5F5;
+    }
+    .hero-tags {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      padding: 8px 14px;
+      border: var(--line);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      background: var(--white);
+    }
+
+    .rollout-section {
+      background: var(--yellow);
+      border: var(--line);
+      border-top: 0;
+      padding: 56px 44px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 44px;
+      align-items: center;
+    }
+    .rollout-left h2 {
+      margin: 0 0 16px;
+      font-family: var(--headline);
+      font-size: 48px;
+      line-height: .95;
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+    .rollout-left p {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--black);
+      max-width: 500px;
+    }
+    .rollout-right {
+      display: flex;
+      justify-content: flex-end;
+    }
+    .rollout-btn {
+      padding: 16px 32px;
+      background: var(--black);
+      color: var(--white);
+      border: var(--line);
+      border-color: var(--black);
+      font-family: var(--body);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .rollout-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 4px 4px 0 var(--yellow);
+    }
+
+    .features-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border: var(--line);
+      border-top: 0;
+    }
+    .feature-box {
+      padding: 44px;
+      border-right: var(--line);
+    }
+    .feature-box:last-child {
+      border-right: 0;
+    }
+    .feature-box h3 {
+      margin: 0 0 16px;
+      font-family: var(--headline);
+      font-size: 32px;
+      line-height: .95;
+      text-transform: uppercase;
+      font-weight: 900;
+      letter-spacing: -.02em;
+    }
+    .feature-box p {
+      margin: 0 0 16px;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--secondary);
+    }
+    .feature-box ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .feature-box li {
+      padding: 8px 0 8px 20px;
+      font-size: 14px;
+      color: var(--secondary);
+      position: relative;
+    }
+    .feature-box li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      font-weight: 800;
+    }
 
     /* Quiz */
     .quiz-wrap { max-width: 740px; }
@@ -572,15 +751,20 @@
       main::before {
         left: 0;
       }
-      .face { padding: 28px 20px; }
+      .face:not(#face-home) { padding: 28px 20px; }
       .prompt-grid, .agent-grid, .discovery-grid { grid-template-columns: 1fr; }
       .prompt-card, .agent-card, .discovery-card { border-right: 0; border-bottom: var(--line); }
       .prompt-card:nth-child(2n) { border-right: 0; }
       .prompt-card:nth-last-child(-n+2) { border-bottom: var(--line); }
-      .home-hero { grid-template-columns: 1fr; gap: 40px; }
-      .hero-content h1 { font-size: 38px; }
-      .hero-subtitle { font-size: 18px; }
-      .hero-description { font-size: 14px; }
+      .hero-section { padding: 60px 28px; }
+      .hero-headline { font-size: 44px; }
+      .hero-buttons { flex-direction: column; }
+      .hero-btn { width: 100%; }
+      .rollout-section { grid-template-columns: 1fr; gap: 32px; padding: 44px 28px; }
+      .rollout-right { justify-content: flex-start; }
+      .features-section { grid-template-columns: 1fr; }
+      .feature-box { border-right: 0; border-bottom: var(--line); padding: 32px 28px; }
+      .feature-box:last-child { border-bottom: 0; }
       .quiz-question h3 { font-size: 18px; }
       .result-header h2 { font-size: 32px; }
     }
@@ -604,37 +788,52 @@
 
   <main>
     <div class="face active" id="face-home">
-      <div class="home-hero">
+      <!-- Hero Section -->
+      <section class="hero-section">
         <div class="hero-content">
-          <h1>Agent Fit Quiz</h1>
-          <p class="hero-subtitle">Score the workflows that are costing your team the most time.</p>
-          <p class="hero-description">Answer 20 quick questions about your construction operations. Your results update as you go, but the final recommendation appears after all 20 questions.</p>
-          <button class="hero-cta" id="heroStartQuiz">Start the quiz →</button>
-        </div>
-        <div class="hero-features">
-          <div class="feature">
-            <span class="feature-icon">✓</span>
-            <div>
-              <strong>20 quick questions</strong>
-              <p>About your team's pain points and workflows</p>
-            </div>
+          <div class="hero-badge">20-QUESTION IMPLEMENTATION DIAGNOSTIC</div>
+          <h1 class="hero-headline">Stop guessing where AI fits in your construction business.</h1>
+          <p class="hero-description">In about three minutes, answer practical questions about bids, RFIs, change orders, field reports, billing, documents, and follow-up — then get a ranked recommendation for the first agent your team should actually implement.</p>
+          <div class="hero-buttons">
+            <button class="hero-btn primary" id="heroStartQuiz">Find my first agent →</button>
+            <button class="hero-btn secondary">Build my first agent</button>
+            <button class="hero-btn secondary">Do a free workflow audit</button>
           </div>
-          <div class="feature">
-            <span class="feature-icon">✓</span>
-            <div>
-              <strong>Real-time results</strong>
-              <p>See which agent fits as you answer</p>
-            </div>
-          </div>
-          <div class="feature">
-            <span class="feature-icon">✓</span>
-            <div>
-              <strong>Personalized recommendation</strong>
-              <p>Primary and secondary agent suggestions</p>
-            </div>
+          <div class="hero-tags">
+            <span class="tag">3 MINUTE DIAGNOSTIC</span>
+            <span class="tag">9 AGENT PATHS</span>
+            <span class="tag">HUMAN APPROVAL FIRST</span>
+            <span class="tag">BUILT FOR CONTRACTORS</span>
           </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Rollout Plan Section -->
+      <section class="rollout-section">
+        <div class="rollout-left">
+          <h2>Your result becomes a rollout plan.</h2>
+          <p>Not a generic score. You'll see the agent to start with, why it fits, and the first workflow to test with your team.</p>
+        </div>
+        <div class="rollout-right">
+          <button class="rollout-btn">Build my first agent</button>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features-section">
+        <div class="feature-box">
+          <h3>Built like a jobsite workflow review.</h3>
+          <p>No generic AI hype. The quiz maps real construction bottlenecks to implementable agents: estimator copilot, PM second brain, change order evidence, RFI/submittal tracking, field reporting, schedule risk, CRM follow-up, billing automation, and project knowledge.</p>
+        </div>
+        <div class="feature-box">
+          <h3>You leave with</h3>
+          <ul>
+            <li>Primary agent recommendation</li>
+            <li>Secondary implementation options</li>
+            <li>Best first workflow</li>
+          </ul>
+        </div>
+      </section>
     </div>
 
     <div class="face" id="face-agents">
