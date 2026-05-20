@@ -10,35 +10,34 @@
   <meta property="og:type" content="website" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #ffffff;
-      --ink: #171717;
-      --muted: #4d4d4d;
-      --soft: #666666;
-      --line: rgba(0, 0, 0, 0.08);
-      --surface: #fafafa;
-      --blue: #0a72ef;
-      --pink: #de1d8d;
-      --red: #ff5b4f;
-      --green: #0d9f6e;
-      --yellow: #b7791f;
-      --shadow-card: rgba(0,0,0,0.08) 0px 0px 0px 1px, rgba(0,0,0,0.04) 0px 2px 2px, rgba(0,0,0,0.04) 0px 8px 8px -8px, #fafafa 0px 0px 0px 1px;
-      --shadow-ring: rgba(0,0,0,0.08) 0px 0px 0px 1px;
-      --radius: 12px;
+      --yellow: #FFB800;
+      --black: #111111;
+      --white: #FFFFFF;
+      --warm: #F2F1ED;
+      --secondary: #555555;
+      --border: #E2E1DC;
+      --radius: 4px;
+      --line: 2px solid var(--black);
+      --body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --headline: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
     }
 
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      color: var(--ink);
-      background: var(--bg);
+      font-family: var(--body);
+      color: var(--black);
+      background:
+        linear-gradient(rgba(17,17,17,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17,17,17,.035) 1px, transparent 1px),
+        var(--white);
+      background-size: 32px 32px;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
-      font-feature-settings: "liga" 1;
     }
 
     a { color: inherit; text-decoration: none; }
@@ -47,260 +46,322 @@
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(255,255,255,0.84);
-      backdrop-filter: blur(18px);
-      box-shadow: var(--shadow-ring);
+      background: rgba(255,255,255,.94);
+      border-bottom: var(--line);
     }
     .nav-inner {
       max-width: 1180px;
       margin: 0 auto;
       display: flex;
-      align-items: center;
+      align-items: stretch;
       justify-content: space-between;
-      gap: 20px;
-      padding: 14px 22px;
+      padding: 0 22px;
+      min-height: 66px;
     }
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      letter-spacing: -0.4px;
+      gap: 12px;
+      font-family: var(--headline);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: .02em;
+      text-transform: uppercase;
       white-space: nowrap;
     }
     .logo {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: #171717;
-      color: #fff;
+      width: 36px;
+      height: 36px;
+      border: var(--line);
+      border-radius: var(--radius);
+      background: var(--yellow);
+      color: var(--black);
       display: grid;
       place-items: center;
-      font-family: 'Geist Mono', monospace;
-      font-size: 12px;
-      box-shadow: var(--shadow-ring);
+      font-family: var(--headline);
+      font-size: 18px;
+      font-weight: 800;
     }
     .nav-links {
       display: flex;
-      gap: 18px;
-      align-items: center;
-      font-size: 14px;
-      color: var(--muted);
-      font-weight: 500;
+      gap: 0;
+      align-items: stretch;
+      font-size: 13px;
+      color: var(--black);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
-    .nav-links a:hover { color: var(--ink); }
+    .nav-links > a:not(.btn) {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-left: var(--line);
+    }
+    .nav-links a:hover { background: var(--yellow); }
 
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      border-radius: 6px;
-      padding: 10px 14px;
-      font-size: 14px;
-      font-weight: 500;
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 700;
       line-height: 1;
       cursor: pointer;
-      transition: transform 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease;
-      border: 0;
-      font-family: inherit;
+      transition: transform 120ms ease, background 120ms ease, color 120ms ease;
+      border: var(--line);
+      font-family: var(--body);
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
-    .btn:hover { transform: translateY(-1px); }
-    .btn-dark { background: var(--ink); color: #fff; box-shadow: var(--shadow-ring); }
-    .btn-light { background: #fff; color: var(--ink); box-shadow: rgb(235,235,235) 0px 0px 0px 1px; }
-    .btn-copy { padding: 8px 10px; font-size: 12px; background: #fff; color: var(--ink); box-shadow: rgb(235,235,235) 0px 0px 0px 1px; }
+    .btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
+    .btn-dark { background: var(--black); color: var(--white); }
+    .btn-light { background: var(--white); color: var(--black); }
+    .btn-yellow { background: var(--yellow); color: var(--black); }
+    .btn-copy { padding: 9px 11px; font-size: 11px; background: var(--yellow); color: var(--black); }
+    .nav .btn { align-self: center; margin-left: 16px; }
 
     .hero {
       position: relative;
       overflow: hidden;
-      padding: 92px 22px 80px;
-      border-bottom: 1px solid #ebebeb;
+      padding: 0 22px;
+      border-bottom: var(--line);
     }
     .hero::before {
       content: "";
       position: absolute;
-      inset: -180px -20% auto;
-      height: 420px;
-      background: radial-gradient(circle at 25% 40%, rgba(10,114,239,0.14), transparent 34%), radial-gradient(circle at 58% 22%, rgba(222,29,141,0.10), transparent 32%), radial-gradient(circle at 78% 55%, rgba(255,91,79,0.12), transparent 28%);
-      filter: blur(10px);
+      inset: 0;
+      background:
+        linear-gradient(135deg, transparent 0 48%, rgba(17,17,17,.10) 48% 49%, transparent 49% 100%),
+        linear-gradient(90deg, rgba(255,184,0,.16), transparent 36%);
       pointer-events: none;
     }
-    .hero-inner { max-width: 1120px; margin: 0 auto; position: relative; }
-    .badge {
+    .hero-inner { max-width: 1120px; margin: 0 auto; position: relative; padding: 68px 0 72px; }
+    .badge, .pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: #ebf5ff;
-      color: #0068d6;
+      background: var(--yellow);
+      color: var(--black);
+      border: var(--line);
       border-radius: 999px;
-      padding: 5px 11px;
+      padding: 7px 12px;
       font-size: 12px;
-      font-weight: 500;
-      box-shadow: rgba(0,0,0,0.04) 0 0 0 1px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
       margin-bottom: 22px;
+    }
+    h1, h2, h3 {
+      font-family: var(--headline);
+      text-transform: uppercase;
+      color: var(--black);
     }
     h1 {
       margin: 0;
-      max-width: 900px;
-      font-size: clamp(48px, 8vw, 86px);
-      line-height: 0.95;
-      letter-spacing: clamp(-4px, -0.06em, -2.2px);
-      font-weight: 600;
+      max-width: 940px;
+      font-size: clamp(58px, 10vw, 118px);
+      line-height: .82;
+      letter-spacing: -.035em;
+      font-weight: 800;
       text-wrap: balance;
     }
     .hero-copy {
       max-width: 760px;
-      margin: 26px 0 0;
-      color: var(--muted);
-      font-size: clamp(18px, 2vw, 22px);
-      line-height: 1.65;
+      margin: 28px 0 0;
+      color: var(--secondary);
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.55;
+      font-weight: 500;
       text-wrap: pretty;
     }
-    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 34px; }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 34px; }
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-      margin-top: 56px;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 0;
+      margin-top: 52px;
       align-items: stretch;
+      border: var(--line);
+      background: var(--black);
     }
-    .terminal-card, .stat-card, .prompt-card, .offer-card {
-      background: #fff;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-card);
+    .terminal-card, .stat-card, .prompt-card, .offer-card, .workflow-card {
+      background: var(--white);
+      border: 0;
+      border-radius: 0;
     }
-    .terminal-card { padding: 18px; min-height: 320px; }
-    .terminal-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid #ebebeb; }
+    .terminal-card { padding: 18px; min-height: 320px; border-right: var(--line); }
+    .terminal-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: var(--line); }
     .dots { display: flex; gap: 6px; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; background: #d4d4d4; }
-    .dot:nth-child(1) { background: var(--red); } .dot:nth-child(2) { background: #f5b547; } .dot:nth-child(3) { background: var(--green); }
-    .mono { font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--soft); }
+    .dot { width: 12px; height: 12px; border: var(--line); border-radius: 50%; background: var(--warm); }
+    .dot:nth-child(1) { background: var(--yellow); } .dot:nth-child(2) { background: var(--white); } .dot:nth-child(3) { background: var(--black); }
+    .mono { font-family: var(--body); font-size: 11px; color: var(--secondary); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
     pre {
-      margin: 16px 0 0;
+      margin: 18px 0 0;
       white-space: pre-wrap;
-      font-family: 'Geist Mono', monospace;
+      font-family: var(--body);
       font-size: 13px;
-      line-height: 1.65;
-      color: #2c2c2c;
+      line-height: 1.7;
+      font-weight: 500;
+      color: var(--black);
     }
-    .side-stats { display: grid; gap: 18px; }
-    .stat-card { padding: 22px; }
-    .stat-num { font-size: 42px; font-weight: 600; letter-spacing: -2px; line-height: 1; }
-    .stat-label { margin-top: 10px; color: var(--muted); line-height: 1.5; }
+    .side-stats { display: grid; gap: 0; }
+    .stat-card { padding: 22px; border-bottom: var(--line); }
+    .stat-card:last-child { border-bottom: 0; }
+    .stat-num { font-family: var(--headline); font-size: 64px; font-weight: 800; letter-spacing: -.04em; line-height: .8; }
+    .stat-label { margin-top: 12px; color: var(--secondary); line-height: 1.5; font-weight: 500; }
 
-    section { padding: 84px 22px; }
+    section { padding: 78px 22px; }
+    section:nth-of-type(odd) { background: var(--warm); border-bottom: var(--line); }
+    section:nth-of-type(even) { background: var(--white); border-bottom: var(--line); }
     .section-inner { max-width: 1120px; margin: 0 auto; }
     .section-kicker {
-      font-family: 'Geist Mono', monospace;
+      display: inline-flex;
+      background: var(--yellow);
+      border: var(--line);
+      border-radius: 999px;
+      padding: 7px 12px;
       font-size: 12px;
       text-transform: uppercase;
-      color: var(--soft);
-      letter-spacing: 0.04em;
-      margin-bottom: 14px;
-      font-weight: 500;
+      color: var(--black);
+      letter-spacing: .06em;
+      margin-bottom: 16px;
+      font-weight: 800;
     }
     h2 {
       margin: 0;
-      font-size: clamp(34px, 5vw, 56px);
-      line-height: 1;
-      letter-spacing: clamp(-2.8px, -0.05em, -1.4px);
-      font-weight: 600;
+      font-size: clamp(42px, 6.5vw, 78px);
+      line-height: .88;
+      letter-spacing: -.03em;
+      font-weight: 800;
       text-wrap: balance;
     }
     .section-copy {
-      max-width: 720px;
-      margin: 18px 0 0;
-      color: var(--muted);
+      max-width: 740px;
+      margin: 20px 0 0;
+      color: var(--secondary);
       font-size: 18px;
-      line-height: 1.7;
+      line-height: 1.65;
+      font-weight: 500;
     }
 
-    .pill-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
-    .pill { border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 500; box-shadow: var(--shadow-ring); background: #fff; }
+    .pill-grid { display: flex; flex-wrap: wrap; gap: 0; margin-top: 28px; }
+    .pill { margin: 0 -2px -2px 0; background: var(--yellow); }
 
-    .workflow {
+    .workflow, .offers, .prompt-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
+      gap: 0;
       margin-top: 36px;
+      border: var(--line);
+      background: var(--black);
     }
-    .workflow-card { padding: 24px; background: #fff; border-radius: var(--radius); box-shadow: var(--shadow-card); }
-    .workflow-card h3 { margin: 10px 0 8px; font-size: 24px; line-height: 1.15; letter-spacing: -0.9px; }
-    .workflow-card p { margin: 0; color: var(--muted); line-height: 1.65; }
-    .kicker-blue { color: var(--blue); } .kicker-pink { color: var(--pink); } .kicker-red { color: var(--red); }
+    .workflow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .workflow-card { padding: 24px; border-right: var(--line); position: relative; }
+    .workflow-card:last-child { border-right: 0; }
+    .workflow-card h3, .offer-card h3, .prompt-card h3 { margin: 10px 0 8px; font-size: 30px; line-height: .95; letter-spacing: -.02em; font-weight: 800; }
+    .workflow-card p, .offer-card p, .prompt-card p { margin: 0; color: var(--secondary); line-height: 1.6; font-weight: 500; }
+    .number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      height: 30px;
+      padding: 0 10px;
+      border: var(--line);
+      background: var(--yellow);
+      font-family: var(--headline);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .kicker-blue, .kicker-pink, .kicker-red { color: var(--black); }
 
     .tabs { margin-top: 38px; }
-    .tab-list { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+    .tab-list { display: flex; gap: 0; flex-wrap: wrap; margin-bottom: -2px; }
     .tab {
-      background: #fff;
-      color: var(--muted);
-      box-shadow: var(--shadow-ring);
-      border: 0;
+      background: var(--white);
+      color: var(--black);
+      border: var(--line);
       border-radius: 999px;
-      padding: 10px 13px;
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 500;
+      padding: 10px 14px;
+      font-family: var(--body);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
       cursor: pointer;
+      margin: 0 -2px 8px 0;
     }
-    .tab.active { background: var(--ink); color: #fff; }
-    .prompt-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-    .prompt-card { padding: 20px; display: flex; flex-direction: column; gap: 12px; min-height: 260px; }
-    .prompt-head { display: flex; justify-content: space-between; gap: 16px; align-items: start; }
-    .prompt-card h3 { margin: 0; font-size: 20px; line-height: 1.2; letter-spacing: -0.5px; }
-    .prompt-card p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .tab.active { background: var(--yellow); color: var(--black); }
+    .prompt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
+    .prompt-card { padding: 20px; display: flex; flex-direction: column; gap: 14px; min-height: 280px; border-right: var(--line); border-bottom: var(--line); }
+    .prompt-card:nth-child(2n) { border-right: 0; }
+    .prompt-card:nth-last-child(-n+2) { border-bottom: 0; }
+    .prompt-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
     .prompt-box {
       flex: 1;
-      background: #fafafa;
-      border-radius: 8px;
-      padding: 13px;
-      font-family: 'Geist Mono', monospace;
+      background: var(--warm);
+      border: var(--line);
+      border-radius: 0;
+      padding: 14px;
+      font-family: var(--body);
       font-size: 12px;
-      line-height: 1.55;
-      color: #333;
-      box-shadow: rgba(0,0,0,0.06) 0 0 0 1px inset;
+      line-height: 1.6;
+      font-weight: 500;
+      color: var(--black);
       white-space: pre-wrap;
     }
 
-    .offers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 36px; }
-    .offer-card { padding: 24px; }
-    .offer-card h3 { margin: 0 0 10px; font-size: 22px; letter-spacing: -0.7px; }
-    .offer-card ul { margin: 16px 0 0; padding-left: 18px; color: var(--muted); line-height: 1.7; }
+    .offers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .offer-card { padding: 24px; border-right: var(--line); }
+    .offer-card:last-child { border-right: 0; }
+    .offer-card ul, .download-card ul { margin: 16px 0 0; padding-left: 18px; color: var(--secondary); line-height: 1.7; font-weight: 500; }
 
     .lead-magnet {
-      background: #171717;
-      color: #fff;
-      border-radius: 20px;
-      padding: clamp(28px, 5vw, 54px);
+      background: var(--black);
+      color: var(--white);
+      border: var(--line);
+      border-radius: 0;
+      padding: 0;
       display: grid;
-      grid-template-columns: 1fr 0.8fr;
-      gap: 32px;
-      align-items: center;
-      box-shadow: rgba(0,0,0,0.18) 0 18px 60px -28px;
+      grid-template-columns: 1fr .8fr;
+      gap: 0;
+      align-items: stretch;
     }
-    .lead-magnet h2 { color: #fff; }
-    .lead-magnet p { color: rgba(255,255,255,0.72); font-size: 18px; line-height: 1.65; }
+    .lead-copy { padding: clamp(28px, 5vw, 54px); }
+    .lead-magnet h2 { color: var(--white); }
+    .lead-magnet p { color: rgba(255,255,255,.75); font-size: 18px; line-height: 1.65; font-weight: 500; }
+    .lead-magnet .section-kicker { color: var(--black) !important; }
     .download-card {
-      background: #fff;
-      color: var(--ink);
-      border-radius: 14px;
-      padding: 20px;
+      background: var(--yellow);
+      color: var(--black);
+      border-left: var(--line);
+      border-radius: 0;
+      padding: clamp(24px, 4vw, 42px);
     }
-    .download-card ul { padding-left: 18px; margin: 14px 0 0; color: var(--muted); line-height: 1.7; }
+    .download-card strong { font-family: var(--headline); text-transform: uppercase; font-size: 32px; line-height: .95; letter-spacing: -.02em; }
+    .download-card ul { color: var(--black); }
 
-    .footer { padding: 36px 22px; border-top: 1px solid #ebebeb; color: var(--muted); }
-    .footer-inner { max-width: 1120px; margin: 0 auto; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 14px; }
+    .footer { padding: 0 22px; border-top: 0; color: var(--black); background: var(--white); }
+    .footer-inner { max-width: 1120px; margin: 0 auto; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 28px 0; }
 
     .toast {
       position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%) translateY(20px);
-      background: #171717;
-      color: #fff;
+      background: var(--yellow);
+      color: var(--black);
+      border: var(--line);
       border-radius: 999px;
       padding: 10px 14px;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
       opacity: 0;
       pointer-events: none;
       transition: opacity 180ms ease, transform 180ms ease;
@@ -309,11 +370,17 @@
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     @media (max-width: 900px) {
+      .nav-inner { align-items: center; }
       .nav-links { display: none; }
       .hero-grid, .lead-magnet { grid-template-columns: 1fr; }
-      .workflow, .offers { grid-template-columns: 1fr; }
-      .prompt-grid { grid-template-columns: 1fr; }
-      section { padding: 64px 20px; }
+      .terminal-card, .download-card { border-right: 0; border-left: 0; border-bottom: var(--line); }
+      .workflow, .offers, .prompt-grid { grid-template-columns: 1fr; }
+      .workflow-card, .offer-card, .prompt-card { border-right: 0; border-bottom: var(--line); }
+      .workflow-card:last-child, .offer-card:last-child, .prompt-card:last-child { border-bottom: 0; }
+      .prompt-card:nth-last-child(-n+2) { border-bottom: var(--line); }
+      .prompt-card:last-child { border-bottom: 0; }
+      section { padding: 62px 20px; }
+      h1 { font-size: clamp(54px, 18vw, 86px); }
     }
   </style>
 </head>
@@ -325,7 +392,7 @@
         <a href="#library">Prompt library</a>
         <a href="#workflows">Workflows</a>
         <a href="#offers">Use cases</a>
-        <a class="btn btn-dark" href="#download">Get the starter pack</a>
+        <a class="btn btn-yellow" href="#download">Get the starter pack</a>
       </div>
     </div>
   </nav>
@@ -333,11 +400,11 @@
   <main id="top">
     <header class="hero">
       <div class="hero-inner">
-        <div class="badge">AI drafts. Contractors approve.</div>
+        <div class="badge">AI drafts / contractor approved</div>
         <h1>The prompt library for construction paperwork that actually matters.</h1>
         <p class="hero-copy">A practical AI system for estimating, RFIs, submittals, change orders, daily reports, and schedule reviews — built for contractors who need fewer missed details, cleaner documentation, and faster follow-up.</p>
         <div class="hero-actions">
-          <a class="btn btn-dark" href="#library">Explore prompts</a>
+          <a class="btn btn-yellow" href="#library">Explore prompts</a>
           <a class="btn btn-light" href="#download">Download starter pack</a>
         </div>
 
@@ -374,9 +441,9 @@ Do not invent quantities, prices, or contract obligations.</pre>
         <h2>Built around the moments where contractors lose time, money, and context.</h2>
         <p class="section-copy">The library turns messy project information into structured drafts, logs, summaries, follow-ups, and checklists. It is not a replacement for PM judgment, estimating experience, or contract review.</p>
         <div class="workflow">
-          <article class="workflow-card"><div class="mono kicker-blue">Estimate</div><h3>Bid smarter</h3><p>Summarize bid packages, find scope gaps, generate RFIs, draft exclusions, and prepare proposal language before the deadline hits.</p></article>
-          <article class="workflow-card"><div class="mono kicker-pink">Control</div><h3>Protect the record</h3><p>Turn field notes, emails, RFIs, and daily reports into clean change-event narratives with backup checklists.</p></article>
-          <article class="workflow-card"><div class="mono kicker-red">Report</div><h3>Follow up faster</h3><p>Create daily reports, schedule risk briefs, submittal aging reviews, and weekly dashboards from project noise.</p></article>
+          <article class="workflow-card"><span class="number">01</span><div class="mono kicker-blue">Estimate</div><h3>Bid smarter</h3><p>Summarize bid packages, find scope gaps, generate RFIs, draft exclusions, and prepare proposal language before the deadline hits.</p></article>
+          <article class="workflow-card"><span class="number">02</span><div class="mono kicker-pink">Control</div><h3>Protect the record</h3><p>Turn field notes, emails, RFIs, and daily reports into clean change-event narratives with backup checklists.</p></article>
+          <article class="workflow-card"><span class="number">03</span><div class="mono kicker-red">Report</div><h3>Follow up faster</h3><p>Create daily reports, schedule risk briefs, submittal aging reviews, and weekly dashboards from project noise.</p></article>
         </div>
       </div>
     </section>
@@ -407,9 +474,9 @@ Do not invent quantities, prices, or contract obligations.</pre>
         <h2>Package the prompt library into implementation offers.</h2>
         <p class="section-copy">The strongest GTM wedge is not selling “AI prompts.” It is installing repeatable documentation workflows that contractors can trust.</p>
         <div class="offers">
-          <article class="offer-card"><h3>Estimator Copilot Setup</h3><p>For specialty contractors drowning in bids.</p><ul><li>Bid package summary</li><li>Scope gap prompts</li><li>RFI and clarification drafts</li><li>Proposal/exclusion templates</li></ul></article>
-          <article class="offer-card"><h3>PM Second Brain</h3><p>For teams buried in meetings and follow-ups.</p><ul><li>Meeting notes to action items</li><li>RFI/submittal aging reviews</li><li>Weekly risk dashboard</li><li>Owner update drafts</li></ul></article>
-          <article class="offer-card"><h3>Change Order Evidence System</h3><p>For contractors losing margin in the record.</p><ul><li>Field notes to change events</li><li>Backup checklists</li><li>Delay narratives</li><li>Follow-up emails</li></ul></article>
+          <article class="offer-card"><span class="number">01</span><h3>Estimator Copilot Setup</h3><p>For specialty contractors drowning in bids.</p><ul><li>Bid package summary</li><li>Scope gap prompts</li><li>RFI and clarification drafts</li><li>Proposal/exclusion templates</li></ul></article>
+          <article class="offer-card"><span class="number">02</span><h3>PM Second Brain</h3><p>For teams buried in meetings and follow-ups.</p><ul><li>Meeting notes to action items</li><li>RFI/submittal aging reviews</li><li>Weekly risk dashboard</li><li>Owner update drafts</li></ul></article>
+          <article class="offer-card"><span class="number">03</span><h3>Change Order Evidence System</h3><p>For contractors losing margin in the record.</p><ul><li>Field notes to change events</li><li>Backup checklists</li><li>Delay narratives</li><li>Follow-up emails</li></ul></article>
         </div>
       </div>
     </section>
@@ -417,11 +484,11 @@ Do not invent quantities, prices, or contract obligations.</pre>
     <section id="download">
       <div class="section-inner">
         <div class="lead-magnet">
-          <div>
-            <div class="section-kicker" style="color: rgba(255,255,255,.58);">Starter pack</div>
+          <div class="lead-copy">
+            <div class="section-kicker">Starter pack</div>
             <h2>Start with the ten prompts contractors will use every week.</h2>
             <p>Use the landing page as the front door for ConstructionFlows: a lead magnet, a YouTube CTA, or the first asset in a contractor AI setup sprint.</p>
-            <div class="hero-actions"><a class="btn btn-light" href="#library">Preview the library</a><a class="btn btn-dark" style="background:#fff;color:#171717" href="mailto:hello@constructionflows.com?subject=ConstructionFlows%20Prompt%20Library">Request the full library</a></div>
+            <div class="hero-actions"><a class="btn btn-light" href="#library">Preview the library</a><a class="btn btn-yellow" href="mailto:hello@constructionflows.com?subject=ConstructionFlows%20Prompt%20Library">Request the full library</a></div>
           </div>
           <div class="download-card">
             <strong>Starter pack includes</strong>
@@ -497,7 +564,7 @@ Do not invent quantities, prices, or contract obligations.</pre>
       grid.innerHTML = prompts[category].map((prompt, index) => `
         <article class="prompt-card">
           <div class="prompt-head">
-            <div><h3>${prompt.title}</h3><p>${prompt.desc}</p></div>
+            <div><span class="number">${String(index + 1).padStart(2, '0')}</span><h3>${prompt.title}</h3><p>${prompt.desc}</p></div>
             <button class="btn btn-copy" data-copy="${category}-${index}">Copy</button>
           </div>
           <div class="prompt-box" id="${category}-${index}">${prompt.text}</div>
