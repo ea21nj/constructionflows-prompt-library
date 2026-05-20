@@ -549,11 +549,19 @@
       line-height: .95;
       text-transform: uppercase;
       font-weight: 900;
+      transition: opacity 400ms ease;
+      opacity: 1;
     }
     .preview-bullets {
       list-style: none;
       padding: 0;
       margin: 0;
+      transition: opacity 400ms ease;
+      opacity: 1;
+    }
+    .preview-bullets.fade-out,
+    .preview-card h3.fade-out {
+      opacity: 0;
     }
     .preview-bullets li {
       padding: 8px 0 8px 20px;
@@ -1560,17 +1568,28 @@ const agents = [
 
       if (!nameEl || !bulletsEl || !agents || agents.length === 0) return;
 
-      const agent = agents[previewIndex];
-      nameEl.textContent = agent.name;
+      // Fade out
+      nameEl.classList.add('fade-out');
+      bulletsEl.classList.add('fade-out');
 
-      const bullets = agent.whatItDoes.slice(0, 4).map(item => `<li>${item}</li>`).join('');
-      bulletsEl.innerHTML = bullets;
+      // Update after fade completes
+      setTimeout(() => {
+        const agent = agents[previewIndex];
+        nameEl.textContent = agent.name;
 
-      previewIndex = (previewIndex + 1) % agents.length;
+        const bullets = agent.whatItDoes.slice(0, 4).map(item => `<li>${item}</li>`).join('');
+        bulletsEl.innerHTML = bullets;
+
+        // Fade in
+        nameEl.classList.remove('fade-out');
+        bulletsEl.classList.remove('fade-out');
+
+        previewIndex = (previewIndex + 1) % agents.length;
+      }, 400);
     }
 
     updatePreviewCard();
-    setInterval(updatePreviewCard, 4000);
+    setInterval(updatePreviewCard, 4500);
 
     // Quiz data
     const quizQuestions = [
