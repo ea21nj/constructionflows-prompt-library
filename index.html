@@ -448,6 +448,36 @@
     ol { margin: 12px 0; padding-left: 20px; color: var(--secondary); line-height: 1.8; }
     ol li { margin: 8px 0; }
 
+    .stack-section {
+      margin: 32px 0;
+      padding: 24px;
+      border: var(--line);
+      background: #FAFAFA;
+    }
+
+    .stack-section h3 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .stack-item {
+      margin-bottom: 16px;
+    }
+
+    .stack-item strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 15px;
+      color: var(--black);
+    }
+
+    .stack-item p {
+      margin: 0;
+      color: var(--secondary);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     @media (max-width: 900px) {
       .sidebar { width: 100%; height: auto; position: static; border-right: 0; border-bottom: var(--line); }
       main { margin-left: 0; }
@@ -469,6 +499,7 @@
       <a href="#" data-face="prompts" class="nav-link active">Copy Prompts</a>
       <a href="#" data-face="agents" class="nav-link">10 Agents</a>
       <a href="#" data-face="discovery" class="nav-link">Discovery</a>
+      <a href="#" data-face="stack" class="nav-link">Tech Stack</a>
       <a href="#" data-face="about" class="nav-link">About</a>
     </div>
   </nav>
@@ -502,6 +533,83 @@
       <h1>Find your best first agent</h1>
       <p>Answer questions about your biggest pain to identify which workflow to build first.</p>
       <div class="discovery-grid" id="discoveryGrid"></div>
+    </div>
+
+    <div class="face" id="face-stack">
+      <h1>Technical Tool Stack</h1>
+      <p>The core philosophy is to use agents to build agents, reducing manual coding required by solo founders.</p>
+
+      <div class="stack-section">
+        <h3>1. Agent Frameworks (The Harnesses)</h3>
+        <div class="stack-item">
+          <strong>Hermes</strong>
+          <p>Recommended as the most reliable and flexible "harness" because it allows you to switch models easily and is self-evolving.</p>
+        </div>
+        <div class="stack-item">
+          <strong>Claude Code & OpenAI's Codex</strong>
+          <p>Desktop apps used by the founder to actually build and install the customer agents.</p>
+        </div>
+      </div>
+
+      <div class="stack-section">
+        <h3>2. Core Models</h3>
+        <div class="stack-item">
+          <strong>GPT 5.5</strong>
+          <p>Identified as the most efficient model for tool calls and general usage.</p>
+        </div>
+        <div class="stack-item">
+          <strong>Opus 4.7</strong>
+          <p>Best for long-horizon coding tasks.</p>
+        </div>
+        <div class="stack-item">
+          <strong>GLM 5.1 or Kimmy</strong>
+          <p>Used for lighter-weight, more affordable open-source tasks.</p>
+        </div>
+      </div>
+
+      <div class="stack-section">
+        <h3>3. Infrastructure & Memory</h3>
+        <div class="stack-item">
+          <strong>Orgo</strong>
+          <p>A workspace that provides cloud computers (VMs) where agents live. This allows the founder to manage and debug agents remotely in a secure, isolated environment.</p>
+        </div>
+        <div class="stack-item">
+          <strong>Obsidian</strong>
+          <p>Acts as the agent's "second brain." By providing the agent with well-structured markdown files in an Obsidian vault, it gains permanent context on the business, people, and projects.</p>
+        </div>
+      </div>
+
+      <div class="stack-section">
+        <h3>4. Connectivity & Skills</h3>
+        <div class="stack-item">
+          <strong>Composio</strong>
+          <p>A vital connector that gives agents access to thousands of apps (Gmail, Slack, Notion) while handling complex authentication and security.</p>
+        </div>
+        <div class="stack-item">
+          <strong>Agent Mail</strong>
+          <p>Provides each agent with its own dedicated email address to act as a true personal assistant.</p>
+        </div>
+        <div class="stack-item">
+          <strong>MCPs (Model Context Protocol)</strong>
+          <p>Specialized tools like Perplexity MCP (for up-to-date knowledge), Context 7 (for GitHub docs), and XMCP (for Twitter/X insights) are used to give agents the latest information needed for setup.</p>
+        </div>
+      </div>
+
+      <div class="stack-section">
+        <h3>5. Customer Management</h3>
+        <div class="stack-item">
+          <strong>Trello</strong>
+          <p>Used as a customer-facing board for request management (e.g., a "to-do" list for new agent skills).</p>
+        </div>
+        <div class="stack-item">
+          <strong>Granola</strong>
+          <p>For meeting notes that automatically sync to Trello.</p>
+        </div>
+        <div class="stack-item">
+          <strong>Loom</strong>
+          <p>For sending video updates to customers regarding agent improvements.</p>
+        </div>
+      </div>
     </div>
 
     <div class="face" id="face-about">
