@@ -27,18 +27,19 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${resendApiKey}`
       },
       body: JSON.stringify({
-        from: 'noreply@constructionflows.com',
+        from: 'onboarding@resend.dev',
         to: 'hello@constructionflows.com',
+        replyTo: email,
         subject: `New Quiz Submission: ${name} - ${company}`,
         html: `
           <h2>New Quiz Submission</h2>
           <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
           <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
           <p><strong>Company:</strong> ${company}</p>
           <p><strong>Agent Fit:</strong> ${agentFit}</p>
           <hr>
-          <p>Reply to: ${email}</p>
+          <p style="font-size: 12px; color: #666;">Reply directly to this email to respond to ${name}</p>
         `
       })
     });
