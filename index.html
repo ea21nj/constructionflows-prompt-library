@@ -212,12 +212,28 @@
       border-bottom: var(--line);
       background: var(--white);
       cursor: pointer;
-      transition: background 120ms ease;
+      transition: all 140ms ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
     }
 
-    .agent-card:hover { background: var(--yellow); }
+    .agent-card:hover {
+      background: var(--yellow);
+      transform: translateY(-2px);
+    }
+
     .agent-card:nth-child(2n) { border-right: 0; }
     .agent-card:nth-last-child(-n+2) { border-bottom: 0; }
+
+    .agent-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
 
     .agent-card .number {
       display: inline-flex;
@@ -232,21 +248,73 @@
       font-size: 22px;
       font-weight: 800;
       line-height: 1;
+      flex-shrink: 0;
     }
 
-    .agent-card .mono {
-      display: block;
-      font-family: var(--body);
-      font-size: 11px;
-      color: var(--secondary);
+    .agent-card-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      font-size: 10px;
       font-weight: 700;
-      letter-spacing: .08em;
+      letter-spacing: .06em;
       text-transform: uppercase;
-      margin: 10px 0 8px;
+      border: var(--line);
+      line-height: 1;
+      flex-shrink: 0;
     }
 
-    .agent-card h3 { margin: 0 0 8px; font-size: 26px; line-height: .95; }
-    .agent-card p { margin: 0; color: var(--secondary); font-size: 14px; line-height: 1.6; }
+    .agent-card-badge.win-work { background: #FFF3CD; color: #333; }
+    .agent-card-badge.run-work { background: #D4EDFF; color: #003d82; }
+    .agent-card-badge.protect-margin { background: #FFE5E5; color: #8b0000; }
+    .agent-card-badge.get-paid { background: #E5F5E5; color: #0a5a0a; }
+    .agent-card-badge.build-memory { background: #F0E5FF; color: #4a0080; }
+
+    .agent-card h3 {
+      margin: 0;
+      font-size: 26px;
+      line-height: .95;
+      flex: 1;
+    }
+
+    .agent-card .brief {
+      margin: 4px 0 0;
+      color: var(--secondary);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .agent-card .pain-preview {
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0,0,0,0.1);
+      font-size: 12px;
+      color: var(--secondary);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .agent-card .explore {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: auto;
+      padding-top: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--black);
+      opacity: 0;
+      transition: opacity 140ms ease;
+    }
+
+    .agent-card:hover .explore {
+      opacity: 1;
+    }
 
     .discovery-grid {
       display: grid;
@@ -675,13 +743,28 @@
 
     // Render agents
     function renderAgentCards() {
+      const getCategoryClass = (category) => {
+        const categoryMap = {
+          'Win work': 'win-work',
+          'Run work': 'run-work',
+          'Protect margin': 'protect-margin',
+          'Get paid': 'get-paid',
+          'Build memory': 'build-memory'
+        };
+        return categoryMap[category] || 'default';
+      };
+
       const agentGrid = document.getElementById('agentGrid');
       agentGrid.innerHTML = agents.map(agent => `
         <article class="agent-card" data-agent-id="${agent.id}">
-          <span class="number">${agent.number}</span>
-          <div class="mono">${agent.category}</div>
+          <div class="agent-card-header">
+            <span class="number">${agent.number}</span>
+            <span class="agent-card-badge ${getCategoryClass(agent.category)}">${agent.category}</span>
+          </div>
           <h3>${agent.name}</h3>
-          <p>${agent.brief}</p>
+          <p class="brief">${agent.brief}</p>
+          <div class="pain-preview">${agent.painPoints[0] || ''}</div>
+          <div class="explore">Explore →</div>
         </article>
       `).join('');
 
