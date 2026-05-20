@@ -168,86 +168,6 @@
     h2, h3 { font-family: var(--headline); text-transform: uppercase; color: var(--black); }
     h3 { font-size: 24px; margin: 32px 0 16px; }
 
-    .tabs { margin-top: 28px; }
-    .tab-list { display: flex; gap: 0; flex-wrap: wrap; margin-bottom: -2px; }
-    .tab {
-      background: var(--white);
-      color: var(--black);
-      border: var(--line);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-family: var(--body);
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      cursor: pointer;
-      margin: 0 -2px 8px 0;
-    }
-    .tab.active { background: var(--yellow); color: var(--black); }
-
-    .prompt-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0;
-      margin-top: 12px;
-      border: var(--line);
-      background: var(--black);
-    }
-
-    .prompt-card {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      min-height: 280px;
-      border-right: var(--line);
-      border-bottom: var(--line);
-      background: var(--white);
-    }
-
-    .prompt-card:nth-child(2n) { border-right: 0; }
-    .prompt-card:nth-last-child(-n+2) { border-bottom: 0; }
-
-    .prompt-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
-    .prompt-card h3 { margin: 0; font-size: 20px; line-height: .95; }
-    .prompt-card p { margin: 0; color: var(--secondary); font-size: 13px; line-height: 1.6; }
-
-    .prompt-box {
-      flex: 1;
-      background: #F5F5F5;
-      border: var(--line);
-      padding: 14px;
-      font-family: var(--body);
-      font-size: 12px;
-      line-height: 1.6;
-      font-weight: 500;
-      color: var(--black);
-      white-space: pre-wrap;
-      overflow: hidden;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-radius: 0;
-      padding: 10px 12px;
-      font-size: 11px;
-      font-weight: 700;
-      line-height: 1;
-      cursor: pointer;
-      transition: transform 120ms ease, background 120ms ease;
-      border: var(--line);
-      font-family: var(--body);
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      background: var(--yellow);
-      color: var(--black);
-    }
-
-    .btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
 
     .agent-filters {
       display: flex;
@@ -475,27 +395,6 @@
     .agent-modal p { margin: 12px 0; color: var(--secondary); line-height: 1.7; font-size: 14px; }
     .agent-modal .section { margin-top: 24px; padding-top: 24px; border-top: var(--line); }
 
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: var(--yellow);
-      color: var(--black);
-      border: var(--line);
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .05em;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 180ms ease, transform 180ms ease;
-      z-index: 100;
-    }
-
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     ol { margin: 12px 0; padding-left: 20px; color: var(--secondary); line-height: 1.8; }
     ol li { margin: 8px 0; }
@@ -594,6 +493,46 @@
       transform: scaleX(1);
     }
 
+    .hero {
+      background: linear-gradient(135deg, #FFB800 0%, #FFC933 100%);
+      padding: 60px 44px;
+      text-align: center;
+      color: var(--black);
+    }
+
+    .hero h1 {
+      margin: 0 0 16px;
+      font-family: var(--headline);
+      font-size: 48px;
+      line-height: .95;
+      text-transform: uppercase;
+      letter-spacing: -.02em;
+    }
+
+    .hero-subheading {
+      margin: 0 0 24px;
+      font-family: var(--body);
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--black);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-cta {
+      margin: 0 0 16px;
+    }
+
+    .hero-features {
+      margin: 0;
+      font-family: var(--body);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--secondary);
+      line-height: 1.6;
+    }
+
     @media (max-width: 900px) {
       .sidebar {
         width: 100%;
@@ -644,24 +583,7 @@
       <p>Also explore <a href="#agents">10 agent templates</a> • <a href="#discovery">Find your best first agent</a> • <a href="#about">Implementation guides</a></p>
     </div>
 
-    <div class="face" id="face-prompts">
-      <h1>Copy-paste prompts</h1>
-      <p>70+ construction prompts. Paste into Claude, ChatGPT, or your AI tool. Click to copy.</p>
-
-      <div class="tabs">
-        <div class="tab-list" role="tablist">
-          <button class="tab active" data-tab="estimating">Estimating</button>
-          <button class="tab" data-tab="rfis">RFIs</button>
-          <button class="tab" data-tab="submittals">Submittals</button>
-          <button class="tab" data-tab="changes">Changes</button>
-          <button class="tab" data-tab="daily">Daily reports</button>
-          <button class="tab" data-tab="schedule">Schedule</button>
-        </div>
-        <div class="prompt-grid" id="promptGrid"></div>
-      </div>
-    </div>
-
-    <div class="face active" id="face-agents">
+<div class="face active" id="face-agents">
       <h1>10 agent ideas</h1>
       <p>Click any agent to see full positioning, workflow, tracker fields, and implementation details.</p>
       <div class="agent-filters" id="agentFilters"></div>
@@ -788,8 +710,6 @@
     </div>
   </div>
 
-  <div class="toast" id="toast">Prompt copied</div>
-
   <script src="index.html?data=agents"></script>
   <script src="index.html?data=prompts"></script>
   <script>
@@ -811,47 +731,8 @@
       });
     });
 
-    // Render prompts and agents (these functions exist in original file)
-    const prompts = {
-      estimating: [
-        { title: 'Bid package summary', desc: 'Turn bid docs into a clean estimating brief.', text: 'Act as a senior construction estimator. Review the bid package information below and create: project overview, scope summary, bid due date, required forms, relevant specs/drawings, addenda, inclusions, exclusions, questions, and bid/no-bid considerations. Do not invent missing information.' },
-        { title: 'Scope gap detector', desc: 'Compare specs, drawings, and scope sheets for missing responsibility.', text: 'Act as a senior estimator. Compare our scope notes, spec requirements, drawing notes, and GC scope sheet. Identify missing scope, duplicated scope, unclear trade responsibility, RFI questions, suggested exclusions, and risk level for each issue.' },
-        { title: 'Proposal draft', desc: 'Create a professional proposal from estimate notes.', text: 'Act as a construction estimator writing a bid proposal. Use the project name, client, trade, estimate notes, inclusions, exclusions, and alternates. Output scope of work, included items, exclusions, qualifications, alternates, schedule notes, price placeholder, validity period, and closing language.' },
-        { title: 'Addendum impact review', desc: 'Find scope and pricing impacts from new addenda.', text: 'Act as a senior estimator reviewing an addendum. Compare original bid scope against addendum text/drawing changes. Return change summary, items affecting our trade, added/deleted scope, changed details, schedule impacts, pricing direction, questions, and estimate sections to update.' }
-      ],
-      rfis: [
-        { title: 'Draft an RFI', desc: 'Convert unclear scope into a formal RFI.', text: 'Act as a construction PM drafting an RFI. Given the issue, project context, and drawing/spec references, write a concise RFI with title, question, background, references, suggested resolution if appropriate, cost/schedule impact placeholder, and needed response date.' },
-        { title: 'RFI response summary', desc: 'Turn a response into actions for office and field.', text: 'Act as a construction PM summarizing an RFI response. Return direct answer, required action, scope impact, cost impact, schedule impact, affected trades, documents affected, follow-up needed, and a plain-English field crew summary.' },
-        { title: 'RFI log review', desc: 'Find overdue, risky, and high-impact RFIs.', text: 'Act as a project controls manager reviewing an RFI log. Identify open RFIs, overdue RFIs, cost/schedule impacts, items waiting on design team or GC, repeated themes, top five escalations, and a follow-up email draft.' },
-        { title: 'RFI quality check', desc: 'Review an RFI before it creates confusion.', text: 'Act as a senior PM reviewing an RFI before submission. Score it 1–10 for clarity and completeness, identify missing references, liability concerns, specificity issues, suggested revisions, and items to verify before sending.' }
-      ],
-      submittals: [
-        { title: 'Requirements extraction', desc: 'Pull every submittal requirement from specs.', text: 'Act as a submittal manager. Review the spec section and extract product data, shop drawings, samples, calculations, certificates, test reports, warranties, closeout submittals, mockups, timing requirements, dependencies, and submittal log notes.' },
-        { title: 'Build a submittal log', desc: 'Create a structured submittal log from specs.', text: 'Act as a project engineer building a submittal log. Create fields for submittal number, spec section, title, type, responsible party, required date, needed approval date, status, reviewer, priority, and notes. Flag procurement or schedule risks.' },
-        { title: 'Completeness review', desc: 'Check a package before it goes out.', text: 'Act as a submittal manager reviewing a package. Compare requirements to submitted contents. Return complete items, missing items, unclear items, deviations, compliance issues, clarification needs, recommended status, and vendor comments.' },
-        { title: 'Submittal aging review', desc: 'Find overdue approvals and procurement blockers.', text: 'Act as a project controls manager reviewing submittal aging. Identify overdue submittals, next-seven-day items, vendor/GC/design bottlenecks, procurement blockers, high-risk submittals, escalations, and follow-up email drafts.' }
-      ],
-      changes: [
-        { title: 'Change order narrative', desc: 'Create a factual narrative from evidence.', text: 'Act as a construction PM writing a change order narrative. Include background, original contract condition, changed condition or directive, work required, why it is outside original scope, cost/schedule placeholders, supporting references, and reservation language if appropriate.' },
-        { title: 'Backup checklist', desc: 'Identify evidence needed for approval.', text: 'Act as a project controls manager. For this change event, list required backup: contract reference, drawing/spec reference, RFI/directive, authorization, field photos, daily reports, labor tickets, invoices, equipment, vendor quotes, schedule support, pricing worksheet, and signatures.' },
-        { title: 'Field notes to change event', desc: 'Turn rough notes into a change record.', text: 'Act as a construction PM. Convert rough field notes and photo descriptions into a potential change event with title, description, date/time/location, parties involved, possible cause, cost/schedule impact, documentation needed, questions, and draft notice email.' },
-        { title: 'Change order log review', desc: 'Prioritize aging and disputed COs.', text: 'Act as a project controls manager reviewing a CO log. Analyze pending, approved, disputed, aging, unpriced, missing-backup, awaiting-response items, schedule impacts, exposure by status, top escalations, and follow-up emails.' }
-      ],
-      daily: [
-        { title: 'Daily report from notes', desc: 'Clean up rough field notes into a report.', text: 'Act as a superintendent preparing a daily report. Use project, date, weather, manpower, work performed, deliveries, inspections, issues, delays, and photo notes. Output work completed, safety observations, RFIs/submittals/change items, and next-day plan.' },
-        { title: 'Voice notes to daily report', desc: 'Convert dictated notes into documentation.', text: 'Act as a superintendent assistant. Convert the voice transcript into a clean daily report, action items, PM follow-ups, possible change-order items, safety notes, and missing information. Do not add facts not in the notes.' },
-        { title: 'Daily report risk scan', desc: 'Find issues hiding in field reports.', text: 'Act as a senior PM reviewing a daily report for risk. Identify potential change events, schedule delays, safety concerns, quality concerns, coordination issues, missing documentation, photo needs, RFI/email follow-ups, and action items.' },
-        { title: 'Weekly daily-report summary', desc: 'Turn a week of reports into a PM update.', text: 'Act as a PM summarizing daily reports for the week. Return work completed, manpower trends, schedule progress, delays/issues, safety observations, quality issues, RFIs/submittals/change events, decisions needed, next week plan, and owner-facing summary.' }
-      ],
-      schedule: [
-        { title: 'Schedule summary', desc: 'Explain the schedule in PM-friendly language.', text: 'Act as a construction scheduler. Given a schedule export or lookahead, summarize current phase, major milestones, next two weeks, next 30 days, critical/near-critical work, long-lead items, dependencies, risks, decisions needed, and owner summary.' },
-        { title: 'Lookahead review', desc: 'Find conflicts before the weekly meeting.', text: 'Act as a superintendent reviewing a lookahead schedule. Identify planned work, trade stacking, missing predecessor work, material/equipment needs, inspection needs, access constraints, safety concerns, RFIs/submittals blocking work, and coordination questions.' },
-        { title: 'Schedule risk review', desc: 'Spot delays, weak logic, and procurement risks.', text: 'Act as a senior scheduler. Review schedule data and notes. Identify activities at risk, missing dependencies, unrealistic durations, trade conflicts, procurement risks, RFI/submittal risks, site/weather/access risks, escalations, mitigation actions, and executive summary.' },
-        { title: 'Delay narrative draft', desc: 'Create a factual delay narrative.', text: 'Act as a construction PM drafting a factual schedule delay narrative. Include background, original planned work, cause of delay, date delay began, affected activities, mitigation steps, current status, schedule impact, document references, and confirmation needs.' }
-      ]
-    };
-
-    const agents = [
+    // Agent data
+const agents = [
       {
         id: 1,
         number: "01",
@@ -1176,42 +1057,7 @@
       `).join('');
     }
 
-    // Render prompts
-    function renderPrompts(category) {
-      const grid = document.getElementById('promptGrid');
-      grid.innerHTML = prompts[category].map((prompt, index) => `
-        <article class="prompt-card">
-          <div class="prompt-head">
-            <div><h3>${prompt.title}</h3><p>${prompt.desc}</p></div>
-            <button class="btn" data-copy="${category}-${index}">Copy</button>
-          </div>
-          <div class="prompt-box" id="${category}-${index}">${prompt.text}</div>
-        </article>
-      `).join('');
-    }
-
-    // Tab functionality
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        renderPrompts(tab.dataset.tab);
-      });
-    });
-
-    // Copy functionality
-    const toast = document.getElementById('toast');
-    document.addEventListener('click', async (event) => {
-      const button = event.target.closest('[data-copy]');
-      if (!button) return;
-      const text = document.getElementById(button.dataset.copy).innerText;
-      await navigator.clipboard.writeText(text);
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 1500);
-    });
-
     // Initialize
-    renderPrompts('estimating');
     renderAgentFilters();
     renderAgentCards();
     renderDiscoveryCards();
