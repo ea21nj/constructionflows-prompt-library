@@ -3,11 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ConstructionFlows Prompt Library</title>
-  <meta name="description" content="A practical AI prompt library for construction estimating, RFIs, submittals, change orders, daily reports, and schedule reviews." />
-  <meta property="og:title" content="ConstructionFlows Prompt Library" />
-  <meta property="og:description" content="Field-tested AI prompts for contractors, PMs, estimators, and project admins." />
-  <meta property="og:type" content="website" />
+  <title>ConstructionFlows - Free AI Prompts & Agent Ideas</title>
+  <meta name="description" content="Free prompts and agent ideas for building AI workflows in construction." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,13 +13,11 @@
       --yellow: #FFB800;
       --black: #111111;
       --white: #FFFFFF;
-      --warm: #F2F1ED;
       --secondary: #555555;
       --border: #E2E1DC;
-      --radius: 4px;
       --line: 2px solid var(--black);
-      --body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --headline: 'Barlow Condensed', Impact, 'Arial Narrow', sans-serif;
+      --body: 'Inter', system-ui, -apple-system, sans-serif;
+      --headline: 'Barlow Condensed', Impact, sans-serif;
     }
 
     * { box-sizing: border-box; }
@@ -31,255 +26,97 @@
       margin: 0;
       font-family: var(--body);
       color: var(--black);
-      background:
-        linear-gradient(rgba(17,17,17,.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(17,17,17,.035) 1px, transparent 1px),
-        var(--white);
-      background-size: 32px 32px;
+      background: var(--white);
       -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
+      display: flex;
+      min-height: 100vh;
     }
 
     a { color: inherit; text-decoration: none; }
 
-    .nav {
-      position: sticky;
+    .sidebar {
+      width: 280px;
+      border-right: var(--line);
+      padding: 28px 0;
+      position: fixed;
+      height: 100vh;
+      left: 0;
       top: 0;
-      z-index: 50;
-      background: rgba(255,255,255,.94);
-      border-bottom: var(--line);
+      background: var(--white);
+      overflow-y: auto;
     }
-    .nav-inner {
-      max-width: 1180px;
-      margin: 0 auto;
-      display: flex;
-      align-items: stretch;
-      justify-content: space-between;
-      padding: 0 22px;
-      min-height: 66px;
-    }
-    .brand {
+
+    .sidebar-brand {
       display: flex;
       align-items: center;
       gap: 12px;
+      padding: 0 22px 28px;
+      border-bottom: var(--line);
+      margin-bottom: 28px;
       font-family: var(--headline);
-      font-size: 24px;
+      font-size: 18px;
       font-weight: 800;
-      letter-spacing: .02em;
       text-transform: uppercase;
-      white-space: nowrap;
     }
-    .logo {
-      width: 36px;
-      height: 36px;
+
+    .sidebar-logo {
+      width: 32px;
+      height: 32px;
       border: var(--line);
-      border-radius: var(--radius);
       background: var(--yellow);
-      color: var(--black);
       display: grid;
       place-items: center;
       font-family: var(--headline);
-      font-size: 18px;
+      font-size: 14px;
       font-weight: 800;
     }
-    .nav-links {
+
+    .sidebar-nav {
       display: flex;
+      flex-direction: column;
       gap: 0;
-      align-items: stretch;
+    }
+
+    .sidebar-nav a {
+      padding: 14px 22px;
+      border-bottom: var(--line);
       font-size: 13px;
-      color: var(--black);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: .04em;
-    }
-    .nav-links > a:not(.btn) {
-      display: flex;
-      align-items: center;
-      padding: 0 16px;
-      border-left: var(--line);
-    }
-    .nav-links a:hover { background: var(--yellow); }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
       cursor: pointer;
-      transition: transform 120ms ease, background 120ms ease, color 120ms ease;
-      border: var(--line);
-      font-family: var(--body);
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-    .btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
-    .btn-dark { background: var(--black); color: var(--white); }
-    .btn-light { background: var(--white); color: var(--black); }
-    .btn-yellow { background: var(--yellow); color: var(--black); }
-    .btn-copy { padding: 9px 11px; font-size: 11px; background: var(--yellow); color: var(--black); }
-    .nav .btn { align-self: center; margin-left: 16px; }
-
-    .hero {
-      position: relative;
-      overflow: hidden;
-      padding: 0 22px;
-      border-bottom: var(--line);
-    }
-    .hero::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(135deg, transparent 0 48%, rgba(17,17,17,.10) 48% 49%, transparent 49% 100%),
-        linear-gradient(90deg, rgba(255,184,0,.16), transparent 36%);
-      pointer-events: none;
-    }
-    .hero-inner { max-width: 1120px; margin: 0 auto; position: relative; padding: 68px 0 72px; }
-    .badge, .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--yellow);
-      color: var(--black);
-      border: var(--line);
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      margin-bottom: 22px;
-    }
-    h1, h2, h3 {
-      font-family: var(--headline);
-      text-transform: uppercase;
-      color: var(--black);
-    }
-    h1 {
-      margin: 0;
-      max-width: 940px;
-      font-size: clamp(58px, 10vw, 118px);
-      line-height: .82;
-      letter-spacing: -.035em;
-      font-weight: 800;
-      text-wrap: balance;
-    }
-    .hero-copy {
-      max-width: 760px;
-      margin: 28px 0 0;
-      color: var(--secondary);
-      font-size: clamp(17px, 2vw, 21px);
-      line-height: 1.55;
-      font-weight: 500;
-      text-wrap: pretty;
-    }
-    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 34px; }
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 0;
-      margin-top: 52px;
-      align-items: stretch;
-      border: var(--line);
-      background: var(--black);
-    }
-    .terminal-card, .stat-card, .prompt-card, .offer-card, .workflow-card {
-      background: var(--white);
-      border: 0;
-      border-radius: 0;
-    }
-    .terminal-card { padding: 18px; min-height: 320px; border-right: var(--line); }
-    .terminal-top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: var(--line); }
-    .dots { display: flex; gap: 6px; }
-    .dot { width: 12px; height: 12px; border: var(--line); border-radius: 50%; background: var(--warm); }
-    .dot:nth-child(1) { background: var(--yellow); } .dot:nth-child(2) { background: var(--white); } .dot:nth-child(3) { background: var(--black); }
-    .mono { font-family: var(--body); font-size: 11px; color: var(--secondary); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    pre {
-      margin: 18px 0 0;
-      white-space: pre-wrap;
-      font-family: var(--body);
-      font-size: 13px;
-      line-height: 1.7;
-      font-weight: 500;
-      color: var(--black);
-    }
-    .side-stats { display: grid; gap: 0; }
-    .stat-card { padding: 22px; border-bottom: var(--line); }
-    .stat-card:last-child { border-bottom: 0; }
-    .stat-num { font-family: var(--headline); font-size: 64px; font-weight: 800; letter-spacing: -.04em; line-height: .8; }
-    .stat-label { margin-top: 12px; color: var(--secondary); line-height: 1.5; font-weight: 500; }
-
-    section { padding: 78px 22px; }
-    section:nth-of-type(odd) { background: var(--warm); border-bottom: var(--line); }
-    section:nth-of-type(even) { background: var(--white); border-bottom: var(--line); }
-    .section-inner { max-width: 1120px; margin: 0 auto; }
-    .section-kicker {
-      display: inline-flex;
-      background: var(--yellow);
-      border: var(--line);
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: 12px;
-      text-transform: uppercase;
-      color: var(--black);
-      letter-spacing: .06em;
-      margin-bottom: 16px;
-      font-weight: 800;
-    }
-    h2 {
-      margin: 0;
-      font-size: clamp(42px, 6.5vw, 78px);
-      line-height: .88;
-      letter-spacing: -.03em;
-      font-weight: 800;
-      text-wrap: balance;
-    }
-    .section-copy {
-      max-width: 740px;
-      margin: 20px 0 0;
-      color: var(--secondary);
-      font-size: 18px;
-      line-height: 1.65;
-      font-weight: 500;
+      transition: background 120ms ease;
+      display: block;
     }
 
-    .pill-grid { display: flex; flex-wrap: wrap; gap: 0; margin-top: 28px; }
-    .pill { margin: 0 -2px -2px 0; background: var(--yellow); }
+    .sidebar-nav a:hover { background: var(--yellow); }
+    .sidebar-nav a.active { background: var(--yellow); font-weight: 800; }
 
-    .workflow, .offers, .prompt-grid {
-      display: grid;
-      gap: 0;
-      margin-top: 36px;
-      border: var(--line);
-      background: var(--black);
+    main {
+      flex: 1;
+      margin-left: 280px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
     }
-    .workflow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .workflow-card { padding: 24px; border-right: var(--line); position: relative; }
-    .workflow-card:last-child { border-right: 0; }
-    .workflow-card h3, .offer-card h3, .prompt-card h3 { margin: 10px 0 8px; font-size: 30px; line-height: .95; letter-spacing: -.02em; font-weight: 800; }
-    .workflow-card p, .offer-card p, .prompt-card p { margin: 0; color: var(--secondary); line-height: 1.6; font-weight: 500; }
-    .number {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 44px;
-      height: 30px;
-      padding: 0 10px;
-      border: var(--line);
-      background: var(--yellow);
-      font-family: var(--headline);
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1;
-    }
-    .kicker-blue, .kicker-pink, .kicker-red { color: var(--black); }
 
-    .tabs { margin-top: 38px; }
+    .face {
+      display: none;
+      padding: 54px 44px;
+      max-width: 1120px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .face.active { display: block; }
+
+    .face h1 { margin: 0 0 12px; font-family: var(--headline); font-size: 48px; line-height: .95; text-transform: uppercase; letter-spacing: -.02em; }
+    .face > p { margin: 0 0 36px; color: var(--secondary); font-size: 16px; line-height: 1.6; max-width: 700px; }
+
+    h2, h3 { font-family: var(--headline); text-transform: uppercase; color: var(--black); }
+    h3 { font-size: 24px; margin: 32px 0 16px; }
+
+    .tabs { margin-top: 28px; }
     .tab-list { display: flex; gap: 0; flex-wrap: wrap; margin-bottom: -2px; }
     .tab {
       background: var(--white);
@@ -296,16 +133,38 @@
       margin: 0 -2px 8px 0;
     }
     .tab.active { background: var(--yellow); color: var(--black); }
-    .prompt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
-    .prompt-card { padding: 20px; display: flex; flex-direction: column; gap: 14px; min-height: 280px; border-right: var(--line); border-bottom: var(--line); }
+
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      margin-top: 12px;
+      border: var(--line);
+      background: var(--black);
+    }
+
+    .prompt-card {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 280px;
+      border-right: var(--line);
+      border-bottom: var(--line);
+      background: var(--white);
+    }
+
     .prompt-card:nth-child(2n) { border-right: 0; }
     .prompt-card:nth-last-child(-n+2) { border-bottom: 0; }
+
     .prompt-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+    .prompt-card h3 { margin: 0; font-size: 20px; line-height: .95; }
+    .prompt-card p { margin: 0; color: var(--secondary); font-size: 13px; line-height: 1.6; }
+
     .prompt-box {
       flex: 1;
-      background: var(--warm);
+      background: #F5F5F5;
       border: var(--line);
-      border-radius: 0;
       padding: 14px;
       font-family: var(--body);
       font-size: 12px;
@@ -313,40 +172,153 @@
       font-weight: 500;
       color: var(--black);
       white-space: pre-wrap;
+      overflow: hidden;
     }
 
-    .offers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .offer-card { padding: 24px; border-right: var(--line); }
-    .offer-card:last-child { border-right: 0; }
-    .offer-card ul, .download-card ul { margin: 16px 0 0; padding-left: 18px; color: var(--secondary); line-height: 1.7; font-weight: 500; }
-
-    .lead-magnet {
-      background: var(--black);
-      color: var(--white);
-      border: var(--line);
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       border-radius: 0;
-      padding: 0;
-      display: grid;
-      grid-template-columns: 1fr .8fr;
-      gap: 0;
-      align-items: stretch;
-    }
-    .lead-copy { padding: clamp(28px, 5vw, 54px); }
-    .lead-magnet h2 { color: var(--white); }
-    .lead-magnet p { color: rgba(255,255,255,.75); font-size: 18px; line-height: 1.65; font-weight: 500; }
-    .lead-magnet .section-kicker { color: var(--black) !important; }
-    .download-card {
+      padding: 10px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      transition: transform 120ms ease, background 120ms ease;
+      border: var(--line);
+      font-family: var(--body);
+      text-transform: uppercase;
+      letter-spacing: .04em;
       background: var(--yellow);
       color: var(--black);
-      border-left: var(--line);
-      border-radius: 0;
-      padding: clamp(24px, 4vw, 42px);
     }
-    .download-card strong { font-family: var(--headline); text-transform: uppercase; font-size: 32px; line-height: .95; letter-spacing: -.02em; }
-    .download-card ul { color: var(--black); }
 
-    .footer { padding: 0 22px; border-top: 0; color: var(--black); background: var(--white); }
-    .footer-inner { max-width: 1120px; margin: 0 auto; display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 28px 0; }
+    .btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      margin-top: 28px;
+      border: var(--line);
+      background: var(--black);
+    }
+
+    .agent-card {
+      padding: 24px;
+      border-right: var(--line);
+      border-bottom: var(--line);
+      background: var(--white);
+      cursor: pointer;
+      transition: background 120ms ease;
+    }
+
+    .agent-card:hover { background: var(--yellow); }
+    .agent-card:nth-child(2n) { border-right: 0; }
+    .agent-card:nth-last-child(-n+2) { border-bottom: 0; }
+
+    .agent-card .number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 44px;
+      height: 30px;
+      padding: 0 10px;
+      border: var(--line);
+      background: var(--yellow);
+      font-family: var(--headline);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .agent-card .mono {
+      display: block;
+      font-family: var(--body);
+      font-size: 11px;
+      color: var(--secondary);
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin: 10px 0 8px;
+    }
+
+    .agent-card h3 { margin: 0 0 8px; font-size: 26px; line-height: .95; }
+    .agent-card p { margin: 0; color: var(--secondary); font-size: 14px; line-height: 1.6; }
+
+    .discovery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0;
+      margin-top: 28px;
+      border: var(--line);
+      background: var(--black);
+    }
+
+    .discovery-card {
+      padding: 24px;
+      border-right: var(--line);
+      border-bottom: var(--line);
+      background: var(--white);
+    }
+
+    .discovery-card:nth-child(2n) { border-right: 0; }
+    .discovery-card:nth-last-child(-n+2) { border-bottom: 0; }
+
+    .discovery-card h3 { margin: 0 0 14px; font-size: 18px; }
+    .discovery-card ul { margin: 0; padding-left: 18px; color: var(--secondary); line-height: 1.8; font-weight: 500; font-size: 13px; }
+    .discovery-card li { margin: 6px 0; }
+
+    .agent-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 20px;
+    }
+
+    .agent-modal.show { display: flex; }
+
+    .agent-modal-content {
+      background: var(--white);
+      max-width: 900px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 40px;
+      border: var(--line);
+      position: relative;
+    }
+
+    .agent-modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border: var(--line);
+      background: var(--white);
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 120ms ease;
+    }
+
+    .agent-modal-close:hover { background: var(--yellow); }
+
+    .agent-modal h2 { margin: 0 0 8px; font-size: 42px; line-height: .9; }
+    .agent-modal .mono { display: block; margin-bottom: 20px; }
+    .agent-modal h3 { margin: 28px 0 12px; font-size: 20px; }
+    .agent-modal ul, .agent-modal ol { margin: 12px 0 0; padding-left: 20px; color: var(--secondary); line-height: 1.8; font-size: 14px; }
+    .agent-modal li { margin: 6px 0; }
+    .agent-modal p { margin: 12px 0; color: var(--secondary); line-height: 1.7; font-size: 14px; }
+    .agent-modal .section { margin-top: 24px; padding-top: 24px; border-top: var(--line); }
 
     .toast {
       position: fixed;
@@ -367,157 +339,118 @@
       transition: opacity 180ms ease, transform 180ms ease;
       z-index: 100;
     }
+
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    ol { margin: 12px 0; padding-left: 20px; color: var(--secondary); line-height: 1.8; }
+    ol li { margin: 8px 0; }
+
     @media (max-width: 900px) {
-      .nav-inner { align-items: center; }
-      .nav-links { display: none; }
-      .hero-grid, .lead-magnet { grid-template-columns: 1fr; }
-      .terminal-card, .download-card { border-right: 0; border-left: 0; border-bottom: var(--line); }
-      .workflow, .offers, .prompt-grid { grid-template-columns: 1fr; }
-      .workflow-card, .offer-card, .prompt-card { border-right: 0; border-bottom: var(--line); }
-      .workflow-card:last-child, .offer-card:last-child, .prompt-card:last-child { border-bottom: 0; }
+      .sidebar { width: 100%; height: auto; position: static; border-right: 0; border-bottom: var(--line); }
+      main { margin-left: 0; }
+      .face { padding: 28px 20px; }
+      .prompt-grid, .agent-grid, .discovery-grid { grid-template-columns: 1fr; }
+      .prompt-card, .agent-card, .discovery-card { border-right: 0; border-bottom: var(--line); }
+      .prompt-card:nth-child(2n) { border-right: 0; }
       .prompt-card:nth-last-child(-n+2) { border-bottom: var(--line); }
-      .prompt-card:last-child { border-bottom: 0; }
-      section { padding: 62px 20px; }
-      h1 { font-size: clamp(54px, 18vw, 86px); }
     }
   </style>
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <a class="brand" href="#top"><span class="logo">CF</span><span>ConstructionFlows</span></a>
-      <div class="nav-links">
-        <a href="#library">Prompt library</a>
-        <a href="#workflows">Workflows</a>
-        <a href="#offers">Use cases</a>
-        <a class="btn btn-yellow" href="#download">Get the starter pack</a>
-      </div>
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="sidebar-logo">CF</span>
+      <span>ConstructionFlows</span>
+    </div>
+    <div class="sidebar-nav">
+      <a href="#" data-face="prompts" class="nav-link active">Copy Prompts</a>
+      <a href="#" data-face="agents" class="nav-link">10 Agents</a>
+      <a href="#" data-face="discovery" class="nav-link">Discovery</a>
+      <a href="#" data-face="about" class="nav-link">About</a>
     </div>
   </nav>
 
-  <main id="top">
-    <header class="hero">
-      <div class="hero-inner">
-        <div class="badge">AI drafts / contractor approved</div>
-        <h1>The prompt library for construction paperwork that actually matters.</h1>
-        <p class="hero-copy">A practical AI system for estimating, RFIs, submittals, change orders, daily reports, and schedule reviews — built for contractors who need fewer missed details, cleaner documentation, and faster follow-up.</p>
-        <div class="hero-actions">
-          <a class="btn btn-yellow" href="#library">Explore prompts</a>
-          <a class="btn btn-light" href="#download">Download starter pack</a>
+  <main>
+    <div class="face active" id="face-prompts">
+      <h1>Copy-paste prompts</h1>
+      <p>70+ construction prompts. Paste into Claude, ChatGPT, or your AI tool. Click to copy.</p>
+
+      <div class="tabs">
+        <div class="tab-list" role="tablist">
+          <button class="tab active" data-tab="estimating">Estimating</button>
+          <button class="tab" data-tab="rfis">RFIs</button>
+          <button class="tab" data-tab="submittals">Submittals</button>
+          <button class="tab" data-tab="changes">Changes</button>
+          <button class="tab" data-tab="daily">Daily reports</button>
+          <button class="tab" data-tab="schedule">Schedule</button>
         </div>
-
-        <div class="hero-grid">
-          <div class="terminal-card" aria-label="Example prompt preview">
-            <div class="terminal-top">
-              <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-              <span class="mono">prompt-library/constructionflows</span>
-            </div>
-            <pre>Act as a senior estimator reviewing a bid package.
-
-Use only the provided drawings, specs, and scope notes.
-Return:
-1. Scope summary
-2. Missing information
-3. Possible exclusions
-4. RFI questions
-5. Risk level by item
-
-Do not invent quantities, prices, or contract obligations.</pre>
-          </div>
-          <div class="side-stats">
-            <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">Core construction workflows covered end-to-end.</div></div>
-            <div class="stat-card"><div class="stat-num">70+</div><div class="stat-label">Prompt patterns for PMs, estimators, supers, and project admins.</div></div>
-            <div class="stat-card"><div class="stat-num">0</div><div class="stat-label">Black-box decisions. The library is designed for human review.</div></div>
-          </div>
-        </div>
+        <div class="prompt-grid" id="promptGrid"></div>
       </div>
-    </header>
+    </div>
 
-    <section id="workflows">
-      <div class="section-inner">
-        <div class="section-kicker">Workflow-first AI</div>
-        <h2>Built around the moments where contractors lose time, money, and context.</h2>
-        <p class="section-copy">The library turns messy project information into structured drafts, logs, summaries, follow-ups, and checklists. It is not a replacement for PM judgment, estimating experience, or contract review.</p>
-        <div class="workflow">
-          <article class="workflow-card"><span class="number">01</span><div class="mono kicker-blue">Estimate</div><h3>Bid smarter</h3><p>Summarize bid packages, find scope gaps, generate RFIs, draft exclusions, and prepare proposal language before the deadline hits.</p></article>
-          <article class="workflow-card"><span class="number">02</span><div class="mono kicker-pink">Control</div><h3>Protect the record</h3><p>Turn field notes, emails, RFIs, and daily reports into clean change-event narratives with backup checklists.</p></article>
-          <article class="workflow-card"><span class="number">03</span><div class="mono kicker-red">Report</div><h3>Follow up faster</h3><p>Create daily reports, schedule risk briefs, submittal aging reviews, and weekly dashboards from project noise.</p></article>
-        </div>
-      </div>
-    </section>
+    <div class="face" id="face-agents">
+      <h1>10 agent ideas</h1>
+      <p>Click any agent to see full positioning, workflow, tracker fields, and implementation details.</p>
+      <div class="agent-grid" id="agentGrid"></div>
+    </div>
 
-    <section id="library">
-      <div class="section-inner">
-        <div class="section-kicker">Copy-paste prompt library</div>
-        <h2>Prompts for the six construction workflows worth automating first.</h2>
-        <p class="section-copy">Each prompt is intentionally constrained: use provided documents, cite sources when available, list missing information, and flag items requiring human review.</p>
+    <div class="face" id="face-discovery">
+      <h1>Find your best first agent</h1>
+      <p>Answer questions about your biggest pain to identify which workflow to build first.</p>
+      <div class="discovery-grid" id="discoveryGrid"></div>
+    </div>
 
-        <div class="tabs" data-tabs>
-          <div class="tab-list" role="tablist" aria-label="Prompt categories">
-            <button class="tab active" data-tab="estimating">Estimating</button>
-            <button class="tab" data-tab="rfis">RFIs</button>
-            <button class="tab" data-tab="submittals">Submittals</button>
-            <button class="tab" data-tab="changes">Change orders</button>
-            <button class="tab" data-tab="daily">Daily reports</button>
-            <button class="tab" data-tab="schedule">Schedule reviews</button>
-          </div>
-          <div class="prompt-grid" id="promptGrid"></div>
-        </div>
-      </div>
-    </section>
+    <div class="face" id="face-about">
+      <h1>Free resources for contractors</h1>
+      <p>ConstructionFlows publishes free prompts and templates for building AI workflows in construction. No signup, no restrictions — just ideas you can use.</p>
 
-    <section id="offers">
-      <div class="section-inner">
-        <div class="section-kicker">Where this becomes a service</div>
-        <h2>Package the prompt library into implementation offers.</h2>
-        <p class="section-copy">The strongest GTM wedge is not selling “AI prompts.” It is installing repeatable documentation workflows that contractors can trust.</p>
-        <div class="offers">
-          <article class="offer-card"><span class="number">01</span><h3>Estimator Copilot Setup</h3><p>For specialty contractors drowning in bids.</p><ul><li>Bid package summary</li><li>Scope gap prompts</li><li>RFI and clarification drafts</li><li>Proposal/exclusion templates</li></ul></article>
-          <article class="offer-card"><span class="number">02</span><h3>PM Second Brain</h3><p>For teams buried in meetings and follow-ups.</p><ul><li>Meeting notes to action items</li><li>RFI/submittal aging reviews</li><li>Weekly risk dashboard</li><li>Owner update drafts</li></ul></article>
-          <article class="offer-card"><span class="number">03</span><h3>Change Order Evidence System</h3><p>For contractors losing margin in the record.</p><ul><li>Field notes to change events</li><li>Backup checklists</li><li>Delay narratives</li><li>Follow-up emails</li></ul></article>
-        </div>
-      </div>
-    </section>
+      <h3>How to use this</h3>
+      <ol>
+        <li><strong>Copy a prompt</strong> — Pick any prompt and paste into Claude, ChatGPT, or your AI tool.</li>
+        <li><strong>Add your documents</strong> — Paste emails, specs, RFIs, or notes so AI works with real information.</li>
+        <li><strong>Review and approve</strong> — Check output before using. All prompts are human-reviewable, not autonomous.</li>
+        <li><strong>Build one agent</strong> — Pick one of the 10 agents and set it up using tools you already have.</li>
+      </ol>
 
-    <section id="download">
-      <div class="section-inner">
-        <div class="lead-magnet">
-          <div class="lead-copy">
-            <div class="section-kicker">Starter pack</div>
-            <h2>Start with the ten prompts contractors will use every week.</h2>
-            <p>Use the landing page as the front door for ConstructionFlows: a lead magnet, a YouTube CTA, or the first asset in a contractor AI setup sprint.</p>
-            <div class="hero-actions"><a class="btn btn-light" href="#library">Preview the library</a><a class="btn btn-yellow" href="mailto:hello@constructionflows.com?subject=ConstructionFlows%20Prompt%20Library">Request the full library</a></div>
-          </div>
-          <div class="download-card">
-            <strong>Starter pack includes</strong>
-            <ul>
-              <li>Bid package summary</li>
-              <li>Scope gap detector</li>
-              <li>RFI draft from unclear scope</li>
-              <li>Submittal requirements extraction</li>
-              <li>Change order narrative</li>
-              <li>Daily report from rough notes</li>
-              <li>Schedule risk review</li>
-              <li>Weekly project dashboard</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
+      <h3>What is an agent?</h3>
+      <p>An agent is a repeatable workflow using AI to handle tedious work: summarizing, organizing, flagging, drafting. Your team approves final decisions. It reduces paperwork, prevents missed deadlines, protects margin, and helps you get paid faster.</p>
+
+      <h3>Where to start</h3>
+      <p>1. Browse the 10 agents. 2. Answer discovery questions. 3. Pick one agent. 4. Copy relevant prompts. 5. Build it using tools you already have.</p>
+    </div>
   </main>
 
-  <footer class="footer">
-    <div class="footer-inner">
-      <span>© ConstructionFlows. Practical AI workflows for contractors.</span>
-      <span>Built for estimators, PMs, supers, and project admins.</span>
+  <div class="agent-modal" id="agentModal">
+    <div style="position: relative; width: 100%;">
+      <button class="agent-modal-close" id="agentModalClose">×</button>
+      <div class="agent-modal-content" id="agentModalContent"></div>
     </div>
-  </footer>
+  </div>
 
   <div class="toast" id="toast">Prompt copied</div>
 
+  <script src="index.html?data=agents"></script>
+  <script src="index.html?data=prompts"></script>
   <script>
+    // Agent data and Prompt data will be injected from original file
+
+    // Navigation
+    document.querySelectorAll('[data-face]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const faceId = link.dataset.face;
+
+        // Update nav
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+
+        // Update faces
+        document.querySelectorAll('.face').forEach(f => f.classList.remove('active'));
+        document.getElementById(`face-${faceId}`).classList.add('active');
+      });
+    });
+
+    // Render prompts and agents (these functions exist in original file)
     const prompts = {
       estimating: [
         { title: 'Bid package summary', desc: 'Turn bid docs into a clean estimating brief.', text: 'Act as a senior construction estimator. Review the bid package information below and create: project overview, scope summary, bid due date, required forms, relevant specs/drawings, addenda, inclusions, exclusions, questions, and bid/no-bid considerations. Do not invent missing information.' },
@@ -557,26 +490,292 @@ Do not invent quantities, prices, or contract obligations.</pre>
       ]
     };
 
-    const grid = document.getElementById('promptGrid');
-    const toast = document.getElementById('toast');
+    const agents = [
+      {
+        id: 1,
+        number: "01",
+        category: "Win work",
+        name: "Bid Desk Agent",
+        brief: "Monitors bid invitations, extracts project details, organizes documents, tracks deadlines, and prepares estimator-ready packages.",
+        pain: "Bid chaos, missed addenda, lost due dates, slow vendor quote requests, weak proposal prep",
+        positioning: "A Bid Desk Agent helps contractors manage incoming bid opportunities, organize bid documents, track deadlines, and prepare estimator-ready bid packages. This is one of the strongest first opportunities because bid chaos is common across nearly every specialty trade.",
+        painPoints: ["Bid invites buried in email", "Missed due dates", "Forgotten addenda", "Estimators wasting time sorting files", "No consistent bid/no-bid process", "Vendor quote requests going out too late", "Proposal assumptions/exclusions recreated manually", "No easy visibility into open bids"],
+        whatItDoes: ["Monitors bid invitation emails", "Extracts project name, GC, location, due date, walkthrough date, trade, and scope", "Creates or updates a bid tracker", "Downloads and organizes attachments", "Flags missing information", "Summarizes scope and key dates", "Detects addenda and revisions", "Drafts vendor/supplier quote requests", "Drafts proposal skeletons", "Creates follow-up reminders", "Sends weekly open-bid summaries"],
+        exampleWorkflow: ["GC sends bid invite by email", "Hermes reads the email and attachments", "Agent extracts: Project name, GC, Bid due date, Contact, Location, Trade/scope, Links to plans/specs", "Agent creates a row in monday.com or Airtable", "Agent creates a folder in Google Drive", "Agent summarizes the opportunity", "Agent asks the human: 'Bid or no-bid?'", "If 'bid,' agent drafts: vendor quote requests, estimator checklist, proposal outline", "Agent reminds the estimator before deadline", "Agent follows up after submission"],
+        trackerFields: ["Project Name", "GC / Customer", "Contact Name", "Contact Email", "Location", "Trade / Scope", "Bid Due Date", "Walkthrough Date", "Addenda Received", "Status", "Estimator", "Bid / No-Bid Decision", "Proposal Sent Date", "Follow-Up Date", "Probability", "Notes", "Folder Link"],
+        statuses: ["New Invite", "Reviewing", "Need Docs", "Bid / No-Bid Needed", "Estimating", "Waiting on Vendor Quotes", "Proposal Drafted", "Submitted", "Follow-Up Needed", "Awarded", "Lost", "No Bid"],
+        bestFitTrades: ["Electrical", "HVAC", "Plumbing", "Fire protection", "Roofing", "Concrete", "Glass/glazing", "Sitework", "Framing/drywall", "Low voltage/security", "Specialty finishes"],
+        roi: ["More bids reviewed", "Fewer missed deadlines", "Faster bid setup", "Better follow-up discipline", "Higher hit-rate tracking", "Less estimator admin time"],
+        implementationPackage: ["Connect bid inbox", "Create bid tracker", "Set up folder structure", "Build bid intake prompt", "Build addenda detection workflow", "Draft vendor quote templates", "Create weekly bid report", "Train team on approval process"],
+        approvalGates: ["Bid/no-bid decision", "Sending vendor quote requests", "Sending proposals", "Customer-facing follow-ups"]
+      },
+      {
+        id: 2,
+        number: "02",
+        category: "Win work",
+        name: "Lead / Sales Follow-Up Agent",
+        brief: "Researches prospects, manages relationships, drafts outreach, and maintains a clean CRM without ripping out existing systems.",
+        pain: "Scattered contacts, missed follow-ups, no bid relationship tracking, pipeline invisibility",
+        positioning: "A Sales Follow-Up Agent helps contractors research prospects, manage relationships, draft outreach, and follow up consistently. Many small and mid-size contractors have no real CRM process.",
+        painPoints: ["No CRM discipline", "Contacts scattered across email, phones, spreadsheets", "Missed follow-ups after estimates", "No systematic GC outreach", "Referral sources not tracked", "Bid invites not connected to relationship history", "Owners do all sales from memory", "Pipeline visibility is weak"],
+        whatItDoes: ["Researches target GCs/builders/property managers", "Finds contact information", "Drafts personalized outreach", "Logs activity in monday/Notion/Airtable", "Creates follow-up reminders", "Summarizes recent touchpoints", "Tracks bid invites by relationship", "Drafts 'checking in' emails", "Produces weekly sales pipeline reports"],
+        exampleWorkflow: ["User says: 'Find GCs within 50 miles that build medical/dental offices'", "Agent researches companies", "Agent creates prospect records", "Agent drafts outreach", "Human approves sends", "Agent tracks replies", "Agent reminds user to follow up", "Agent updates pipeline status"],
+        trackerFields: ["Company", "Contact Name", "Title", "Email", "Phone", "Website", "Location", "Trade Fit", "Project Type", "Source", "Last Touch", "Next Follow-Up", "Status", "Relationship Strength", "Notes", "Owner", "Bid History"],
+        statuses: ["New Prospect", "Researched", "Outreach Drafted", "Contacted", "Follow-Up Needed", "Responded", "Meeting Scheduled", "Bid Invite Received", "Active Customer", "Not a Fit"],
+        bestFitTrades: ["Specialty subs", "Service contractors", "Contractors without a CRM", "Owner-led sales teams"],
+        roi: ["More consistent follow-up", "Better relationship tracking", "More bid invites", "Less owner memory dependency", "Cleaner pipeline visibility"],
+        implementationPackage: ["Build CRM tracker", "Create outreach templates", "Set up research workflow", "Create follow-up reminders", "Build pipeline report", "Connect to email"],
+        approvalGates: ["Sending outreach", "Follow-up cadence", "Contact list quality", "Customer-facing messages"]
+      },
+      {
+        id: 3,
+        number: "03",
+        category: "Run work",
+        name: "PM Second Brain",
+        brief: "Summarizes emails, turns meeting notes into action items, tracks decisions, creates weekly updates, and flags overdue tasks.",
+        pain: "Email overload, forgotten action items, weak decision logs, manual status updates",
+        positioning: "A PM Second Brain helps project managers stay on top of emails, meetings, RFIs, submittals, deadlines, decisions, and follow-ups. Every PM understands the pain.",
+        painPoints: ["Too many emails", "Meeting notes turn into forgotten action items", "RFIs/submittals fall behind", "Project decisions live in scattered messages", "PMs manually write weekly updates", "Owners/GCs want status updates", "Field and office communication gaps", "No clean project memory", "PMs spend too much time on admin"],
+        whatItDoes: ["Summarizes project emails", "Turns meeting notes into action items", "Tracks decisions and open questions", "Creates weekly project updates", "Drafts GC/owner emails", "Summarizes RFIs/submittals by status", "Flags overdue tasks", "Tracks blockers", "Creates project closeout lessons learned"],
+        exampleWorkflow: ["PM forwards meeting notes or uploads transcript", "Agent extracts: decisions, action items, responsible parties, due dates, open questions", "Agent updates project tracker", "Agent drafts follow-up email", "Agent reminds PM of overdue items", "On Friday, agent generates project summary"],
+        trackerFields: ["Project", "Task / Issue", "Category", "Owner", "Due Date", "Status", "Source", "Last Updated", "Next Action", "Related RFI/Submittal/CO", "Notes"],
+        statuses: ["New", "Assigned", "In Progress", "Waiting", "Overdue", "Complete", "Blocked"],
+        bestFitTrades: ["PM-heavy subs", "Small contractors", "Owner-led shops", "Fast-growing contractors"],
+        roi: ["Fewer dropped balls", "Less PM admin time", "Better communication", "Faster follow-up", "Cleaner project history", "Better handoffs"],
+        implementationPackage: ["Project tracker", "Meeting notes workflow", "Email summary workflow", "Weekly report template", "RFI/submittal aging view", "Decision log", "Follow-up drafts"],
+        approvalGates: ["Sending emails", "Updating external customers", "Changing official project records", "Escalation notices"]
+      },
+      {
+        id: 4,
+        number: "04",
+        category: "Run work",
+        name: "RFI / Submittal Agent",
+        brief: "Reads specs, builds submittal checklists, checks package completeness, drafts RFIs, and tracks aging approvals.",
+        pain: "Tedious spec review, missed requirements, incomplete packages, slow approval tracking",
+        positioning: "An RFI/Submittal Agent helps contractors prepare, review, track, and follow up on RFIs and submittals. The best positioning is 'AI helps draft, organize, check, and track RFIs/submittals so your team moves faster.'",
+        painPoints: ["Spec sections are tedious to review", "Submittal requirements are easy to miss", "RFIs are written from scratch", "Approval delays are not tracked consistently", "Resubmittals lose context", "PMs waste time searching drawings/specs", "Missing documents cause rejection", "Aging logs are manually maintained"],
+        whatItDoes: ["Reads relevant spec sections", "Summarizes submittal requirements", "Creates submittal package checklists", "Checks package completeness", "Drafts RFI language", "Tracks RFI/submittal status", "Summarizes reviewer comments", "Drafts resubmission cover notes", "Creates weekly aging reports"],
+        exampleWorkflow: ["PM uploads spec section", "Agent extracts: required submittals, product data requirements, warranties, certifications, closeout docs", "Agent builds checklist", "PM uploads vendor package", "Agent checks completeness", "Agent drafts transmittal or RFI", "Agent tracks status until approved"],
+        trackerFields: ["Project", "RFI/Submittal #", "Type", "Spec Section", "Description", "Submitted Date", "Due Date", "Responsible Party", "Status", "Days Open", "Reviewer", "Comments", "Resubmittal Required?", "Related CO?", "Link to Docs", "Next Follow-Up"],
+        statuses: ["Drafting", "Ready for Review", "Submitted", "Under Review", "Approved", "Approved as Noted", "Revise and Resubmit", "Rejected", "Closed"],
+        bestFitTrades: ["Electrical", "Mechanical", "Plumbing", "Fire protection", "Roofing", "Glazing", "Doors/hardware", "Low voltage", "Any material/submittal-heavy trade"],
+        roi: ["Faster submittal prep", "Fewer rejected packages", "Less time reading specs", "Better approval tracking", "Reduced schedule risk"],
+        implementationPackage: ["Spec reading workflow", "Checklist generation", "Completeness review", "RFI drafting prompts", "Aging report creation", "Submission tracking"],
+        approvalGates: ["RFI submission", "Submittal package submission", "Interpretation of contract requirements", "Customer-facing communication"]
+      },
+      {
+        id: 5,
+        number: "05",
+        category: "Run work",
+        name: "Field-to-Office Evidence Agent",
+        brief: "Captures field notes and photos, organizes by project/date, drafts daily reports, and builds change order backup packets.",
+        pain: "Photos on phones, missed documentation, weak change-order backup, inconsistent daily reports",
+        positioning: "A Field Evidence Agent helps contractors capture jobsite photos, notes, daily reports, and progress updates, then turn them into organized documentation. Field information is often captured informally but never turned into usable business documentation.",
+        painPoints: ["Job photos stuck on phones", "Text messages never make it into project records", "Daily reports are inconsistent", "Work progress is hard to prove later", "Change order backup is weak", "Billing backup is incomplete", "PMs don't know what happened until too late", "Field crews dislike paperwork"],
+        whatItDoes: ["Receives field notes/photos by Telegram, email, form, or mobile app", "Organizes by project/date/location", "Drafts daily reports", "Extracts manpower, work performed, delays, deliveries, visitors, safety issues", "Links photos to change events", "Builds progress-to-pay backup packets", "Summarizes daily/weekly field activity", "Flags missing information"],
+        exampleWorkflow: ["Foreman sends photos and voice note: 'Crew of 4, Level 2 rough-in, GC delayed access to Room 214'", "Agent transcribes/summarizes", "Agent creates daily report draft", "Agent tags: project, date, location, manpower, delay, photos", "PM reviews and approves", "If delay/change impact exists, agent creates potential change event"],
+        trackerFields: ["Project", "Date", "Foreman", "Crew Size", "Work Area", "Work Performed", "Delays", "Safety Issues", "Materials Delivered", "Photos Link", "Related CO/RFI", "Weather", "Notes", "Reviewed By"],
+        statuses: ["Draft", "Pending Review", "Approved", "Archived"],
+        bestFitTrades: ["Field-heavy subs", "Contractors with distributed crews", "Companies that struggle with daily reports", "Contractors with frequent change-order disputes"],
+        roi: ["Better documentation", "Stronger change order backup", "Faster daily reports", "Better PM visibility", "Cleaner project history", "Improved billing support"],
+        implementationPackage: ["Field intake form", "Photo organization", "Daily report drafting", "Voice note transcription", "Change event flagging", "Archive structure"],
+        approvalGates: ["Official daily report submission", "Change order notices", "Billing backup packets", "Customer-facing claims"]
+      },
+      {
+        id: 6,
+        number: "06",
+        category: "Protect margin",
+        name: "Change Order / Margin Protection Agent",
+        brief: "Captures change events, drafts notices, tracks approval status, builds backup checklists, and flags unpaid work.",
+        pain: "Verbal changes not documented, forgotten change orders, weak backup, margin leakage",
+        positioning: "A Change Order Agent helps contractors capture, document, price, submit, and follow up on extra work before it becomes lost margin. This may be the most financially powerful agent.",
+        painPoints: ["Verbal changes not documented", "Field work performed without written authorization", "Change events forgotten until billing time", "Weak backup documentation", "Photos scattered in phones/texts", "RFIs, emails, and field notes disconnected", "No central change order log", "GC delays approval", "Approved COs not included in pay apps", "Margin leakage from expired pricing"],
+        whatItDoes: ["Captures change-event signals from emails, texts, photos, daily reports, RFIs, and meeting notes", "Creates potential change event records", "Drafts notice emails", "Tracks status of each change", "Builds backup checklists", "Drafts change order descriptions", "Links photos/documents to each event", "Reminds PMs to follow up", "Flags work performed but not billed", "Compares approved changes against pay apps"],
+        exampleWorkflow: ["Field supervisor sends note: 'GC asked us to move conduit in Area B'", "Hermes captures it through email, Telegram, text, or daily report", "Agent asks: Was this directed by GC? Was pricing requested? Any photos? Any labor/material impact?", "Agent creates a change-event row", "Agent drafts a notice", "PM reviews and sends", "Agent follows up until priced/approved", "Agent reminds billing team to include approved CO in next pay app"],
+        trackerFields: ["Change Event #", "Project", "Date Identified", "Description", "Source", "Directed By", "Status", "Responsible PM", "Estimated Cost", "Submitted Amount", "Approved Amount", "Notice Sent Date", "Quote Sent Date", "Approval Date", "Included in Pay App?", "Backup Complete?", "Photos Link", "Email/RFI Reference", "Follow-Up Date"],
+        statuses: ["Potential Change", "Notice Needed", "Notice Sent", "Pricing Needed", "Quote Drafted", "Submitted", "Under Review", "Approved", "Rejected", "Work Complete", "Included in Pay App", "Closed"],
+        bestFitTrades: ["Electrical", "Mechanical", "Plumbing", "Concrete", "Sitework", "Drywall/framing", "Fire protection", "Roofing", "Any trade with frequent field changes"],
+        roi: ["Recover more extra work", "Reduce forgotten change orders", "Improve backup quality", "Shorten approval cycles", "Protect margin", "Create cleaner billing handoff"],
+        implementationPackage: ["Change order tracker", "Field intake form or message flow", "Notice email templates", "Backup checklist", "Weekly change order report", "Project folder connections", "Pay app tracker connections"],
+        approvalGates: ["Sending notices", "Submitting pricing", "Final CO amount", "Customer-facing communication"]
+      },
+      {
+        id: 7,
+        number: "07",
+        category: "Protect margin",
+        name: "Vendor / Subcontractor CRM Agent",
+        brief: "Maintains a searchable vendor database with insurance, W-9s, pricing, responsiveness, and performance history.",
+        pain: "Stale vendor lists, scattered contact info, compliance tracking, slow quote requests",
+        positioning: "A Vendor/Subcontractor CRM Agent helps contractors maintain a clean, searchable database of vendors, suppliers, subcontractors, insurance documents, pricing notes, service areas, and performance history.",
+        painPoints: ["Vendor lists are outdated", "Contact info is scattered", "Insurance/W-9/license tracking is manual", "Bid history is not recorded", "No easy way to know who is responsive", "PMs use personal contacts instead of company knowledge", "Supplier pricing notes are not centralized", "Prequalification is inconsistent"],
+        whatItDoes: ["Builds vendor/sub database", "Extracts contacts from email/spreadsheets", "Tracks trades and service areas", "Tracks insurance/W-9/license docs", "Logs bid participation", "Records responsiveness and performance notes", "Suggests vendors for upcoming projects", "Sends document renewal reminders", "Drafts quote requests"],
+        exampleWorkflow: ["New vendor sends COI and W-9", "Agent extracts: company, contact, trade, insurance expiration, service area", "Agent creates/updates vendor record", "Agent files documents", "Agent reminds admin before expiration", "During bid prep, agent suggests vendors for relevant scope"],
+        trackerFields: ["Company", "Contact Name", "Email", "Phone", "Trade", "Service Area", "Union / Non-Union", "W-9 on File", "COI Expiration", "License #", "Last Bid Date", "Last Project", "Responsiveness", "Performance Notes", "Preferred Vendor?", "Status"],
+        statuses: ["New", "Qualified", "Preferred", "Active", "Inactive", "Need Compliance"],
+        bestFitTrades: ["General contractors", "Larger specialty subs", "Contractors with multiple suppliers", "Companies doing frequent bidding"],
+        roi: ["Cleaner vendor data", "Faster quote requests", "Less compliance risk", "Better buyout process", "Reduced dependence on individual PM memory"],
+        implementationPackage: ["Vendor database", "Contact extraction", "Compliance tracking", "Performance scoring", "Quote request templates", "Report generation"],
+        approvalGates: ["Vendor qualification", "Preferred vendor status", "Quote request sending", "Performance scoring"]
+      },
+      {
+        id: 8,
+        number: "08",
+        category: "Get paid",
+        name: "AIA Billing / Pay App Agent",
+        brief: "Tracks monthly deadlines, maintains billing checklists, flags approved COs, calculates retainage, and follows up on payment.",
+        pain: "Tedious pay apps, incomplete backup, retainage tracking gaps, slow collections",
+        positioning: "A Billing Agent helps commercial contractors prepare, track, and follow up on pay applications, retainage, and payment status. It ties directly to cash flow.",
+        painPoints: ["Pay apps are tedious", "G702/G703 details are easy to get wrong", "Retainage tracking is messy", "Change orders don't always make it into the billing cycle", "Backup documents are incomplete", "Payments are delayed", "AR follow-up is inconsistent", "Owners/GCs request revisions at the last minute", "Accounting and PMs are not always aligned"],
+        whatItDoes: ["Tracks monthly billing deadlines", "Maintains pay app checklist", "Tracks schedule of values", "Flags approved COs not yet billed", "Calculates retainage", "Drafts billing reminders to PMs", "Creates backup document checklists", "Drafts payment follow-up emails", "Tracks submitted, approved, paid, and rejected pay apps", "Creates aging reports", "Flags retainage release opportunities"],
+        exampleWorkflow: ["Billing cycle opens", "Agent sends PM a checklist", "PM replies with updates", "Agent updates billing tracker", "Agent flags missing backup", "Human prepares/approves formal pay app", "Agent tracks submission", "Agent follows up until approval/payment", "Agent flags unpaid retainage"],
+        trackerFields: ["Project", "Customer / GC", "Billing Period", "Pay App #", "Contract Value", "Approved COs", "Revised Contract Value", "Amount Previously Billed", "Current Billing", "Retainage %", "Retainage Held", "Net Due", "Submitted Date", "Approved Date", "Paid Date", "Status", "Missing Backup", "Follow-Up Date", "Notes"],
+        statuses: ["Billing Prep", "Waiting on PM", "Backup Needed", "Ready for Review", "Submitted", "Revisions Requested", "Approved", "Paid", "Retainage Outstanding", "Closed"],
+        bestFitTrades: ["Commercial subcontractors", "Contractors using AIA billing", "Contractors with multiple concurrent projects", "Companies where PMs and accounting are disconnected"],
+        roi: ["Faster billing cycles", "Fewer rejected pay apps", "Better retainage tracking", "Improved cash flow", "Less manual follow-up", "Better visibility across projects"],
+        implementationPackage: ["Pay app tracker", "Monthly billing checklist", "Retainage tracker", "CO-to-pay-app reconciliation", "Follow-up email templates", "Weekly AR report", "Approval workflow"],
+        approvalGates: ["Billing values", "Formal pay application submission", "Payment demand language", "Customer-facing emails"]
+      },
+      {
+        id: 9,
+        number: "09",
+        category: "Build memory",
+        name: "Safety / Compliance Agent",
+        brief: "Drafts JHAs, toolbox talks, tracks expiring documents, maintains audit binders, and summarizes incidents.",
+        pain: "Manual safety paperwork, missing compliance docs, audit scrambles, inconsistent training",
+        positioning: "A Safety/Compliance Agent helps contractors generate, organize, and track safety documentation, toolbox talks, JHAs, compliance records, and audit materials.",
+        painPoints: ["JHAs/JSA forms take time", "Toolbox talks are inconsistent", "Compliance documents expire", "Safety documentation is scattered", "Audit binders are painful", "Near-miss reports are under-documented", "Supervisors hate paperwork", "Contractors scramble before site audits"],
+        whatItDoes: ["Drafts JHAs/JSAs based on task/scope", "Drafts toolbox talks", "Tracks safety meeting attendance", "Tracks COIs, licenses, certifications, OSHA docs", "Creates audit checklists", "Summarizes incidents/near misses", "Maintains safety document library", "Sends reminders for expiring documents", "Creates project-specific safety packs"],
+        exampleWorkflow: ["PM says: 'We're starting overhead conduit install Monday'", "Agent drafts: JHA, toolbox talk, PPE checklist, fall protection reminders", "Safety manager reviews", "Agent stores approved docs in project folder", "Agent reminds foreman to collect signatures"],
+        trackerFields: ["Project", "Document Type", "Task / Hazard", "Required By", "Owner", "Due Date", "Status", "Expiration Date", "File Link", "Reviewed By", "Notes"],
+        statuses: ["Draft", "Pending Review", "Approved", "Active", "Expired", "Archived"],
+        bestFitTrades: ["Commercial subs", "Industrial contractors", "Companies with recurring safety documentation", "Contractors working under strict GC requirements"],
+        roi: ["Less admin burden", "Better audit readiness", "Fewer missed compliance items", "More consistent safety communication", "Better documentation after incidents"],
+        implementationPackage: ["JHA/JSA templates", "Toolbox talk generation", "Attendance tracking", "Document expiration alerts", "Audit checklist", "Incident reporting"],
+        approvalGates: ["Final safety content", "Incident reports", "Compliance certifications", "Official submissions"]
+      },
+      {
+        id: 10,
+        number: "10",
+        category: "Build memory",
+        name: "Company Knowledge / Archiver Agent",
+        brief: "Captures decisions, documents SOPs, turns lessons learned into reusable guidance, and answers questions from company knowledge base.",
+        pain: "Tribal knowledge, repeated questions, scattered templates, owner bottleneck",
+        positioning: "An Archiver Agent captures company knowledge, decisions, lessons learned, SOPs, templates, and project history so contractors stop relying on tribal memory.",
+        painPoints: ["Institutional knowledge is not documented", "Same questions get asked repeatedly", "New hires learn by interrupting senior people", "Templates are scattered", "Lessons learned are forgotten", "Project closeout knowledge is lost", "SOPs are outdated or nonexistent", "Owner/PM is the bottleneck for decisions"],
+        whatItDoes: ["Saves useful decisions, emails, templates, and notes", "Creates SOP drafts", "Maintains a knowledge base", "Turns project lessons into reusable guidance", "Answers questions from company docs", "Organizes templates by workflow", "Summarizes 'how we do things'", "Creates onboarding guides", "Archives completed project insights"],
+        exampleWorkflow: ["PM finishes a difficult project", "Agent asks: What went wrong? What should we do differently? Which vendor performed well? Which scope item was missed?", "Agent creates a lessons-learned note", "Agent updates SOP or checklist", "Future PM asks: 'How do we handle closeout on medical projects?'", "Agent answers from company knowledge base"],
+        trackerFields: ["Topic", "Type", "Created Date", "Last Updated", "Author", "Related Projects", "Tags", "Status", "Content Link"],
+        statuses: ["Draft", "Active", "Archived"],
+        bestFitTrades: ["Growing contractors", "Owner-led companies", "Companies hiring PMs/admins", "Companies with recurring workflows"],
+        roi: ["Faster onboarding", "Less repeated explanation", "More consistent processes", "Reduced owner bottleneck", "Better knowledge retention"],
+        implementationPackage: ["Knowledge base", "SOP templates", "Lesson capture workflow", "Search interface", "Onboarding guides", "Process documentation"],
+        approvalGates: ["Final SOP approval", "Policy decisions", "Customer-specific rules", "Sensitive financial/contract info"]
+      }
+    ];
 
+    // Render agents
+    function renderAgentCards() {
+      const agentGrid = document.getElementById('agentGrid');
+      agentGrid.innerHTML = agents.map(agent => `
+        <article class="agent-card" data-agent-id="${agent.id}">
+          <span class="number">${agent.number}</span>
+          <div class="mono">${agent.category}</div>
+          <h3>${agent.name}</h3>
+          <p>${agent.brief}</p>
+        </article>
+      `).join('');
+
+      document.querySelectorAll('.agent-card').forEach(card => {
+        card.addEventListener('click', () => {
+          const agentId = parseInt(card.dataset.agentId);
+          const agent = agents.find(a => a.id === agentId);
+          showAgentModal(agent);
+        });
+      });
+    }
+
+    function showAgentModal(agent) {
+      const agentModal = document.getElementById('agentModal');
+      const agentModalContent = document.getElementById('agentModalContent');
+      const html = `
+        <h2>${agent.name}</h2>
+        <div class="mono">${agent.category}</div>
+        <div class="section"><h3>Positioning</h3><p>${agent.positioning}</p></div>
+        <div class="section"><h3>Primary Pain Points</h3><ul>${agent.painPoints.map(p => `<li>${p}</li>`).join('')}</ul></div>
+        <div class="section"><h3>What the Agent Does</h3><ul>${agent.whatItDoes.map(w => `<li>${w}</li>`).join('')}</ul></div>
+        <div class="section"><h3>Example Workflow</h3><ol>${agent.exampleWorkflow.map(e => `<li>${e}</li>`).join('')}</ol></div>
+        <div class="section"><h3>Recommended Tracker Fields</h3><ul>${agent.trackerFields.map(f => `<li>${f}</li>`).join('')}</ul></div>
+        <div class="section"><h3>Example Statuses</h3><ul>${agent.statuses.map(s => `<li>${s}</li>`).join('')}</ul></div>
+        <div class="section"><h3>Best Fit</h3><ul>${agent.bestFitTrades.map(b => `<li>${b}</li>`).join('')}</ul></div>
+        <div class="section"><h3>ROI</h3><ul>${agent.roi.map(r => `<li>${r}</li>`).join('')}</ul></div>
+        <div class="section"><h3>Implementation Package</h3><ul>${agent.implementationPackage.map(i => `<li>${i}</li>`).join('')}</ul></div>
+        <div class="section"><h3>Human Approval Gates</h3><ul>${agent.approvalGates.map(a => `<li>${a}</li>`).join('')}</ul></div>
+      `;
+      agentModalContent.innerHTML = html;
+      agentModal.classList.add('show');
+    }
+
+    const agentModalClose = document.getElementById('agentModalClose');
+    const agentModal = document.getElementById('agentModal');
+    agentModalClose.addEventListener('click', () => agentModal.classList.remove('show'));
+    agentModal.addEventListener('click', (e) => {
+      if (e.target === agentModal) agentModal.classList.remove('show');
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') agentModal.classList.remove('show');
+    });
+
+    // Render discovery questions
+    function renderDiscoveryCards() {
+      const discoveryGrid = document.getElementById('discoveryGrid');
+      discoveryGrid.innerHTML = [
+        {
+          title: "Bid Desk",
+          questions: ["How do bid invites come in today?", "Who decides bid/no-bid?", "How do you track due dates?", "Where do plans/specs get saved?", "How often do addenda get missed?", "Do vendor quotes delay your bids?"]
+        },
+        {
+          title: "Change Orders",
+          questions: ["How are potential changes captured?", "Who sends notices?", "How do field photos get tied to COs?", "How many open COs are waiting on approval?", "Do approved COs ever get missed in pay apps?"]
+        },
+        {
+          title: "Billing",
+          questions: ["Who prepares pay apps?", "How do PMs provide percent-complete updates?", "How do you track retainage?", "How do you follow up on unpaid invoices?", "Are COs reconciled before billing?"]
+        },
+        {
+          title: "PM Workflows",
+          questions: ["How many projects does each PM manage?", "Where do meeting notes go?", "How are action items tracked?", "What gets missed most often?", "Do you send weekly project updates?"]
+        },
+        {
+          title: "Field Documentation",
+          questions: ["How do foremen submit daily updates?", "Where do job photos live?", "Are delays documented consistently?", "Can you quickly build backup for disputed work?"]
+        },
+        {
+          title: "CRM / Sales",
+          questions: ["How do you track GC relationships?", "How do you follow up after estimates?", "Who owns business development?", "Do you know which GCs send the best work?"]
+        }
+      ].map(group => `
+        <article class="discovery-card">
+          <h3>${group.title}</h3>
+          <ul>${group.questions.map(q => `<li>${q}</li>`).join('')}</ul>
+        </article>
+      `).join('');
+    }
+
+    // Render prompts
     function renderPrompts(category) {
+      const grid = document.getElementById('promptGrid');
       grid.innerHTML = prompts[category].map((prompt, index) => `
         <article class="prompt-card">
           <div class="prompt-head">
-            <div><span class="number">${String(index + 1).padStart(2, '0')}</span><h3>${prompt.title}</h3><p>${prompt.desc}</p></div>
-            <button class="btn btn-copy" data-copy="${category}-${index}">Copy</button>
+            <div><h3>${prompt.title}</h3><p>${prompt.desc}</p></div>
+            <button class="btn" data-copy="${category}-${index}">Copy</button>
           </div>
           <div class="prompt-box" id="${category}-${index}">${prompt.text}</div>
         </article>
       `).join('');
     }
 
-    function showToast() {
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 1500);
-    }
-
+    // Tab functionality
     document.querySelectorAll('.tab').forEach(tab => {
       tab.addEventListener('click', () => {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -585,15 +784,21 @@ Do not invent quantities, prices, or contract obligations.</pre>
       });
     });
 
+    // Copy functionality
+    const toast = document.getElementById('toast');
     document.addEventListener('click', async (event) => {
       const button = event.target.closest('[data-copy]');
       if (!button) return;
       const text = document.getElementById(button.dataset.copy).innerText;
       await navigator.clipboard.writeText(text);
-      showToast();
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1500);
     });
 
+    // Initialize
     renderPrompts('estimating');
+    renderAgentCards();
+    renderDiscoveryCards();
   </script>
 </body>
 </html>
