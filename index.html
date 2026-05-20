@@ -1353,6 +1353,8 @@ const agents = [
           document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
           option.classList.add('selected');
           quizAnswers[currentQuestionIdx] = idx;
+          updateQuizProgress();
+          updateQuizNavigation();
         });
       });
 
