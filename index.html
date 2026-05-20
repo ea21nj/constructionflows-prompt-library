@@ -507,8 +507,12 @@
     .quiz-option.selected { background: var(--yellow); font-weight: 600; }
     .quiz-option-letter { font-family: var(--headline); font-size: 18px; font-weight: 800; min-width: 24px; }
     .quiz-option-text { font-size: 14px; line-height: 1.4; }
-    .quiz-submit { margin-top: 32px; padding: 16px 28px; background: var(--yellow); border: var(--line); font-family: var(--body); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: all 120ms ease; }
-    .quiz-submit:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
+    .quiz-controls { display: flex; gap: 16px; margin-top: 32px; justify-content: space-between; }
+    .quiz-control-btn { padding: 14px 20px; background: var(--white); border: var(--line); font-family: var(--body); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: all 120ms ease; }
+    .quiz-control-btn:hover:not(:disabled) { background: #F5F5F5; transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
+    .quiz-control-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .quiz-submit { padding: 16px 28px; background: var(--yellow); border: var(--line); font-family: var(--body); font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; cursor: pointer; transition: all 120ms ease; }
+    .quiz-submit:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--black); }
     .quiz-submit:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
     .quiz-result { display: none; }
     .quiz-result.show { display: block; }
@@ -699,7 +703,11 @@
         <div id="quizForm">
           <div class="quiz-progress-bar"><div class="quiz-progress-bar-fill" id="quizProgressFill" style="width:0%"></div></div>
           <div id="quizQuestions"></div>
-          <button class="quiz-submit" id="quizSubmit" disabled>See my results →</button>
+          <div class="quiz-controls">
+            <button class="quiz-control-btn" id="quizPrev">← Previous</button>
+            <button class="quiz-control-btn" id="quizNext" style="display:none;">Next →</button>
+            <button class="quiz-submit" id="quizSubmit" style="display:none;">See my results →</button>
+          </div>
         </div>
 
         <!-- Results state (hidden until submit) -->
@@ -1305,41 +1313,103 @@ const agents = [
       `).join('');
     }
 
+    // Quiz state
+    let currentQuestionIdx = 0;
+    let quizAnswers = {};
+
     // Quiz functions
     function renderQuizFace() {
+      currentQuestionIdx = 0;
+      quizAnswers = {};
+      renderCurrentQuestion();
+    }
+
+    function renderCurrentQuestion() {
+      const q = quizQuestions[currentQuestionIdx];
       const quizContainer = document.getElementById('quizQuestions');
-      quizContainer.innerHTML = quizQuestions.map((q, idx) => `
+
+      quizContainer.innerHTML = `
         <div class="quiz-question">
-          <p class="q-label">Question ${idx + 1} of 20</p>
+          <p class="q-label">Question ${currentQuestionIdx + 1} of 20</p>
           <h3>${q.q}</h3>
           ${q.options.map(opt => `
-            <div class="quiz-option" data-question="${idx}" data-agents="${opt.agents.join(',')}">
+            <div class="quiz-option" data-agents="${opt.agents.join(',')}">
               <span class="quiz-option-letter">${opt.label}</span>
               <span class="quiz-option-text">${opt.text}</span>
             </div>
           `).join('')}
         </div>
-      `).join('');
+      `;
+
+      // Highlight previously selected answer if exists
+      const selected = quizAnswers[currentQuestionIdx];
+      if (selected !== undefined) {
+        document.querySelectorAll('.quiz-option')[selected].classList.add('selected');
+      }
 
       // Attach click handlers
-      document.querySelectorAll('.quiz-option').forEach(option => {
+      document.querySelectorAll('.quiz-option').forEach((option, idx) => {
         option.addEventListener('click', () => {
-          const questionIdx = parseInt(option.dataset.question);
-          document.querySelectorAll(`[data-question="${questionIdx}"]`).forEach(o => o.classList.remove('selected'));
+          document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
           option.classList.add('selected');
-          updateQuizProgress();
+          quizAnswers[currentQuestionIdx] = idx;
         });
       });
 
       updateQuizProgress();
+      updateQuizNavigation();
     }
 
     function updateQuizProgress() {
+      const answered = Object.keys(quizAnswers).length;
       const totalQuestions = quizQuestions.length;
-      const answered = document.querySelectorAll('.quiz-option.selected').length;
       const progressPercent = (answered / totalQuestions) * 100;
       document.getElementById('quizProgressFill').style.width = progressPercent + '%';
-      document.getElementById('quizSubmit').disabled = answered < totalQuestions;
+    }
+
+    function updateQuizNavigation() {
+      const isFirst = currentQuestionIdx === 0;
+      const isLast = currentQuestionIdx === quizQuestions.length - 1;
+      const isAnswered = quizAnswers[currentQuestionIdx] !== undefined;
+
+      const prevBtn = document.getElementById('quizPrev');
+      const nextBtn = document.getElementById('quizNext');
+      const submitBtn = document.getElementById('quizSubmit');
+
+      if (prevBtn) prevBtn.style.opacity = isFirst ? '0.4' : '1';
+      if (prevBtn) prevBtn.disabled = isFirst;
+
+      if (nextBtn) {
+        if (isLast) {
+          nextBtn.style.display = 'none';
+        } else {
+          nextBtn.style.display = 'block';
+          nextBtn.disabled = !isAnswered;
+        }
+      }
+
+      if (submitBtn) {
+        if (isLast) {
+          submitBtn.style.display = 'block';
+          submitBtn.disabled = !isAnswered;
+        } else {
+          submitBtn.style.display = 'none';
+        }
+      }
+    }
+
+    function goToPrevious() {
+      if (currentQuestionIdx > 0) {
+        currentQuestionIdx--;
+        renderCurrentQuestion();
+      }
+    }
+
+    function goToNext() {
+      if (currentQuestionIdx < quizQuestions.length - 1 && quizAnswers[currentQuestionIdx] !== undefined) {
+        currentQuestionIdx++;
+        renderCurrentQuestion();
+      }
     }
 
     function submitQuiz() {
@@ -1350,9 +1420,12 @@ const agents = [
         scores[key] = 0;
       });
 
-      // Tally scores from selected answers
-      document.querySelectorAll('.quiz-option.selected').forEach(option => {
-        const agents = option.dataset.agents.split(',');
+      // Tally scores from stored answers
+      Object.keys(quizAnswers).forEach(qIdx => {
+        const optionIdx = quizAnswers[qIdx];
+        const q = quizQuestions[qIdx];
+        const selectedOption = q.options[optionIdx];
+        const agents = selectedOption.agents;
         agents.forEach(agent => {
           scores[agent]++;
         });
@@ -1394,13 +1467,16 @@ const agents = [
     }
 
     function retakeQuiz() {
-      document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
-      updateQuizProgress();
+      currentQuestionIdx = 0;
+      quizAnswers = {};
       document.getElementById('quizForm').style.display = 'block';
       document.getElementById('quizResult').classList.remove('show');
+      renderCurrentQuestion();
     }
 
     // Quiz event listeners
+    document.getElementById('quizPrev').addEventListener('click', goToPrevious);
+    document.getElementById('quizNext').addEventListener('click', goToNext);
     document.getElementById('quizSubmit').addEventListener('click', submitQuiz);
     document.getElementById('quizRetake').addEventListener('click', retakeQuiz);
 
