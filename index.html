@@ -1064,14 +1064,8 @@
           </div>
           <div class="hero-right">
             <div class="preview-card">
-              <div class="preview-card-header">Your result</div>
-              <h3>PM Second Brain</h3>
-              <ul class="preview-bullets">
-                <li>Summarizes emails & meetings</li>
-                <li>Tracks decisions & blockers</li>
-                <li>Creates weekly updates</li>
-                <li>Flags overdue tasks</li>
-              </ul>
+              <h3 id="previewAgentName"></h3>
+              <ul class="preview-bullets" id="previewAgentBullets"></ul>
             </div>
           </div>
         </div>
@@ -1372,6 +1366,27 @@
         document.getElementById(`face-${faceId}`).classList.add('active');
       });
     });
+
+    // Preview card agent cycling
+    let previewIndex = 0;
+
+    function updatePreviewCard() {
+      const nameEl = document.getElementById('previewAgentName');
+      const bulletsEl = document.getElementById('previewAgentBullets');
+
+      if (!nameEl || !bulletsEl || !agents || agents.length === 0) return;
+
+      const agent = agents[previewIndex];
+      nameEl.textContent = agent.name;
+
+      const bullets = agent.whatItDoes.slice(0, 4).map(item => `<li>${item}</li>`).join('');
+      bulletsEl.innerHTML = bullets;
+
+      previewIndex = (previewIndex + 1) % agents.length;
+    }
+
+    updatePreviewCard();
+    setInterval(updatePreviewCard, 4000);
 
     // Agent data
 const agents = [
