@@ -1,6 +1,6 @@
-# ConstructionFlows Prompt Library Landing Page
+# Eligeo Prompt Library Landing Page
 
-A Vercel-style landing page for the ConstructionFlows construction AI prompt library.
+A Vercel-style landing page for the Eligeo construction AI prompt library.
 
 ## What it includes
 

@@ -60,7 +60,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         from: 'onboarding@resend.dev',
-        to: 'hello@constructionflows.com',
+        to: 'hello@eligeo.com',
         replyTo: email,
         subject: subject,
         html: htmlContent

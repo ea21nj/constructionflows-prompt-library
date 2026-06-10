@@ -1,8 +1,8 @@
 {
-  "name": "constructionflows-prompt-library",
+  "name": "eligeo-prompt-library",
   "version": "1.0.0",
   "private": false,
-  "description": "Landing page for the ConstructionFlows construction AI prompt library.",
+  "description": "Landing page for the Eligeo construction AI prompt library.",
   "scripts": {
     "start": "vite --host 0.0.0.0",
     "build": "vite build"

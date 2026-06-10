@@ -3,29 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ConstructionFlows - Free AI Prompts & Agent Ideas</title>
+  <title>Eligeo - Free AI Prompts & Agent Ideas</title>
   <meta name="description" content="Free prompts and agent ideas for building AI workflows in construction." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DIN+Condensed&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #F6F4EF;
+      --bg: #F7F7F7;
       --white: #FFFFFF;
-      --black: #111111;
-      --gray: #686868;
-      --border-gray: #E5E5E5;
-      --light-gray: #F1F1F1;
-      --healthy: #2E7D32;
+      --black: #363539;
+      --gray: #56555A;
+      --secondary: #56555A;
+      --border-gray: #DCDCDC;
+      --light-gray: #EFEFEF;
+      --primary: #008037;
+      --healthy: #008037;
       --moderate: #F5A623;
       --weak: #F97316;
       --critical: #D92D20;
       --unknown: #9CA3AF;
       --line: 1px solid var(--border-gray);
-      --body: 'Inter', system-ui, -apple-system, sans-serif;
-      --hero: 'Bebas Neue', sans-serif;
-      --section: 'DIN Condensed', sans-serif;
-      --mono: 'IBM Plex Mono', monospace;
+      --body: 'Poppins', system-ui, -apple-system, sans-serif;
+      --hero: 'Poppins', sans-serif;
+      --section: 'Poppins', sans-serif;
+      --headline: 'Poppins', sans-serif;
+      --mono: 'Poppins', sans-serif;
     }
 
     * { box-sizing: border-box; }
@@ -66,9 +69,9 @@
       padding: 0 44px;
       border: 0;
       margin: 0;
-      font-family: var(--headline);
+      font-family: var(--body);
       font-size: 14px;
-      font-weight: 800;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: .04em;
     }
@@ -76,15 +79,16 @@
     .sidebar-logo {
       width: 32px;
       height: 32px;
-      border: var(--line);
-      background: var(--black);
+      border: none;
+      background: var(--primary);
       display: grid;
       place-items: center;
-      font-family: var(--section);
+      font-family: var(--body);
       font-size: 12px;
       font-weight: 700;
       flex-shrink: 0;
       color: var(--white);
+      border-radius: 6px;
     }
 
     .sidebar-nav {
@@ -125,7 +129,7 @@
     }
 
     .sidebar-nav a.active {
-      background: var(--black);
+      background: var(--primary);
       color: var(--white);
     }
 
@@ -201,14 +205,14 @@
       border: var(--line);
       background: var(--white);
       color: var(--black);
-      font-family: var(--mono);
+      font-family: var(--body);
       font-size: 11px;
       font-weight: 500;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: all 120ms ease;
-      border-radius: 0;
+      border-radius: 4px;
     }
 
     .filter-btn:hover {
@@ -216,7 +220,7 @@
     }
 
     .filter-btn.active {
-      background: var(--black);
+      background: var(--primary);
       color: var(--white);
     }
 
@@ -271,14 +275,15 @@
       min-width: 44px;
       height: 30px;
       padding: 0 10px;
-      border: var(--line);
-      background: var(--black);
+      border: none;
+      background: var(--primary);
       color: var(--white);
-      font-family: var(--mono);
+      font-family: var(--body);
       font-size: 14px;
       font-weight: 600;
       line-height: 1;
       flex-shrink: 0;
+      border-radius: 4px;
     }
 
     .agent-card-badge {
@@ -390,7 +395,7 @@
       padding: 40px;
       border: var(--line);
       position: relative;
-      border-radius: 0;
+      border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
@@ -408,7 +413,7 @@
       align-items: center;
       justify-content: center;
       transition: background 120ms ease;
-      border-radius: 0;
+      border-radius: 4px;
     }
 
     .agent-modal-close:hover { background: var(--light-gray); }
@@ -457,7 +462,7 @@
       transition: all 180ms ease;
       position: relative;
       overflow: hidden;
-      border-radius: 0;
+      border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     }
 
@@ -466,9 +471,9 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 2px;
+      width: 3px;
       height: 100%;
-      background: var(--black);
+      background: var(--primary);
       transform: scaleY(0);
       transform-origin: top;
       transition: transform 180ms ease;
@@ -488,7 +493,7 @@
       display: block;
       margin-bottom: 8px;
       font-size: 16px;
-      font-weight: 800;
+      font-weight: 700;
       color: var(--black);
       text-transform: uppercase;
       letter-spacing: .03em;
@@ -514,7 +519,7 @@
       left: 0;
       width: 100%;
       height: 3px;
-      background: var(--black);
+      background: var(--primary);
       transform: scaleX(0);
       transform-origin: left;
       transition: transform 200ms ease;
@@ -558,7 +563,7 @@
       padding: 32px;
       width: 100%;
       max-width: 350px;
-      border-radius: 0;
+      border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
     .preview-card-header {
@@ -571,11 +576,11 @@
     }
     .preview-card h3 {
       margin: 0 0 16px;
-      font-family: var(--headline);
-      font-size: 36px;
-      line-height: .95;
+      font-family: var(--body);
+      font-size: 28px;
+      line-height: 1.1;
       text-transform: uppercase;
-      font-weight: 900;
+      font-weight: 700;
       transition: opacity 400ms ease;
       opacity: 1;
     }
@@ -607,11 +612,11 @@
     .hero-badge {
       display: inline-block;
       background: transparent;
-      color: var(--black);
-      border: var(--line);
-      padding: 12px 18px;
-      border-radius: 0;
-      font-family: var(--mono);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-family: var(--body);
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
@@ -621,11 +626,11 @@
     .hero-headline {
       margin: 0 0 28px;
       font-family: var(--hero);
-      font-size: 92px;
-      line-height: .92;
+      font-size: 64px;
+      line-height: 1.05;
       text-transform: uppercase;
       font-weight: 700;
-      letter-spacing: -1px;
+      letter-spacing: -0.5px;
       color: var(--black);
     }
     .hero-description {
@@ -644,21 +649,23 @@
     .hero-btn {
       padding: 14px 32px;
       border: var(--line);
-      font-family: var(--mono);
+      font-family: var(--body);
       font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: all 120ms ease;
-      border-radius: 0;
+      border-radius: 6px;
     }
     .hero-btn.primary {
-      background: var(--black);
+      background: var(--primary);
       color: var(--white);
+      border-color: var(--primary);
     }
     .hero-btn.primary:hover {
-      background: var(--gray);
+      background: #006830;
+      border-color: #006830;
     }
     .hero-btn.secondary {
       background: transparent;
@@ -676,14 +683,14 @@
     .tag {
       padding: 8px 14px;
       border: var(--line);
-      font-family: var(--mono);
+      font-family: var(--body);
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       background: var(--white);
       color: var(--black);
-      border-radius: 0;
+      border-radius: 4px;
     }
 
     /* How It Works Section */
@@ -705,19 +712,19 @@
     }
     .step-number {
       font-family: var(--hero);
-      font-size: 64px;
+      font-size: 56px;
       font-weight: 700;
-      color: var(--black);
+      color: var(--primary);
       line-height: 1;
       margin-bottom: 16px;
-      letter-spacing: -1px;
+      letter-spacing: -0.5px;
     }
     .step h4 {
       margin: 0 0 12px;
-      font-family: var(--headline);
+      font-family: var(--body);
       font-size: 20px;
       text-transform: uppercase;
-      font-weight: 800;
+      font-weight: 700;
       line-height: 1.2;
     }
     .step p {
@@ -746,17 +753,17 @@
       border: var(--line);
       background: var(--white);
       text-align: center;
-      border-radius: 0;
+      border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     }
     .stat-number {
       font-family: var(--hero);
       font-size: 48px;
       font-weight: 700;
-      color: var(--black);
+      color: var(--primary);
       line-height: 1;
       margin-bottom: 8px;
-      letter-spacing: -1px;
+      letter-spacing: -0.5px;
     }
     .stat-label {
       font-size: 12px;
@@ -776,11 +783,11 @@
     .rollout-left h2 {
       margin: 0 0 16px;
       font-family: var(--hero);
-      font-size: 48px;
-      line-height: .95;
+      font-size: 44px;
+      line-height: 1.1;
       text-transform: uppercase;
       font-weight: 700;
-      letter-spacing: -1px;
+      letter-spacing: -0.5px;
       color: var(--white);
     }
     .rollout-left p {
@@ -892,7 +899,7 @@
       width: 90%;
       max-height: 90vh;
       overflow-y: auto;
-      border-radius: 0;
+      border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
@@ -912,7 +919,7 @@
       align-items: center;
       justify-content: center;
       padding: 0;
-      border-radius: 0;
+      border-radius: 4px;
     }
 
     .modal-close:hover {
@@ -959,7 +966,7 @@
       font-size: 14px;
       background: var(--white);
       color: var(--black);
-      border-radius: 0;
+      border-radius: 4px;
     }
 
     .form-group input:focus {
@@ -970,21 +977,21 @@
 
     .audit-submit {
       padding: 14px 28px;
-      background: var(--black);
+      background: var(--primary);
       color: var(--white);
-      border: var(--line);
-      font-family: var(--mono);
+      border: none;
+      font-family: var(--body);
       font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       cursor: pointer;
       transition: all 120ms ease;
-      border-radius: 0;
+      border-radius: 6px;
     }
 
     .audit-submit:hover {
-      background: var(--gray);
+      background: #006830;
     }
 
     .audit-submit:disabled {
@@ -997,45 +1004,45 @@
     /* Quiz */
     .quiz-wrap { max-width: 740px; }
     .quiz-progress { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--secondary); margin-bottom: 28px; }
-    .quiz-progress-bar { height: 2px; background: var(--border-gray); border: none; margin-bottom: 32px; border-radius: 0; }
-    .quiz-progress-bar-fill { height: 100%; background: var(--black); transition: width 300ms ease; border-radius: 0; }
-    .quiz-question { margin-bottom: 36px; padding: 32px; border: var(--line); background: var(--white); border-radius: 0; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04); }
+    .quiz-progress-bar { height: 3px; background: var(--border-gray); border: none; margin-bottom: 32px; border-radius: 2px; }
+    .quiz-progress-bar-fill { height: 100%; background: var(--primary); transition: width 300ms ease; border-radius: 2px; }
+    .quiz-question { margin-bottom: 36px; padding: 32px; border: var(--line); background: var(--white); border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04); }
     .quiz-question p.q-label { margin: 0 0 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--secondary); }
     .quiz-question h3 { margin: 0 0 20px; font-size: 22px; line-height: 1.1; }
-    .quiz-option { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: var(--line); margin-bottom: 8px; cursor: pointer; transition: background 120ms ease; background: var(--white); border-radius: 0; }
+    .quiz-option { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border: var(--line); margin-bottom: 8px; cursor: pointer; transition: background 120ms ease; background: var(--white); border-radius: 6px; }
     .quiz-option:last-child { margin-bottom: 0; }
     .quiz-option:hover { background: var(--light-gray); }
-    .quiz-option.selected { background: var(--black); color: var(--white); font-weight: 600; }
-    .quiz-option-letter { font-family: var(--headline); font-size: 18px; font-weight: 800; min-width: 24px; }
+    .quiz-option.selected { background: var(--primary); color: var(--white); font-weight: 600; border-color: var(--primary); }
+    .quiz-option-letter { font-family: var(--body); font-size: 18px; font-weight: 700; min-width: 24px; }
     .quiz-option-text { font-size: 14px; line-height: 1.4; }
     .quiz-controls { display: flex; gap: 16px; margin-top: 32px; justify-content: space-between; }
-    .quiz-control-btn { padding: 14px 28px; background: var(--white); border: var(--line); font-family: var(--mono); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 120ms ease; border-radius: 0; color: var(--black); }
+    .quiz-control-btn { padding: 14px 28px; background: var(--white); border: var(--line); font-family: var(--body); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 120ms ease; border-radius: 6px; color: var(--black); }
     .quiz-control-btn:hover:not(:disabled) { background: var(--light-gray); }
     .quiz-control-btn:disabled { opacity: .4; cursor: not-allowed; }
-    .quiz-submit { padding: 16px 32px; background: var(--black); color: var(--white); border: var(--line); font-family: var(--mono); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 120ms ease; border-radius: 0; }
-    .quiz-submit:hover:not(:disabled) { background: var(--gray); }
+    .quiz-submit { padding: 16px 32px; background: var(--primary); color: var(--white); border: none; font-family: var(--body); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 120ms ease; border-radius: 6px; }
+    .quiz-submit:hover:not(:disabled) { background: #006830; }
     .quiz-submit:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
     .quiz-result { display: none; }
     .quiz-result.show { display: block; }
-    .result-header { padding: 32px; background: var(--black); color: var(--white); border: var(--line); margin-bottom: 0; border-radius: 0; }
+    .result-header { padding: 32px; background: var(--black); color: var(--white); border: var(--line); margin-bottom: 0; border-radius: 8px 8px 0 0; }
     .result-header h2 { color: var(--white); margin: 0 0 8px; font-family: var(--section); font-size: 42px; line-height: 1; text-transform: uppercase; font-weight: 700; }
     .result-header .result-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px; }
     .result-header h2 { margin: 0; font-family: var(--headline); font-size: 42px; line-height: .95; text-transform: uppercase; }
-    .result-body { padding: 32px; border: var(--line); border-top: 0; margin-bottom: 24px; background: var(--white); border-radius: 0; }
+    .result-body { padding: 32px; border: var(--line); border-top: 0; margin-bottom: 24px; background: var(--white); border-radius: 0 0 8px 8px; }
     .result-body p { color: var(--secondary); font-size: 14px; line-height: 1.7; margin: 0 0 20px; }
     .result-bullets { list-style: none; padding: 0; margin: 0 0 24px; }
     .result-bullets li { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; color: var(--secondary); display: flex; gap: 10px; }
     .result-bullets li::before { content: '→'; font-weight: 700; color: var(--black); flex-shrink: 0; }
-    .result-workflow { background: var(--light-gray); border: var(--line); padding: 20px; margin-top: 20px; border-radius: 0; }
+    .result-workflow { background: var(--light-gray); border: var(--line); padding: 20px; margin-top: 20px; border-radius: 6px; }
     .result-workflow strong { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
     .result-workflow p { margin: 0; font-size: 13px; color: var(--secondary); line-height: 1.6; }
-    .result-secondary { padding: 20px; border: var(--line); background: var(--light-gray); margin-bottom: 24px; border-radius: 0; }
+    .result-secondary { padding: 20px; border: var(--line); background: var(--light-gray); margin-bottom: 24px; border-radius: 8px; }
     .result-secondary .sec-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--secondary); margin-bottom: 6px; }
     .result-secondary h3 { margin: 0 0 8px; font-size: 20px; }
     .result-secondary p { margin: 0; font-size: 13px; color: var(--secondary); line-height: 1.6; }
-    .result-retake { padding: 12px 20px; border: var(--line); background: var(--white); font-family: var(--mono); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 120ms ease; margin-top: 24px; color: var(--black); border-radius: 0; }
+    .result-retake { padding: 12px 20px; border: var(--line); background: var(--white); font-family: var(--body); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 120ms ease; margin-top: 24px; color: var(--black); border-radius: 6px; }
     .result-retake:hover { background: var(--light-gray); }
-    .result-contact { border: var(--line); padding: 28px; background: var(--light-gray); margin: 28px 0; border-radius: 0; }
+    .result-contact { border: var(--line); padding: 28px; background: var(--light-gray); margin: 28px 0; border-radius: 8px; }
     .result-contact h3 { margin: 0 0 8px; font-size: 20px; }
     .result-contact > p { margin: 0 0 20px; font-size: 14px; color: var(--secondary); }
     .contact-form { display: flex; flex-direction: column; gap: 16px; }
@@ -1043,8 +1050,8 @@
     .form-group label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
     .form-group input { padding: 12px 14px; border: var(--line); font-family: var(--body); font-size: 14px; }
     .form-group input:focus { outline: none; background: #F5F5F5; }
-    .contact-submit { padding: 14px 28px; background: var(--black); color: var(--white); border: var(--line); font-family: var(--mono); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 120ms ease; border-radius: 0; }
-    .contact-submit:hover { background: var(--gray); }
+    .contact-submit { padding: 14px 28px; background: var(--primary); color: var(--white); border: none; font-family: var(--body); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; transition: all 120ms ease; border-radius: 6px; }
+    .contact-submit:hover { background: #006830; }
 
 @media (max-width: 900px) {
       .sidebar {
@@ -1086,15 +1093,15 @@
 <body>
   <nav class="sidebar">
     <div class="sidebar-brand">
-      <span class="sidebar-logo">CF</span>
-      <span>ConstructionFlows</span>
+      <span class="sidebar-logo">E</span>
+      <span>Eligeo</span>
     </div>
     <div class="sidebar-nav">
       <a href="#" data-face="home" class="nav-link active">Home</a>
       <a href="#" data-face="quiz" class="nav-link">Agent Quiz</a>
       <a href="#" data-face="agents" class="nav-link">10 Agents</a>
       <a href="#" data-face="discovery" class="nav-link">Discovery</a>
-      <a href="#" data-face="stack" class="nav-link">Tech Stack</a>
+      <a href="#" data-face="stack" class="nav-link" style="display:none;">Tech Stack</a>
       <a href="#" data-face="about" class="nav-link">About</a>
     </div>
   </nav>
@@ -1110,7 +1117,7 @@
             <p class="hero-description">In about three minutes, answer practical questions about bids, RFIs, change orders, field reports, billing, documents, and follow-up — then get a ranked recommendation for the first agent your team should actually implement.</p>
             <div class="hero-buttons">
               <button class="hero-btn primary" id="heroStartQuiz">Find my first agent →</button>
-              <button class="hero-btn secondary" id="workflowAuditBtn">Do a free workflow audit</button>
+              <a href="https://www.eligeo.com/meeting-with-erik-andersson/" target="_blank" rel="noopener" class="hero-btn secondary">Do a free workflow audit</a>
             </div>
             <div class="hero-tags">
               <span class="tag">3 MINUTE DIAGNOSTIC</span>
@@ -1294,7 +1301,7 @@
 
     <div class="face" id="face-about">
       <h1>Free resources for contractors</h1>
-      <p>ConstructionFlows publishes free prompts and templates for building AI workflows in construction. No signup, no restrictions — just ideas you can use.</p>
+      <p>Eligeo publishes free prompts and templates for building AI workflows in construction. No signup, no restrictions — just ideas you can use.</p>
 
       <h3>How to use this</h3>
       <ol>
@@ -2301,9 +2308,6 @@ const agents = [
       document.querySelector('[data-face="quiz"]').click();
     });
 
-    document.getElementById('workflowAuditBtn').addEventListener('click', () => {
-      document.getElementById('auditModal').classList.add('show');
-    });
 
     // Audit modal close
     document.getElementById('auditModalClose').addEventListener('click', () => {
