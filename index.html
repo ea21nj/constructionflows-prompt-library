@@ -1365,36 +1365,11 @@
           <div class="result-body" id="resultBody"></div>
           <div class="result-secondary" id="resultSecondary"></div>
 
-          <!-- Contact form -->
-          <div class="result-contact" id="resultContact" style="display:none;">
-            <h3>Next steps</h3>
-            <p>Share your info and we'll help you get started with your best-fit agent.</p>
-            <form class="contact-form" id="contactForm">
-              <input type="hidden" name="agentFit" id="agentFit" />
-
-              <div class="form-group">
-                <label for="contactName">Name</label>
-                <input type="text" id="contactName" name="name" required />
-              </div>
-
-              <div class="form-group">
-                <label for="contactEmail">Email</label>
-                <input type="email" id="contactEmail" name="email" required />
-              </div>
-
-              <div class="form-group">
-                <label for="contactPhone">Phone (optional)</label>
-                <input type="tel" id="contactPhone" name="phone" />
-              </div>
-
-              <div class="form-group">
-                <label for="contactCompany">Company</label>
-                <input type="text" id="contactCompany" name="company" required />
-              </div>
-
-              <button type="submit" class="contact-submit" id="contactSubmit">Send my info →</button>
-              <div id="contactMessage" style="display:none; margin-top:12px; padding:12px; border:var(--line); text-align:center; font-size:14px;"></div>
-            </form>
+          <!-- Next steps CTA -->
+          <div class="result-contact" id="resultContact">
+            <h3>Ready to get started?</h3>
+            <p>Book a free session with Erik to map out your first agent implementation.</p>
+            <a href="https://www.eligeo.com/meeting-with-erik-andersson/" target="_blank" rel="noopener" class="contact-submit" style="display:inline-block; text-decoration:none;">Book a meeting →</a>
           </div>
 
           <button class="result-retake" id="quizRetake">Retake quiz</button>
@@ -2177,10 +2152,6 @@ const agents = [
 
       document.getElementById('quizForm').style.display = 'none';
       document.getElementById('quizResult').classList.add('show');
-
-      // Show contact form with selected agents pre-filled
-      document.getElementById('resultContact').style.display = 'block';
-      document.getElementById('agentFit').value = `${primaryData.title} (Primary), ${secondaryData.title} (Secondary)`;
     }
 
     function retakeQuiz() {
@@ -2247,61 +2218,6 @@ const agents = [
       }
     }
 
-    // Contact form handler
-    async function handleContactSubmit(e) {
-      e.preventDefault();
-      const submitBtn = document.getElementById('contactSubmit');
-      const messageDiv = document.getElementById('contactMessage');
-
-      const formData = {
-        name: document.getElementById('contactName').value,
-        email: document.getElementById('contactEmail').value,
-        phone: document.getElementById('contactPhone').value,
-        company: document.getElementById('contactCompany').value,
-        agentFit: document.getElementById('agentFit').value
-      };
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Sending...';
-
-      try {
-        const response = await fetch('/api/contact', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          messageDiv.style.display = 'block';
-          messageDiv.style.background = '#F0F9FF';
-          messageDiv.style.borderColor = '#4CAF50';
-          messageDiv.style.color = '#2E7D32';
-          messageDiv.textContent = '✓ Thanks! We\'ll be in touch soon.';
-          document.getElementById('contactForm').reset();
-          submitBtn.textContent = 'Send my info →';
-        } else {
-          messageDiv.style.display = 'block';
-          messageDiv.style.background = '#FFF3E0';
-          messageDiv.style.borderColor = '#F57C00';
-          messageDiv.style.color = '#E65100';
-          messageDiv.textContent = '✕ ' + (data.error || 'Failed to send. Please try again.');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Send my info →';
-        }
-      } catch (error) {
-        messageDiv.style.display = 'block';
-        messageDiv.style.background = '#FFF3E0';
-        messageDiv.style.borderColor = '#F57C00';
-        messageDiv.style.color = '#E65100';
-        messageDiv.textContent = '✕ Error sending form. Please try again.';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Send my info →';
-      }
-    }
 
     // Home buttons
     document.getElementById('heroStartQuiz').addEventListener('click', () => {
@@ -2326,7 +2242,6 @@ const agents = [
     document.getElementById('quizNext').addEventListener('click', goToNext);
     document.getElementById('quizSubmit').addEventListener('click', submitQuiz);
     document.getElementById('quizRetake').addEventListener('click', retakeQuiz);
-    document.getElementById('contactForm').addEventListener('submit', handleContactSubmit);
 
     // Initialize
     renderAgentFilters();
