@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Upload, Zap,
@@ -241,7 +241,9 @@ function FighterSelectScreen({ form, setForm, canEnterArena, onEnter }) {
   );
 }
 
-function IntelUploadScreen({ form, setForm, selectedFighter, useDemo, dragOver, setDragOver, canFight, onDemo, onFile, onDrop, onFight, onBack }) {
+function IntelUploadScreen({ form, onTranscriptChange, selectedFighter, useDemo, dragOver, setDragOver, canFight, onDemo, onFile, onDrop, onFight, onBack }) {
+  const [transcriptFocused, setTranscriptFocused] = useState(false);
+  const fileInputRef = useRef(null);
   return (
     <motion.div
       initial={{ opacity: 0, x: 60 }}
@@ -300,10 +302,14 @@ function IntelUploadScreen({ form, setForm, selectedFighter, useDemo, dragOver, 
 
       {/* Drop zone */}
       <div
+        role="button"
+        tabIndex={0}
+        aria-label="Upload transcript file"
         onDrop={onDrop}
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
-        onClick={() => document.getElementById('file-input-arcade').click()}
+        onClick={() => fileInputRef.current?.click()}
+        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click(); }}
         style={{
           width: '100%',
           maxWidth: 820,
@@ -328,7 +334,7 @@ function IntelUploadScreen({ form, setForm, selectedFighter, useDemo, dragOver, 
           </div>
         </div>
         <input
-          id="file-input-arcade"
+          ref={fileInputRef}
           type="file"
           accept=".txt,.md,.doc"
           style={{ display: 'none' }}
@@ -339,14 +345,14 @@ function IntelUploadScreen({ form, setForm, selectedFighter, useDemo, dragOver, 
       {/* Textarea */}
       <textarea
         value={form.transcript}
-        onChange={e => setForm(f => ({ ...f, transcript: e.target.value }))}
+        onChange={e => onTranscriptChange(e.target.value)}
         placeholder={`PASTE BATTLE TRANSCRIPT HERE...\n\nThe AI will extract:\n— Departments and workflow steps\n— Pain points and bottlenecks\n— Tools currently in use\n— Automation opportunities\n— Estimated time and cost waste`}
         style={{
           width: '100%',
           maxWidth: 820,
           height: 300,
           background: '#0A0008',
-          border: '1.5px solid #2A1A10',
+          border: `1.5px solid ${transcriptFocused ? '#D4A017' : '#2A1A10'}`,
           borderRadius: 0,
           padding: '12px 14px',
           color: '#F0E6D3',
@@ -357,8 +363,8 @@ function IntelUploadScreen({ form, setForm, selectedFighter, useDemo, dragOver, 
           outline: 'none',
           transition: 'border-color 0.15s',
         }}
-        onFocus={e => e.target.style.borderColor = '#D4A017'}
-        onBlur={e => e.target.style.borderColor = '#2A1A10'}
+        onFocus={() => setTranscriptFocused(true)}
+        onBlur={() => setTranscriptFocused(false)}
       />
 
       {form.transcript && (
@@ -436,7 +442,7 @@ function IntelUploadScreen({ form, setForm, selectedFighter, useDemo, dragOver, 
 
       {/* FIGHT button */}
       <motion.button
-        onClick={canFight ? onFight : undefined}
+        onClick={onFight}
         disabled={!canFight}
         whileTap={canFight ? { scale: 0.97 } : {}}
         className={canFight ? 'arcade-btn-fight' : 'arcade-btn-disabled'}
@@ -573,7 +579,7 @@ function FightSequence({ phase, fighterName, analysisStage }) {
             <div style={{ fontFamily: 'Space Mono', fontSize: 11 }}>
               {STAGES.slice(0, analysisStage + 1).map((stage, i) => (
                 <motion.div
-                  key={i}
+                  key={stage}
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
                   style={{
@@ -649,24 +655,28 @@ export function InputForm({ onAnalyze, isAnalyzing, analysisStage }) {
   const [useDemo, setUseDemo] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
+  const analyzePhaseRef = useRef(analyzePhase);
+  useEffect(() => { analyzePhaseRef.current = analyzePhase; }, [analyzePhase]);
+
   const selectedFighter = FIGHTERS.find(f => f.industry === form.industry);
-  const canEnterArena = !!(form.clientName && form.teamSize && form.hourlyRate);
+  const canEnterArena = !!(form.clientName && Number(form.teamSize) > 0 && Number(form.hourlyRate) > 0);
   const canFight = !!(form.transcript || useDemo);
 
   useEffect(() => {
     if (!isAnalyzing) return;
+    let cancelled = false;
     setAnalyzePhase('vs');
-    const t1 = setTimeout(() => setAnalyzePhase('countdown'), 800);
-    const t2 = setTimeout(() => setAnalyzePhase('fight'), 1800);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    const t1 = setTimeout(() => { if (!cancelled) setAnalyzePhase('countdown'); }, 800);
+    const t2 = setTimeout(() => { if (!cancelled) setAnalyzePhase('fight'); }, 1800);
+    return () => { cancelled = true; clearTimeout(t1); clearTimeout(t2); };
   }, [isAnalyzing]);
 
   useEffect(() => {
-    if (analysisStage === STAGES.length - 1 && analyzePhase === 'fight') {
+    if (analysisStage === STAGES.length - 1 && analyzePhaseRef.current === 'fight') {
       const t = setTimeout(() => setAnalyzePhase('victory'), 600);
       return () => clearTimeout(t);
     }
-  }, [analysisStage, analyzePhase]);
+  }, [analysisStage]);
 
   const handleDemo = () => {
     setUseDemo(true);
@@ -677,6 +687,11 @@ export function InputForm({ onAnalyze, isAnalyzing, analysisStage }) {
       hourlyRate: '92',
       transcript: DEMO_TRANSCRIPT,
     });
+  };
+
+  const handleTranscriptChange = (value) => {
+    setForm(f => ({ ...f, transcript: value }));
+    if (useDemo) setUseDemo(false);
   };
 
   const handleFile = (file) => {
@@ -717,7 +732,7 @@ export function InputForm({ onAnalyze, isAnalyzing, analysisStage }) {
           <IntelUploadScreen
             key="intel-upload"
             form={form}
-            setForm={setForm}
+            onTranscriptChange={handleTranscriptChange}
             selectedFighter={selectedFighter}
             useDemo={useDemo}
             dragOver={dragOver}
