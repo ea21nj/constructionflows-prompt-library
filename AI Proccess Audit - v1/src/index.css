@@ -406,7 +406,7 @@ html, body, #root {
   padding: 9px 12px;
   color: #F0E6D3;
   font-size: 12px;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-mono);
   outline: none;
   transition: border-color 0.15s;
 }
@@ -421,7 +421,7 @@ html, body, #root {
 
 .arcade-label {
   display: block;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-display);
   font-size: 10px;
   color: #6B5B4E;
   letter-spacing: 0.12em;
@@ -435,7 +435,7 @@ html, body, #root {
   transform: translateY(-50%);
   font-size: 11px;
   color: #6B5B4E;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-mono);
   pointer-events: none;
 }
 
@@ -446,7 +446,7 @@ html, body, #root {
   transform: translateY(-50%);
   font-size: 9px;
   color: #6B5B4E;
-  font-family: 'Space Mono', monospace;
+  font-family: var(--font-mono);
   pointer-events: none;
   letter-spacing: 0.05em;
 }
@@ -461,7 +461,7 @@ html, body, #root {
   border-radius: 0;
   padding: 14px 24px;
   color: #D4A017;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-display);
   font-size: 18px;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -474,6 +474,11 @@ html, body, #root {
   box-shadow: 0 0 20px rgba(212, 160, 23, 0.5);
 }
 
+.arcade-btn-primary:focus-visible {
+  outline: 2px solid #D4A017;
+  outline-offset: 2px;
+}
+
 .arcade-btn-fight {
   display: flex;
   align-items: center;
@@ -483,7 +488,7 @@ html, body, #root {
   border-radius: 0;
   padding: 14px 24px;
   color: #F0E6D3;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-display);
   font-size: 20px;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -496,6 +501,11 @@ html, body, #root {
   box-shadow: 0 0 28px rgba(200, 0, 26, 0.7);
 }
 
+.arcade-btn-fight:focus-visible {
+  outline: 2px solid #F0E6D3;
+  outline-offset: 2px;
+}
+
 .arcade-btn-disabled {
   display: flex;
   align-items: center;
@@ -505,10 +515,11 @@ html, body, #root {
   border-radius: 0;
   padding: 14px 24px;
   color: #6B5B4E;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: var(--font-display);
   font-size: 18px;
   letter-spacing: 0.1em;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Keyframes */
@@ -524,7 +535,7 @@ html, body, #root {
 
 @keyframes flash-round {
   0% { color: #FFFFFF; text-shadow: 0 0 40px rgba(255,255,255,1); }
-  100% { color: #C8001A; text-shadow: none; }
+  100% { color: #C8001A; text-shadow: 0 0 0px rgba(255,255,255,0); }
 }
 
 .round-text {
