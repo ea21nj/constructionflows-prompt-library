@@ -1,8 +1,8 @@
 {
-  "name": "eligeo-prompt-library",
+  "name": "workflow-playbook-prompt-library",
   "version": "1.0.0",
   "private": false,
-  "description": "Landing page for the Eligeo construction AI prompt library.",
+  "description": "Landing page for the Workflow Playbook construction AI prompt library.",
   "scripts": {
     "start": "vite --host 0.0.0.0",
     "build": "vite build"

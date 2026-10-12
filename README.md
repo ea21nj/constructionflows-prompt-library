@@ -1,6 +1,6 @@
-# Eligeo Prompt Library Landing Page
+# Workflow Playbook Prompt Library
 
-A Vercel-style landing page for the Eligeo construction AI prompt library.
+A Vercel-style landing page for the Workflow Playbook construction AI prompt library.
 
 ## What it includes
 
