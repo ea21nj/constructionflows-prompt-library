@@ -1095,127 +1095,189 @@
     }
 
 
-    /* ---- Agent detail dialog -------------------------------------------- */
+    /* ---- Agent detail dialog: every tab fits without scrolling ---------- */
     .agent-card:focus-visible { outline: 3px solid var(--highlight); outline-offset: -3px; }
     body.dialog-open { overflow: hidden; }
     .agent-modal {
       position: fixed; inset: 0; z-index: 2000; display: none;
-      align-items: center; justify-content: center; padding: 32px;
+      align-items: center; justify-content: center; padding: 24px;
       background: rgba(26,26,26,.72);
     }
     .agent-modal.show { display: flex; }
     .agent-dialog {
-      width: min(1040px, 100%); height: min(860px, 100%);
+      width: min(1240px, 100%); max-height: 100%; min-height: min(560px, 100%);
       display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr);
-      background: var(--white); border: var(--rule); box-shadow: 12px 12px 0 var(--primary);
+      background: var(--white); border: var(--rule); box-shadow: 10px 10px 0 var(--primary);
       animation: dialog-in 180ms ease-out;
     }
-    @keyframes dialog-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @keyframes dialog-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
     @media (prefers-reduced-motion: reduce) { .agent-dialog { animation: none; } }
 
-    .ad-head { background: var(--black); color: var(--white); padding: 28px 32px 24px; position: relative; border-bottom: 8px solid var(--primary); }
-    .ad-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
-    .ad-meta .ad-num { font-family: var(--display); font-weight: 700; font-size: 13px; background: var(--primary); color: var(--black); padding: 4px 10px; }
-    .ad-meta .ad-cat { font-family: var(--display); font-size: 12px; letter-spacing: var(--track-wide); color: var(--primary); border: 2px solid var(--primary); padding: 2px 8px; }
-    .ad-head { transition: padding 160ms ease; }
-    .ad-head .ad-collapse { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 180ms ease, opacity 180ms ease; }
-    .ad-head .ad-collapse > div { overflow: hidden; }
-    .agent-dialog.condensed .ad-head { padding-top: 16px; padding-bottom: 14px; }
-    .agent-dialog.condensed .ad-collapse { grid-template-rows: 0fr; opacity: 0; }
-    .agent-dialog.condensed .ad-head h2 { font-size: 24px; margin-bottom: 0; }
-    .agent-dialog.condensed .ad-meta { margin-bottom: 8px; }
-    .ad-head h2 { margin: 0 56px 12px 0; transition: font-size 160ms ease; color: var(--white); font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; }
-    .ad-head p { margin: 0; max-width: 760px; color: #D6D6D6; font-size: 15px; line-height: 1.6; }
-    .ad-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 20px; border: 2px solid #505050; }
-    .ad-facts div { padding: 10px 14px; border-right: 2px solid #505050; }
-    .ad-facts div:last-child { border-right: 0; }
+    /* Header: identity left, quick facts right */
+    .ad-head {
+      background: var(--black); color: var(--white); border-bottom: 6px solid var(--primary);
+      display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start;
+      padding: 20px 76px 20px 28px; position: relative;
+    }
+    .ad-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .ad-num { font-family: var(--display); font-weight: 700; font-size: 12px; background: var(--primary); color: var(--black); padding: 3px 8px; }
+    .ad-cat { font-family: var(--display); font-size: 11px; letter-spacing: var(--track-wide); color: var(--primary); border: 2px solid var(--primary); padding: 1px 7px; }
+    .ad-head h2 { margin: 0 0 8px; color: var(--white); font-size: 30px; line-height: 1.1; letter-spacing: -0.03em; }
+    .ad-head p { margin: 0; color: #D6D6D6; font-size: 14px; line-height: 1.55; }
+    .ad-facts { margin: 0; border: 2px solid #505050; }
+    .ad-facts div { display: grid; grid-template-columns: 96px 1fr; gap: 10px; padding: 8px 12px; border-bottom: 2px solid #505050; align-items: baseline; }
+    .ad-facts div:last-child { border-bottom: 0; }
     .ad-facts dt { font-family: var(--display); font-size: 11px; letter-spacing: var(--track-wide); color: #BDBDBD; }
-    .ad-facts dd { margin: 4px 0 0; font-size: 14px; font-weight: 500; color: var(--white); }
+    .ad-facts dd { margin: 0; font-size: 13px; font-weight: 500; color: var(--white); line-height: 1.35; }
     .ad-close {
-      position: absolute; top: 20px; right: 20px; width: 44px; height: 44px;
+      position: absolute; top: 18px; right: 18px; width: 40px; height: 40px;
       background: var(--white); color: var(--black); border: 2px solid var(--white);
-      font-size: 24px; line-height: 1; cursor: pointer; display: grid; place-items: center;
+      font-size: 22px; line-height: 1; cursor: pointer; display: grid; place-items: center;
     }
     .ad-close:hover { background: var(--primary); border-color: var(--primary); }
 
+    /* Tabs */
     .ad-tabs { display: flex; border-bottom: var(--rule); background: var(--bg); overflow-x: auto; }
     .ad-tab {
-      flex: 0 0 auto; padding: 16px 22px; border: 0; border-right: var(--line); background: transparent;
+      flex: 0 0 auto; padding: 13px 20px; border: 0; border-right: var(--line); background: transparent;
       font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: var(--track-wide);
       color: var(--secondary); cursor: pointer; position: relative;
     }
     .ad-tab:hover { color: var(--black); background: var(--white); }
     .ad-tab[aria-selected="true"] { color: var(--black); background: var(--white); }
     .ad-tab[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; background: var(--primary); }
-    .ad-tab .ad-count { margin-left: 8px; font-size: 11px; color: var(--secondary); }
+    .ad-count { margin-left: 8px; font-size: 11px; color: var(--secondary); }
+    .ad-hint { margin-left: auto; align-self: center; padding: 0 18px; font-family: var(--display); font-size: 11px; color: var(--secondary); white-space: nowrap; }
 
-    .ad-body { overflow-y: auto; padding: 32px; }
+    /* Body: panels are laid out in columns so they fit the frame */
+    .ad-body { overflow-y: auto; padding: 22px 28px; }
     .ad-panel[hidden] { display: none; }
-    .ad-panel h3 { margin: 0 0 14px; font-size: 15px; letter-spacing: var(--track-wide); display: flex; align-items: center; gap: 10px; }
-    .ad-panel h3::before { content: ''; width: 10px; height: 10px; background: var(--primary); flex-shrink: 0; }
-    .ad-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
-    .ad-block + .ad-block, .ad-cols + .ad-block { margin-top: 28px; }
-    .ad-cols > .ad-block { margin-top: 0; }
+    .ad-grid { display: grid; gap: 24px; align-content: start; align-items: start; }
+    .ad-grid.overview { grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); }
+    .ad-grid.workflow { grid-template-columns: minmax(0, 1fr); }
+    .ad-grid.rollout { grid-template-columns: minmax(0, 4fr) minmax(0, 3fr) minmax(0, 4fr); }
+    .ad-block { min-width: 0; }
+    .ad-block + .ad-block { margin-top: 0; }
+    .ad-stack > * + * { margin-top: 20px; }
+    .ad-panel h3 { margin: 0 0 10px; font-size: 13px; letter-spacing: var(--track-wide); display: flex; align-items: center; gap: 8px; }
+    .ad-panel h3::before { content: ''; width: 8px; height: 8px; background: var(--primary); flex-shrink: 0; }
+    .ad-panel h3 .ad-n { margin-left: auto; font-size: 11px; color: var(--secondary); font-weight: 600; }
+
     .ad-list { list-style: none; margin: 0; padding: 0; border: var(--line); }
-    .ad-list li { display: flex; gap: 12px; padding: 11px 14px; border-bottom: 1px dashed var(--border-gray); font-size: 14px; line-height: 1.5; color: var(--black); margin: 0; }
+    .ad-list li { display: flex; gap: 10px; padding: 6px 12px; border-bottom: 1px dashed var(--border-gray); font-size: 13.5px; line-height: 1.4; color: var(--black); margin: 0; }
     .ad-list li:last-child { border-bottom: 0; }
-    .ad-list li::before { font-family: var(--display); font-weight: 700; flex-shrink: 0; width: 16px; }
+    .ad-list li::before { font-family: var(--display); font-weight: 700; flex-shrink: 0; width: 12px; }
+    .ad-list.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ad-list.two li { border-right: 1px dashed var(--border-gray); }
+    .ad-list.two li:nth-child(2n) { border-right: 0; }
     .ad-list.pain li::before { content: '!'; color: var(--critical); }
     .ad-list.does li::before { content: '✓'; color: var(--black); }
     .ad-list.gain li::before { content: '↑'; color: var(--black); }
-    .ad-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
-    .ad-chips li { margin: 0; padding: 6px 10px; border: var(--line); font-size: 13px; background: var(--white); }
+    .ad-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .ad-chips li { margin: 0; padding: 4px 9px; border: var(--line); font-size: 12.5px; background: var(--white); }
 
-    .ad-steps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
-    .ad-steps li { counter-increment: step; display: grid; grid-template-columns: 44px 1fr; gap: 16px; margin: 0; position: relative; padding-bottom: 18px; font-size: 15px; line-height: 1.5; color: var(--black); }
+    .ad-steps { list-style: none; margin: 0; padding: 0; counter-reset: step; display: grid; gap: 0 28px; }
+    .ad-steps.cols { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: column; }
+    .ad-steps li { counter-increment: step; display: grid; grid-template-columns: 34px 1fr; gap: 12px; margin: 0; position: relative; padding-bottom: 10px; font-size: 13.5px; line-height: 1.4; color: var(--black); }
     .ad-steps li::before {
-      content: counter(step, decimal-leading-zero); font-family: var(--display); font-weight: 700; font-size: 13px;
-      height: 32px; display: grid; place-items: center; border: var(--rule); background: var(--white); position: relative; z-index: 1;
+      content: counter(step, decimal-leading-zero); font-family: var(--display); font-weight: 700; font-size: 12px;
+      height: 26px; display: grid; place-items: center; border: var(--rule); background: var(--white); position: relative; z-index: 1;
     }
-    .ad-steps li::after { content: ''; position: absolute; left: 21px; top: 32px; bottom: 0; width: 2px; background: var(--border-gray); }
-    .ad-steps li:last-child::after { display: none; }
-    .ad-steps li > span { padding-top: 5px; }
+    .ad-steps li::after { content: ''; position: absolute; left: 16px; top: 26px; bottom: 0; width: 2px; background: var(--border-gray); }
+    .ad-steps li.last-in-col::after, .ad-steps li:last-child::after { display: none; }
+    .ad-steps li > span { padding-top: 3px; }
     .ad-steps li.gate::before { background: var(--primary); }
-    .ad-gate-tag { display: inline-block; margin-left: 8px; font-family: var(--display); font-size: 11px; font-weight: 700; letter-spacing: var(--track-wide); background: var(--black); color: var(--primary); padding: 2px 6px; vertical-align: 1px; }
+    .ad-gate-tag { display: inline-block; margin-left: 6px; font-family: var(--display); font-size: 10px; font-weight: 700; letter-spacing: var(--track-wide); background: var(--black); color: var(--primary); padding: 1px 5px; vertical-align: 1px; }
 
     .ad-pipeline { display: flex; flex-wrap: wrap; gap: 8px 0; margin: 0; padding: 0; list-style: none; }
     .ad-pipeline li { margin: 0; display: flex; align-items: center; font-family: var(--display); font-size: 12px; }
-    .ad-pipeline li span { padding: 6px 10px; border: var(--rule); background: var(--white); }
-    .ad-pipeline li:not(:last-child)::after { content: ''; width: 14px; height: 2px; background: var(--black); }
+    .ad-pipeline li span { padding: 5px 9px; border: var(--rule); background: var(--white); }
+    .ad-pipeline li:first-child span { background: var(--primary); }
+    .ad-pipeline li:not(:last-child)::after { content: ''; width: 12px; height: 2px; background: var(--black); }
 
-    .ad-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); border-top: var(--line); border-left: var(--line); margin: 0; padding: 0; list-style: none; }
-    .ad-fields li { margin: 0; padding: 10px 12px; border-right: var(--line); border-bottom: var(--line); font-family: var(--display); font-size: 12px; display: flex; gap: 10px; }
-    .ad-fields li span { color: var(--secondary); min-width: 20px; }
-    .ad-copy { margin-top: 14px; padding: 10px 16px; border: var(--rule); background: var(--white); font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: var(--track-wide); cursor: pointer; }
+    .ad-fields { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: var(--line); border-left: var(--line); margin: 0; padding: 0; list-style: none; }
+    .ad-fields li { margin: 0; padding: 9px 12px; border-right: var(--line); border-bottom: var(--line); font-family: var(--display); font-size: 12px; display: flex; gap: 8px; }
+    .ad-fields li span { color: var(--secondary); min-width: 18px; }
+    .ad-tracker-foot { display: flex; align-items: center; gap: 16px; margin-top: 14px; }
+    .ad-tracker-foot p { margin: 0; font-size: 13px; color: var(--secondary); }
+    .ad-copy { padding: 9px 14px; border: var(--rule); background: var(--white); font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: var(--track-wide); cursor: pointer; flex-shrink: 0; }
     .ad-copy:hover { background: var(--primary); }
 
-    .ad-callout { border: var(--rule); border-left: 8px solid var(--primary); background: var(--primary-tint); padding: 18px 20px; }
-    .ad-callout p { margin: 0 0 10px; font-size: 14px; color: var(--black); }
+    .ad-callout { border: var(--rule); border-left: 8px solid var(--primary); background: var(--primary-tint); padding: 14px 16px; }
+    .ad-callout p { margin: 0 0 10px; font-size: 13px; color: var(--black); line-height: 1.45; }
 
-    .ad-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; border-top: var(--rule); background: var(--bg); }
-    .ad-nav { padding: 10px 16px; border: var(--rule); background: var(--white); font-family: var(--display); font-weight: 600; font-size: 12px; cursor: pointer; max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ad-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 18px; border-top: var(--rule); background: var(--bg); }
+    .ad-nav { padding: 8px 14px; border: var(--rule); background: var(--white); font-family: var(--display); font-weight: 600; font-size: 12px; cursor: pointer; max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .ad-nav:hover:not(:disabled) { background: var(--primary); }
     .ad-nav:disabled { opacity: .35; cursor: default; }
     .ad-pos { font-family: var(--display); font-size: 12px; color: var(--secondary); letter-spacing: var(--track-wide); }
     .agent-modal button:focus-visible { outline: 3px solid var(--highlight); outline-offset: 2px; }
 
+    /* Laptop-height screens: tighten so tabs still fit */
+    @media (max-height: 820px) {
+      .agent-modal { padding: 12px; }
+      .ad-head { padding-top: 14px; padding-bottom: 14px; }
+      .ad-head h2 { font-size: 24px; margin-bottom: 4px; }
+      .ad-head p { font-size: 13px; line-height: 1.45; }
+      .ad-meta { margin-bottom: 6px; }
+      .ad-facts div { padding: 6px 12px; }
+      .ad-tab { padding-top: 10px; padding-bottom: 10px; }
+      .ad-body { padding: 16px 28px; }
+      .ad-list li { padding-top: 4px; padding-bottom: 4px; font-size: 13px; }
+      .ad-steps li { padding-bottom: 6px; font-size: 13px; }
+      .ad-stack > * + * { margin-top: 14px; }
+      .ad-grid { gap: 18px; }
+      .ad-foot { padding-top: 7px; padding-bottom: 7px; }
+    }
+    /* Short or narrow screens: fall back to scrolling inside the body */
+    @media (max-height: 700px), (max-width: 1000px) {
+      .ad-body { overflow-y: auto; }
+    }
+    @media (max-width: 1000px) {
+      .ad-grid.overview, .ad-grid.rollout { grid-template-columns: minmax(0, 1fr); }
+      .ad-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .ad-head { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    }
     @media (max-width: 760px) {
       .agent-modal { padding: 0; }
       .agent-dialog { height: 100%; border: 0; box-shadow: none; }
-      .ad-head { padding: 20px 16px 18px; }
-      .ad-head h2 { font-size: 26px; }
-      .ad-head p { font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-      .ad-facts { grid-template-columns: 1fr; }
+      .ad-head { padding: 16px 64px 16px 16px; }
+      .ad-head h2 { font-size: 22px; }
+      .ad-head p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
       .ad-facts div:nth-child(n+2) { display: none; }
-      .agent-dialog.condensed .ad-head h2 { font-size: 20px; }
-      .ad-facts div { border-right: 0; border-bottom: 2px solid #505050; }
-      .ad-facts div:last-child { border-bottom: 0; }
-      .ad-close { top: 14px; right: 14px; }
-      .ad-body { padding: 20px 16px; }
-      .ad-cols { grid-template-columns: 1fr; }
-      .ad-tab { padding: 14px 16px; }
-      .ad-foot { padding: 10px 12px; }
+      .ad-close { top: 12px; right: 12px; }
+      .ad-body { padding: 16px; }
+      .ad-steps.cols, .ad-list.two { grid-template-columns: minmax(0, 1fr); grid-auto-flow: row; }
+      .ad-list.two li { border-right: 0; }
+      .ad-steps li.last-in-col::after { display: block; }
+      .ad-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ad-tab { padding: 12px 14px; }
+      .ad-hint { display: none; }
+      .ad-foot { padding: 8px 10px; }
     }
+
+    /* ---- Agent cards on the grid ---------------------------------------- */
+    .agent-card { padding: 26px 28px 0; gap: 10px; }
+    .agent-card h3 { font-size: 21px; flex: none; }
+    .agent-card .brief { font-size: 14px; color: var(--secondary); }
+    .agent-card .pain-preview {
+      -webkit-line-clamp: unset; display: block; margin-top: 4px; padding: 8px 0 0; font-size: 13px; color: var(--black); border-top: 0;
+    }
+    .agent-card .pain-preview b { font-family: var(--display); font-size: 11px; letter-spacing: var(--track-wide); color: var(--critical); margin-right: 6px; }
+    .agent-card-foot {
+      margin: auto -28px 0; display: flex; align-items: stretch; border-top: var(--line); background: var(--bg);
+    }
+    .agent-card-foot span {
+      padding: 10px 14px; border-right: var(--line); font-family: var(--display); font-size: 11px; color: var(--secondary); white-space: nowrap;
+    }
+    .agent-card-foot span b { color: var(--black); font-size: 13px; margin-right: 4px; }
+    .agent-card .explore {
+      opacity: 1; margin: 0 0 0 auto; padding: 10px 16px; font-family: var(--display); font-size: 12px; letter-spacing: var(--track-wide);
+      background: var(--black); color: var(--white); display: flex; align-items: center;
+    }
+    .agent-card:hover .explore { background: var(--primary); color: var(--black); }
+    .agent-card:hover { box-shadow: inset 0 -4px 0 var(--primary); background: var(--white); }
+    @media (max-width: 520px) { .agent-card-foot span:nth-child(2) { display: none; } }
 
 @media (max-width: 900px) {
       .sidebar {
@@ -2041,8 +2103,13 @@ const agents = [
           </div>
           <h3>${agent.name}</h3>
           <p class="brief">${agent.brief}</p>
-          <div class="pain-preview">${agent.painPoints[0] || ''}</div>
-          <div class="explore">Explore →</div>
+          <div class="pain-preview"><b>Pain</b>${agent.painPoints[0] || ''}</div>
+          <div class="agent-card-foot">
+            <span><b>${agent.exampleWorkflow.length}</b>steps</span>
+            <span><b>${agent.trackerFields.length}</b>fields</span>
+            <span><b>${agent.approvalGates.length}</b>approvals</span>
+            <span class="explore">View →</span>
+          </div>
         </article>
       `).join('');
 
@@ -2113,35 +2180,47 @@ const agents = [
     }
 
     function agentPanels(agent) {
+      const n = (items) => `<span class="ad-n">${items.length}</span>`;
+      const half = Math.ceil(agent.exampleWorkflow.length / 2);
+      const halfPkg = Math.ceil(agent.implementationPackage.length / 2);
       return {
         overview: `
-          <div class="ad-cols">
-            <div class="ad-block"><h3>Pain it solves</h3><ul class="ad-list pain">${listItems(agent.painPoints)}</ul></div>
-            <div class="ad-block"><h3>What the agent does</h3><ul class="ad-list does">${listItems(agent.whatItDoes)}</ul></div>
-          </div>
-          <div class="ad-block"><h3>Best fit</h3><ul class="ad-chips">${listItems(agent.bestFitTrades)}</ul></div>`,
+          <div class="ad-grid overview">
+            <div class="ad-block"><h3>Pain it solves ${n(agent.painPoints)}</h3><ul class="ad-list pain">${listItems(agent.painPoints)}</ul></div>
+            <div class="ad-block ad-stack">
+              <div><h3>What the agent does ${n(agent.whatItDoes)}</h3><ul class="ad-list does two">${listItems(agent.whatItDoes)}</ul></div>
+              <div><h3>Best fit ${n(agent.bestFitTrades)}</h3><ul class="ad-chips">${listItems(agent.bestFitTrades)}</ul></div>
+            </div>
+          </div>`,
         workflow: `
-          <div class="ad-block"><h3>Example workflow</h3>
-            <ol class="ad-steps">${agent.exampleWorkflow.map(step => isGateStep(step)
-              ? `<li class="gate"><span>${step}<span class="ad-gate-tag">Human check</span></span></li>`
-              : `<li><span>${step}</span></li>`).join('')}</ol>
-          </div>
-          <div class="ad-block"><h3>Status pipeline</h3>
-            <ol class="ad-pipeline">${agent.statuses.map(st => `<li><span>${st}</span></li>`).join('')}</ol>
+          <div class="ad-grid workflow">
+            <div class="ad-block"><h3>Example workflow ${n(agent.exampleWorkflow)}</h3>
+              <ol class="ad-steps cols" style="grid-template-rows: repeat(${half}, auto)">${agent.exampleWorkflow.map((step, i) =>
+                `<li class="${isGateStep(step) ? 'gate' : ''}${i === half - 1 ? ' last-in-col' : ''}"><span>${step}${isGateStep(step) ? '<span class="ad-gate-tag">Human check</span>' : ''}</span></li>`).join('')}</ol>
+            </div>
+            <div class="ad-block"><h3>Status pipeline ${n(agent.statuses)}</h3>
+              <ol class="ad-pipeline">${agent.statuses.map(st => `<li><span>${st}</span></li>`).join('')}</ol>
+            </div>
           </div>`,
         tracker: `
-          <div class="ad-block"><h3>Recommended tracker fields</h3>
-            <ul class="ad-fields">${agent.trackerFields.map((f, i) => `<li><span>${String(i + 1).padStart(2, '0')}</span>${f}</li>`).join('')}</ul>
-            <button type="button" class="ad-copy" data-copy-fields>Copy field list</button>
+          <div class="ad-grid">
+            <div class="ad-block"><h3>Recommended tracker fields ${n(agent.trackerFields)}</h3>
+              <ul class="ad-fields">${agent.trackerFields.map((f, i) => `<li><span>${String(i + 1).padStart(2, '0')}</span>${f}</li>`).join('')}</ul>
+              <div class="ad-tracker-foot">
+                <button type="button" class="ad-copy" data-copy-fields>Copy field list</button>
+                <p>Paste into monday.com, Airtable or a spreadsheet as your column headers.</p>
+              </div>
+            </div>
           </div>`,
         rollout: `
-          <div class="ad-cols">
-            <div class="ad-block"><h3>Implementation package</h3><ol class="ad-steps">${agent.implementationPackage.map(i => `<li><span>${i}</span></li>`).join('')}</ol></div>
-            <div class="ad-block"><h3>Expected ROI</h3><ul class="ad-list gain">${listItems(agent.roi)}</ul></div>
-          </div>
-          <div class="ad-block ad-callout"><h3>Human approval gates</h3>
-            <p>The agent drafts and prepares. A person approves these before anything goes out:</p>
-            <ul class="ad-list does">${listItems(agent.approvalGates)}</ul>
+          <div class="ad-grid rollout">
+            <div class="ad-block"><h3>Implementation package ${n(agent.implementationPackage)}</h3>
+              <ol class="ad-steps">${agent.implementationPackage.map(i => `<li><span>${i}</span></li>`).join('')}</ol></div>
+            <div class="ad-block"><h3>Expected ROI ${n(agent.roi)}</h3><ul class="ad-list gain">${listItems(agent.roi)}</ul></div>
+            <div class="ad-block ad-callout"><h3>Human approval gates ${n(agent.approvalGates)}</h3>
+              <p>The agent drafts and prepares. A person approves these before anything goes out:</p>
+              <ul class="ad-list does">${listItems(agent.approvalGates)}</ul>
+            </div>
           </div>`,
       };
     }
@@ -2154,21 +2233,22 @@ const agents = [
       const counts = { overview: agent.whatItDoes.length, workflow: agent.exampleWorkflow.length, tracker: agent.trackerFields.length, rollout: agent.implementationPackage.length };
       agentDialog.innerHTML = `
         <header class="ad-head">
-          <div class="ad-meta"><span class="ad-num">${agent.number}</span><span class="ad-cat">${agent.category}</span></div>
-          <h2 id="adTitle" tabindex="-1">${agent.name}</h2>
-          <div class="ad-collapse"><div>
-          <p>${agent.positioning}</p>
+          <div>
+            <div class="ad-meta"><span class="ad-num">${agent.number}</span><span class="ad-cat">${agent.category}</span></div>
+            <h2 id="adTitle" tabindex="-1">${agent.name}</h2>
+            <p>${agent.positioning}</p>
+          </div>
           <dl class="ad-facts">
             <div><dt>Main pain</dt><dd>${agent.painPoints[0]}</dd></div>
             <div><dt>First win</dt><dd>${agent.roi[0]}</dd></div>
-            <div><dt>Needs your OK on</dt><dd>${agent.approvalGates.length} actions</dd></div>
+            <div><dt>Approvals</dt><dd>${agent.approvalGates.length} actions need your OK</dd></div>
           </dl>
-          </div></div>
           <button type="button" class="ad-close" data-close aria-label="Close">×</button>
         </header>
         <div class="ad-tabs" role="tablist" aria-label="${agent.name} details">
           ${AGENT_TABS.map(t => `<button type="button" class="ad-tab" role="tab" id="adtab-${t.id}" aria-controls="adpanel-${t.id}"
             aria-selected="${t.id === currentTab}" tabindex="${t.id === currentTab ? 0 : -1}" data-tab="${t.id}">${t.label}<span class="ad-count">${counts[t.id]}</span></button>`).join('')}
+          <span class="ad-hint">← → switch tabs · Esc close</span>
         </div>
         <div class="ad-body">
           ${AGENT_TABS.map(t => `<section class="ad-panel" role="tabpanel" id="adpanel-${t.id}" aria-labelledby="adtab-${t.id}" ${t.id === currentTab ? '' : 'hidden'}>${panels[t.id]}</section>`).join('')}
@@ -2190,7 +2270,6 @@ const agents = [
       });
       agentDialog.querySelectorAll('.ad-panel').forEach(p => { p.hidden = p.id !== `adpanel-${id}`; });
       agentDialog.querySelector('.ad-body').scrollTop = 0;
-      agentDialog.classList.remove('condensed');
     }
 
     function showAgentModal(agent, opener) {
@@ -2201,11 +2280,6 @@ const agents = [
       }
       currentAgentId = agent.id;
       renderAgentDialog(agent);
-      agentDialog.classList.remove('condensed');
-      // Condense the header while reading so the content gets the room
-      agentDialog.querySelector('.ad-body').addEventListener('scroll', (e) => {
-        agentDialog.classList.toggle('condensed', e.target.scrollTop > 24);
-      }, { passive: true });
       agentModal.classList.add('show');
       document.body.classList.add('dialog-open');
       agentDialog.querySelector('#adTitle').focus();
