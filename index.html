@@ -1279,6 +1279,102 @@
     .agent-card:hover { box-shadow: inset 0 -4px 0 var(--primary); background: var(--white); }
     @media (max-width: 520px) { .agent-card-foot span:nth-child(2) { display: none; } }
 
+
+    /* ---- Discovery interview -------------------------------------------- */
+    .dv-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: var(--rule); background: var(--white); margin-bottom: 28px; }
+    .dv-details label { display: block; padding: 12px 16px; border-right: var(--line); }
+    .dv-details label:last-child { border-right: 0; }
+    .dv-details span { display: block; font-family: var(--display); font-size: 11px; font-weight: 600; letter-spacing: var(--track-wide); color: var(--secondary); margin-bottom: 4px; }
+    .dv-details input { width: 100%; border: 0; padding: 4px 0; font: 500 15px var(--body); color: var(--black); background: transparent; }
+    .dv-details input:focus { outline: none; box-shadow: inset 0 -2px 0 var(--highlight); }
+
+    .dv-areas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: var(--rule); border-left: var(--rule); }
+    .dv-area { border-right: var(--rule); border-bottom: var(--rule); background: var(--white); padding: 22px 22px 0; display: flex; flex-direction: column; gap: 10px; }
+    .dv-area h3 { margin: 0; font-size: 20px; }
+    .dv-area ol { margin: 0; padding-left: 18px; font-size: 13px; color: var(--secondary); line-height: 1.5; }
+    .dv-area ol li { margin: 3px 0; }
+    .dv-area ol li.done { color: var(--black); }
+    .dv-area ol li.done::marker { content: '✓  '; font-weight: 700; }
+    .dv-area-foot { margin: auto -22px 0; display: flex; align-items: stretch; border-top: var(--line); background: var(--bg); }
+    .dv-area-foot .dv-progress { padding: 10px 14px; font-family: var(--display); font-size: 12px; color: var(--secondary); flex: 1; display: flex; align-items: center; gap: 10px; }
+    .dv-bar { flex: 1; height: 6px; background: var(--white); border: 1px solid var(--border-gray); max-width: 90px; }
+    .dv-bar i { display: block; height: 100%; background: var(--highlight); }
+    .dv-start { border: 0; border-left: var(--line); background: var(--black); color: var(--white); padding: 10px 16px; font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: var(--track-wide); cursor: pointer; }
+    .dv-area:hover .dv-start, .dv-start:focus-visible { background: var(--primary); color: var(--black); }
+
+    .dv-bottom { display: flex; align-items: center; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+    .dv-btn { padding: 12px 20px; border: var(--rule); background: var(--white); font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: var(--track-wide); cursor: pointer; color: var(--black); }
+    .dv-btn:hover:not(:disabled) { background: var(--surface-2); }
+    .dv-btn.primary { background: var(--primary); }
+    .dv-btn.primary:hover:not(:disabled) { background: var(--black); color: var(--primary); }
+    .dv-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .dv-btn.link { border-color: transparent; background: transparent; padding-left: 0; padding-right: 0; text-decoration: underline; }
+    .dv-note { margin: 0; font-size: 13px; color: var(--secondary); }
+
+    .dv-interview { display: grid; grid-template-columns: 260px minmax(0, 1fr); border: var(--rule); background: var(--white); }
+    .dv-rail { border-right: var(--rule); background: var(--bg); }
+    .dv-rail h3 { margin: 0; padding: 16px 18px; font-size: 15px; border-bottom: var(--line); }
+    .dv-rail ol { list-style: none; margin: 0; padding: 0; counter-reset: q; }
+    .dv-rail li { counter-increment: q; margin: 0; }
+    .dv-rail button { width: 100%; text-align: left; display: grid; grid-template-columns: 28px 1fr; gap: 8px; padding: 10px 16px; border: 0; border-bottom: 1px dashed var(--border-gray); background: transparent; font: 13px/1.4 var(--body); color: var(--secondary); cursor: pointer; }
+    .dv-rail button::before { content: counter(q, decimal-leading-zero); font-family: var(--display); font-weight: 700; font-size: 11px; height: 22px; display: grid; place-items: center; border: 2px solid var(--border-gray); }
+    .dv-rail button.done { color: var(--black); }
+    .dv-rail button.done::before { content: '✓'; background: var(--black); color: var(--primary); border-color: var(--black); }
+    .dv-rail button[aria-current="step"] { background: var(--white); color: var(--black); font-weight: 500; box-shadow: inset 4px 0 0 var(--primary); }
+    .dv-main { padding: 28px 32px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    .dv-step { font-family: var(--display); font-size: 12px; letter-spacing: var(--track-wide); color: var(--secondary); margin: 0; }
+    .dv-q { margin: 0; font-size: 28px; line-height: 1.2; letter-spacing: -0.02em; }
+    .dv-voice { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .dv-mic {
+      display: inline-flex; align-items: center; gap: 12px; padding: 14px 22px; border: var(--rule); background: var(--black); color: var(--white);
+      font-family: var(--display); font-weight: 700; font-size: 14px; letter-spacing: var(--track-wide); cursor: pointer;
+    }
+    .dv-mic svg { width: 18px; height: 18px; }
+    .dv-mic:hover { background: var(--primary); color: var(--black); }
+    .dv-mic.listening { background: var(--critical); border-color: var(--critical); color: var(--white); }
+    .dv-live { display: none; align-items: center; gap: 8px; font-family: var(--display); font-size: 12px; color: var(--critical); }
+    .dv-live.on { display: inline-flex; }
+    .dv-live i { width: 10px; height: 10px; background: var(--critical); border-radius: 50%; animation: dv-pulse 1s ease-in-out infinite; }
+    @keyframes dv-pulse { 50% { opacity: .25; } }
+    @media (prefers-reduced-motion: reduce) { .dv-live i { animation: none; } }
+    .dv-interim { min-height: 22px; margin: 0; font-size: 15px; color: var(--secondary); font-style: italic; }
+    .dv-answer { width: 100%; min-height: 160px; resize: vertical; padding: 14px 16px; border: var(--rule); font: 16px/1.6 var(--body); color: var(--black); background: var(--white); border-radius: 0; }
+    .dv-answer:focus { outline: none; box-shadow: 0 0 0 3px var(--highlight); }
+    .dv-status { margin: 0; font-size: 13px; color: var(--secondary); min-height: 18px; }
+    .dv-status.error { color: var(--critical); }
+    .dv-nav { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; border-top: var(--line); padding-top: 16px; margin-top: auto; }
+    .dv-nav .spacer { flex: 1; }
+
+    .dv-doc-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .dv-doc { background: var(--white); border: var(--rule); border-top: 8px solid var(--primary); padding: 40px 48px; max-width: 860px; }
+    .dv-doc h2 { margin: 0 0 6px; font-size: 30px; letter-spacing: -0.02em; }
+    .dv-doc .dv-meta { margin: 0 0 24px; font-family: var(--display); font-size: 12px; color: var(--secondary); }
+    .dv-doc h3 { margin: 28px 0 12px; font-size: 18px; padding-bottom: 8px; border-bottom: var(--rule); }
+    .dv-doc dl { margin: 0; }
+    .dv-doc dt { margin: 16px 0 4px; font-weight: 600; font-size: 15px; }
+    .dv-doc dd { margin: 0; font-size: 15px; line-height: 1.6; white-space: pre-wrap; color: var(--black); }
+    .dv-doc dd.empty { color: var(--secondary); font-style: italic; }
+    .dv-doc .dv-summary { margin: 0; padding: 14px 16px; background: var(--bg); border: var(--line); font-size: 14px; }
+
+    @media (max-width: 900px) {
+      .dv-details, .dv-areas { grid-template-columns: minmax(0, 1fr); }
+      .dv-details label { border-right: 0; border-bottom: var(--line); }
+      .dv-interview { grid-template-columns: minmax(0, 1fr); }
+      .dv-rail { border-right: 0; border-bottom: var(--rule); }
+      .dv-rail ol { display: flex; overflow-x: auto; }
+      .dv-rail li { flex: 0 0 auto; }
+      .dv-rail button { grid-template-columns: 28px; border-bottom: 0; border-right: 1px dashed var(--border-gray); padding: 10px 12px; }
+      .dv-rail button span { display: none; }
+      .dv-main { padding: 20px 16px; }
+      .dv-q { font-size: 22px; }
+      .dv-doc { padding: 24px 18px; }
+    }
+    @media print {
+      body * { visibility: hidden; }
+      .dv-doc, .dv-doc * { visibility: visible; }
+      .dv-doc { position: absolute; left: 0; top: 0; border: 0; max-width: none; padding: 0; }
+    }
+
 @media (max-width: 900px) {
       .sidebar {
         width: 100%;
@@ -1441,9 +1537,9 @@
     </div>
 
     <div class="face" id="face-discovery">
-      <h1>Find your best first agent</h1>
-      <p>Answer questions about your biggest pain to identify which workflow to build first.</p>
-      <div class="discovery-grid" id="discoveryGrid"></div>
+      <h1>Discovery interview</h1>
+      <p>Pick an area and answer each question out loud or by typing. When you're done, we turn your answers into a discovery document you can download or share.</p>
+      <div id="discoveryApp"></div>
     </div>
 
     <div class="face" id="face-stack">
@@ -2326,40 +2422,237 @@ const agents = [
     });
 
     // Render discovery questions
-    function renderDiscoveryCards() {
-      const discoveryGrid = document.getElementById('discoveryGrid');
-      discoveryGrid.innerHTML = [
-        {
-          title: "Bid Desk",
-          questions: ["How do bid invites come in today?", "Who decides bid/no-bid?", "How do you track due dates?", "Where do plans/specs get saved?", "How often do addenda get missed?", "Do vendor quotes delay your bids?"]
-        },
-        {
-          title: "Change Orders",
-          questions: ["How are potential changes captured?", "Who sends notices?", "How do field photos get tied to COs?", "How many open COs are waiting on approval?", "Do approved COs ever get missed in pay apps?"]
-        },
-        {
-          title: "Billing",
-          questions: ["Who prepares pay apps?", "How do PMs provide percent-complete updates?", "How do you track retainage?", "How do you follow up on unpaid invoices?", "Are COs reconciled before billing?"]
-        },
-        {
-          title: "PM Workflows",
-          questions: ["How many projects does each PM manage?", "Where do meeting notes go?", "How are action items tracked?", "What gets missed most often?", "Do you send weekly project updates?"]
-        },
-        {
-          title: "Field Documentation",
-          questions: ["How do foremen submit daily updates?", "Where do job photos live?", "Are delays documented consistently?", "Can you quickly build backup for disputed work?"]
-        },
-        {
-          title: "CRM / Sales",
-          questions: ["How do you track GC relationships?", "How do you follow up after estimates?", "Who owns business development?", "Do you know which GCs send the best work?"]
-        }
-      ].map(group => `
-        <article class="discovery-card">
-          <h3>${group.title}</h3>
-          <ul>${group.questions.map(q => `<li>${q}</li>`).join('')}</ul>
-        </article>
-      `).join('');
+    // ---- Discovery interview: speak or type answers, then build a document ----
+    const DISCOVERY_AREAS = [
+      { title: "Bid Desk", questions: ["How do bid invites come in today?", "Who decides bid/no-bid?", "How do you track due dates?", "Where do plans/specs get saved?", "How often do addenda get missed?", "Do vendor quotes delay your bids?"] },
+      { title: "Change Orders", questions: ["How are potential changes captured?", "Who sends notices?", "How do field photos get tied to COs?", "How many open COs are waiting on approval?", "Do approved COs ever get missed in pay apps?"] },
+      { title: "Billing", questions: ["Who prepares pay apps?", "How do PMs provide percent-complete updates?", "How do you track retainage?", "How do you follow up on unpaid invoices?", "Are COs reconciled before billing?"] },
+      { title: "PM Workflows", questions: ["How many projects does each PM manage?", "Where do meeting notes go?", "How are action items tracked?", "What gets missed most often?", "Do you send weekly project updates?"] },
+      { title: "Field Documentation", questions: ["How do foremen submit daily updates?", "Where do job photos live?", "Are delays documented consistently?", "Can you quickly build backup for disputed work?"] },
+      { title: "CRM / Sales", questions: ["How do you track GC relationships?", "How do you follow up after estimates?", "Who owns business development?", "Do you know which GCs send the best work?"] },
+    ];
+    const DV_KEY = 'wp.discovery.v1';
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const MIC_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+
+    const dv = { view: 'areas', area: 0, q: 0, data: { details: { company: '', name: '', role: '' }, answers: {} } };
+    try { const saved = JSON.parse(localStorage.getItem(DV_KEY)); if (saved && saved.answers) dv.data = { ...dv.data, ...saved }; } catch (e) {}
+    function dvSave() { try { localStorage.setItem(DV_KEY, JSON.stringify(dv.data)); } catch (e) {} }
+    const answerOf = (a, q) => ((dv.data.answers[a] || {})[q] || '').trim();
+    const answeredIn = (a) => DISCOVERY_AREAS[a].questions.filter((_, q) => answerOf(a, q)).length;
+    const totalAnswered = () => DISCOVERY_AREAS.reduce((n, _, a) => n + answeredIn(a), 0);
+    function setAnswer(a, q, text) {
+      dv.data.answers[a] = dv.data.answers[a] || {};
+      dv.data.answers[a][q] = text;
+      dvSave();
     }
+
+    // Speech: one recognizer, restarted when the browser stops it after a pause
+    let rec = null, listening = false;
+    function stopListening() {
+      listening = false;
+      if (rec) { try { rec.stop(); } catch (e) {} }
+      const mic = document.querySelector('.dv-mic'); if (mic) { mic.classList.remove('listening'); mic.setAttribute('aria-pressed', 'false'); mic.lastChild.textContent = ' Answer by voice'; }
+      document.querySelector('.dv-live')?.classList.remove('on');
+      const interim = document.querySelector('.dv-interim'); if (interim) interim.textContent = '';
+    }
+    function startListening() {
+      const box = document.querySelector('.dv-answer'), status = document.querySelector('.dv-status');
+      rec = new SpeechRec();
+      rec.lang = navigator.language || 'en-US';
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.onresult = (e) => {
+        let interim = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const text = e.results[i][0].transcript;
+          if (e.results[i].isFinal) {
+            const cur = box.value;
+            box.value = (cur && !/\s$/.test(cur) ? cur + ' ' : cur) + text.trim().replace(/^./, c => c.toUpperCase());
+            setAnswer(dv.area, dv.q, box.value);
+            refreshRail();
+          } else interim += text;
+        }
+        document.querySelector('.dv-interim').textContent = interim;
+      };
+      rec.onerror = (e) => {
+        if (e.error === 'no-speech') return;
+        status.classList.add('error');
+        status.textContent = e.error === 'not-allowed' || e.error === 'service-not-allowed'
+          ? 'Microphone access is blocked. Allow it in your browser\'s address bar, or type your answer instead.'
+          : 'Voice input stopped (' + e.error + '). You can try again or type your answer.';
+        stopListening();
+      };
+      rec.onend = () => { if (listening) { try { rec.start(); } catch (e) {} } };
+      try { rec.start(); } catch (e) { return; }
+      listening = true;
+      status.classList.remove('error');
+      status.textContent = 'Speak naturally. Your words appear in the box below, and you can edit them any time.';
+      const mic = document.querySelector('.dv-mic');
+      mic.classList.add('listening'); mic.setAttribute('aria-pressed', 'true'); mic.lastChild.textContent = ' Stop';
+      document.querySelector('.dv-live').classList.add('on');
+    }
+
+    function renderDiscovery() {
+      const app = document.getElementById('discoveryApp');
+      if (!app) return;
+      if (dv.view === 'interview') return renderInterview(app);
+      if (dv.view === 'document') return renderDocument(app);
+      const d = dv.data.details;
+      app.innerHTML = `
+        <div class="dv-details">
+          <label><span>Company</span><input data-detail="company" value="${esc(d.company)}" placeholder="Acme Electric" autocomplete="organization"></label>
+          <label><span>Your name</span><input data-detail="name" value="${esc(d.name)}" placeholder="Optional" autocomplete="name"></label>
+          <label><span>Role</span><input data-detail="role" value="${esc(d.role)}" placeholder="Owner, PM, estimator…" autocomplete="organization-title"></label>
+        </div>
+        <div class="dv-areas">
+          ${DISCOVERY_AREAS.map((area, a) => {
+            const n = answeredIn(a), total = area.questions.length;
+            return `<article class="dv-area">
+              <h3>${area.title}</h3>
+              <ol>${area.questions.map((q, i) => `<li class="${answerOf(a, i) ? 'done' : ''}">${q}</li>`).join('')}</ol>
+              <div class="dv-area-foot">
+                <span class="dv-progress">${n}/${total}<span class="dv-bar"><i style="width:${Math.round(n / total * 100)}%"></i></span></span>
+                <button type="button" class="dv-start" data-open-area="${a}">${n === 0 ? 'Start' : n === total ? 'Review' : 'Continue'} →</button>
+              </div>
+            </article>`;
+          }).join('')}
+        </div>
+        <div class="dv-bottom">
+          <button type="button" class="dv-btn primary" data-dv="create" ${totalAnswered() ? '' : 'disabled'}>Create document (${totalAnswered()} answers)</button>
+          ${totalAnswered() ? '<button type="button" class="dv-btn link" data-dv="clear">Clear all answers</button>' : ''}
+          <p class="dv-note">Answers are saved only in this browser.${SpeechRec ? ' Voice is converted to text by your browser\'s speech service.' : ''}</p>
+        </div>`;
+    }
+
+    function railHtml() {
+      const area = DISCOVERY_AREAS[dv.area];
+      return area.questions.map((q, i) => `<li><button type="button" data-goto-q="${i}" class="${answerOf(dv.area, i) ? 'done' : ''}" ${i === dv.q ? 'aria-current="step"' : ''}><span>${q}</span></button></li>`).join('');
+    }
+    function refreshRail() { const ol = document.querySelector('.dv-rail ol'); if (ol) ol.innerHTML = railHtml(); }
+
+    function renderInterview(app) {
+      const area = DISCOVERY_AREAS[dv.area], total = area.questions.length, last = dv.q === total - 1;
+      app.innerHTML = `
+        <div class="dv-interview">
+          <nav class="dv-rail" aria-label="${area.title} questions"><h3>${area.title}</h3><ol>${railHtml()}</ol></nav>
+          <section class="dv-main">
+            <p class="dv-step">Question ${dv.q + 1} of ${total}</p>
+            <h2 class="dv-q" id="dvQuestion" tabindex="-1">${area.questions[dv.q]}</h2>
+            ${SpeechRec ? `
+              <div class="dv-voice">
+                <button type="button" class="dv-mic" aria-pressed="false">${MIC_ICON}<span> Answer by voice</span></button>
+                <span class="dv-live" aria-live="polite"><i></i>Listening…</span>
+              </div>
+              <p class="dv-interim" aria-hidden="true"></p>` : ''}
+            <textarea class="dv-answer" aria-labelledby="dvQuestion" placeholder="${SpeechRec ? 'Press “Answer by voice” and talk, or type here.' : 'Type your answer here.'}">${esc(dv.data.answers[dv.area]?.[dv.q] || '')}</textarea>
+            <p class="dv-status" role="status">${SpeechRec ? '' : 'Voice input isn\'t available in this browser. Chrome, Edge and Safari support it; you can type instead.'}</p>
+            <div class="dv-nav">
+              <button type="button" class="dv-btn" data-dv="prev" ${dv.q === 0 ? 'disabled' : ''}>← Previous</button>
+              <button type="button" class="dv-btn" data-dv="${last ? 'areas' : 'next'}">${last ? 'Done with this area' : 'Next →'}</button>
+              <span class="spacer"></span>
+              <button type="button" class="dv-btn link" data-dv="areas">All areas</button>
+              <button type="button" class="dv-btn primary" data-dv="create">Create document</button>
+            </div>
+          </section>
+        </div>`;
+    }
+
+    function renderDocument(app) {
+      const d = dv.data.details;
+      const date = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      const used = DISCOVERY_AREAS.map((area, a) => ({ area, a })).filter(({ a }) => answeredIn(a));
+      app.innerHTML = `
+        <div class="dv-doc-actions">
+          <button type="button" class="dv-btn primary" data-dv="word">Download Word</button>
+          <button type="button" class="dv-btn" data-dv="md">Download Markdown</button>
+          <button type="button" class="dv-btn" data-dv="copy">Copy text</button>
+          <button type="button" class="dv-btn" data-dv="print">Print / save PDF</button>
+          <button type="button" class="dv-btn link" data-dv="areas">← Keep editing</button>
+        </div>
+        <article class="dv-doc" id="dvDoc">
+          <h2>Workflow discovery${d.company ? ' — ' + esc(d.company) : ''}</h2>
+          <p class="dv-meta">${esc([d.name, d.role].filter(Boolean).join(', '))}${d.name || d.role ? ' · ' : ''}${date}</p>
+          <p class="dv-summary">${totalAnswered()} answers across ${used.length} area${used.length === 1 ? '' : 's'}: ${used.map(u => u.area.title).join(', ')}.</p>
+          ${used.map(({ area, a }) => `
+            <h3>${area.title}</h3>
+            <dl>${area.questions.map((q, i) => `<dt>${q}</dt>${answerOf(a, i) ? `<dd>${esc(answerOf(a, i))}</dd>` : '<dd class="empty">Not answered</dd>'}`).join('')}</dl>`).join('')}
+        </article>`;
+    }
+
+    function docMarkdown() {
+      const d = dv.data.details;
+      const lines = [`# Workflow discovery${d.company ? ' — ' + d.company : ''}`, ''];
+      const who = [d.name, d.role].filter(Boolean).join(', ');
+      lines.push(`${who ? who + ' · ' : ''}${new Date().toLocaleDateString()}`, '');
+      DISCOVERY_AREAS.forEach((area, a) => {
+        if (!answeredIn(a)) return;
+        lines.push(`## ${area.title}`, '');
+        area.questions.forEach((q, i) => lines.push(`**${q}**`, '', answerOf(a, i) || '_Not answered_', ''));
+      });
+      return lines.join('\n');
+    }
+    function download(name, type, content) {
+      const url = URL.createObjectURL(new Blob([content], { type }));
+      const link = Object.assign(document.createElement('a'), { href: url, download: name });
+      document.body.appendChild(link); link.click(); link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+    const docFileName = (ext) => `discovery-${(dv.data.details.company || 'notes').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'notes'}.${ext}`;
+
+    function dvGo(view, focusSel) {
+      stopListening();
+      dv.view = view;
+      renderDiscovery();
+      document.getElementById('face-discovery').scrollIntoView({ block: 'start' });
+      (document.querySelector(focusSel || '#discoveryApp h2, #discoveryApp .dv-start'))?.focus();
+    }
+
+    const discoveryApp = document.getElementById('discoveryApp');
+    discoveryApp.addEventListener('input', (e) => {
+      if (e.target.matches('[data-detail]')) { dv.data.details[e.target.dataset.detail] = e.target.value; dvSave(); }
+      if (e.target.matches('.dv-answer')) { setAnswer(dv.area, dv.q, e.target.value); refreshRail(); }
+    });
+    discoveryApp.addEventListener('click', (e) => {
+      const open = e.target.closest('[data-open-area]');
+      if (open) {
+        dv.area = Number(open.dataset.openArea);
+        const firstOpen = DISCOVERY_AREAS[dv.area].questions.findIndex((_, i) => !answerOf(dv.area, i));
+        dv.q = firstOpen === -1 ? 0 : firstOpen;
+        return dvGo('interview', '#dvQuestion');
+      }
+      const goto = e.target.closest('[data-goto-q]');
+      if (goto) { dv.q = Number(goto.dataset.gotoQ); return dvGo('interview', '#dvQuestion'); }
+      if (e.target.closest('.dv-mic')) return listening ? stopListening() : startListening();
+      const act = e.target.closest('[data-dv]')?.dataset.dv;
+      if (!act) return;
+      if (act === 'next') { dv.q++; return dvGo('interview', '#dvQuestion'); }
+      if (act === 'prev') { dv.q--; return dvGo('interview', '#dvQuestion'); }
+      if (act === 'areas') return dvGo('areas');
+      if (act === 'create') return totalAnswered() ? dvGo('document') : null;
+      if (act === 'clear') {
+        if (!e.target.dataset.armed) { e.target.dataset.armed = '1'; e.target.textContent = 'Click again to clear everything'; return; }
+        dv.data.answers = {}; dvSave(); return renderDiscovery();
+      }
+      if (act === 'md') return download(docFileName('md'), 'text/markdown', docMarkdown());
+      if (act === 'word') {
+        const body = document.getElementById('dvDoc').innerHTML;
+        return download(docFileName('doc'), 'application/msword',
+          `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Workflow discovery</title>
+          <style>body{font-family:Arial,sans-serif;font-size:11pt;color:#1A1A1A}h2{font-size:20pt}h3{font-size:14pt;border-bottom:2px solid #1A1A1A;padding-bottom:4px;margin-top:20pt}dt{font-weight:bold;margin-top:10pt}dd{margin:2pt 0 0}.empty{color:#777;font-style:italic}.dv-meta{color:#505050}.dv-summary{background:#F5F5F5;padding:8pt}</style></head><body>${body}</body></html>`);
+      }
+      if (act === 'copy') {
+        navigator.clipboard?.writeText(docMarkdown()).then(() => {
+          e.target.textContent = 'Copied ✓'; setTimeout(() => { e.target.textContent = 'Copy text'; }, 1600);
+        });
+        return;
+      }
+      if (act === 'print') return window.print();
+    });
+    // Leaving the page or switching sections stops the microphone
+    document.querySelectorAll('[data-face]').forEach(link => link.addEventListener('click', stopListening));
+    window.addEventListener('pagehide', stopListening);
 
     // Quiz state
     let currentQuestionIdx = 0;
@@ -2608,7 +2901,7 @@ const agents = [
     // Initialize
     renderAgentFilters();
     renderAgentCards();
-    renderDiscoveryCards();
+    renderDiscovery();
     renderQuizFace();
   </script>
 </body>
