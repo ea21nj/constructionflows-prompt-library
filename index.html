@@ -378,57 +378,6 @@
     .discovery-card ul { margin: 0; padding-left: 18px; color: var(--secondary); line-height: 1.8; font-weight: 500; font-size: 13px; }
     .discovery-card li { margin: 6px 0; }
 
-    .agent-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      padding: 20px;
-    }
-
-    .agent-modal.show { display: flex; }
-
-    .agent-modal-content {
-      background: var(--white);
-      max-width: 900px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 40px;
-      border: var(--line);
-      position: relative;
-      border-radius: 0;
-      box-shadow: none;
-    }
-
-    .agent-modal-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 40px;
-      height: 40px;
-      border: var(--line);
-      background: var(--white);
-      font-size: 24px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 120ms ease;
-      border-radius: 0;
-    }
-
-    .agent-modal-close:hover { background: var(--light-gray); }
-
-    .agent-modal h2 { margin: 0 0 8px; font-family: var(--section); font-size: 42px; line-height: 1; font-weight: 700; }
-    .agent-modal .mono { display: block; margin-bottom: 20px; }
-    .agent-modal h3 { margin: 28px 0 12px; font-size: 20px; }
-    .agent-modal ul, .agent-modal ol { margin: 12px 0 0; padding-left: 20px; color: var(--secondary); line-height: 1.8; font-size: 14px; }
-    .agent-modal li { margin: 6px 0; }
-    .agent-modal p { margin: 12px 0; color: var(--secondary); line-height: 1.7; font-size: 14px; }
-    .agent-modal .section { margin-top: 24px; padding-top: 24px; border-top: var(--line); }
 
 
     ol { margin: 12px 0; padding-left: 20px; color: var(--secondary); line-height: 1.8; }
@@ -1048,7 +997,7 @@
     .face h1 { font-size: 44px; letter-spacing: -0.03em; border-bottom: 0; padding-bottom: 0; }
     .face h1::after { content: ''; display: block; width: 64px; height: 8px; margin-top: 18px; background: var(--primary); }
     .agent-card h3 { font-size: 22px; line-height: 1.15; }
-    .agent-modal h2, .result-header h2 { letter-spacing: -0.03em; }
+    .result-header h2 { letter-spacing: -0.03em; }
 
     /* Labels: monospace, tracked caps-free */
     .sidebar-nav a, .filter-btn, .hero-btn, .tag, .audit-submit, .quiz-control-btn,
@@ -1102,7 +1051,7 @@
       border-bottom: var(--rule);
       padding: 88px 44px;
     }
-    .preview-card, .stat-item, .stack-item, .quiz-question, .agent-modal-content, .modal-content { background: var(--white); border: var(--rule); }
+    .preview-card, .stat-item, .stack-item, .quiz-question, .modal-content { background: var(--white); border: var(--rule); }
     .preview-card { max-width: none; box-shadow: 8px 8px 0 var(--black); }
     .preview-bullets li::before { content: '■'; font-size: 9px; top: 12px; color: var(--primary); }
     .steps-section { background: var(--white); border-top: 0; border-bottom: var(--rule); }
@@ -1139,10 +1088,133 @@
     .result-workflow, .result-secondary { background: var(--bg); border: var(--rule); }
     .form-group input { font-family: var(--body); border: var(--line); }
     .form-group input:focus { background: var(--white); border-color: var(--highlight); }
-    .agent-modal-content, .modal-content { border-top: 8px solid var(--primary); box-shadow: 10px 10px 0 var(--black); }
-    .agent-modal-close, .modal-close { border-radius: 0; border: var(--rule); }
+    .modal-content { border-top: 8px solid var(--primary); box-shadow: 10px 10px 0 var(--black); }
+    .modal-close { border-radius: 0; border: var(--rule); }
     a:focus-visible, button:focus-visible, input:focus-visible {
       outline: 3px solid var(--highlight); outline-offset: 2px;
+    }
+
+
+    /* ---- Agent detail dialog -------------------------------------------- */
+    .agent-card:focus-visible { outline: 3px solid var(--highlight); outline-offset: -3px; }
+    body.dialog-open { overflow: hidden; }
+    .agent-modal {
+      position: fixed; inset: 0; z-index: 2000; display: none;
+      align-items: center; justify-content: center; padding: 32px;
+      background: rgba(26,26,26,.72);
+    }
+    .agent-modal.show { display: flex; }
+    .agent-dialog {
+      width: min(1040px, 100%); height: min(860px, 100%);
+      display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr);
+      background: var(--white); border: var(--rule); box-shadow: 12px 12px 0 var(--primary);
+      animation: dialog-in 180ms ease-out;
+    }
+    @keyframes dialog-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .agent-dialog { animation: none; } }
+
+    .ad-head { background: var(--black); color: var(--white); padding: 28px 32px 24px; position: relative; border-bottom: 8px solid var(--primary); }
+    .ad-meta { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+    .ad-meta .ad-num { font-family: var(--display); font-weight: 700; font-size: 13px; background: var(--primary); color: var(--black); padding: 4px 10px; }
+    .ad-meta .ad-cat { font-family: var(--display); font-size: 12px; letter-spacing: var(--track-wide); color: var(--primary); border: 2px solid var(--primary); padding: 2px 8px; }
+    .ad-head { transition: padding 160ms ease; }
+    .ad-head .ad-collapse { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 180ms ease, opacity 180ms ease; }
+    .ad-head .ad-collapse > div { overflow: hidden; }
+    .agent-dialog.condensed .ad-head { padding-top: 16px; padding-bottom: 14px; }
+    .agent-dialog.condensed .ad-collapse { grid-template-rows: 0fr; opacity: 0; }
+    .agent-dialog.condensed .ad-head h2 { font-size: 24px; margin-bottom: 0; }
+    .agent-dialog.condensed .ad-meta { margin-bottom: 8px; }
+    .ad-head h2 { margin: 0 56px 12px 0; transition: font-size 160ms ease; color: var(--white); font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; }
+    .ad-head p { margin: 0; max-width: 760px; color: #D6D6D6; font-size: 15px; line-height: 1.6; }
+    .ad-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; margin-top: 20px; border: 2px solid #505050; }
+    .ad-facts div { padding: 10px 14px; border-right: 2px solid #505050; }
+    .ad-facts div:last-child { border-right: 0; }
+    .ad-facts dt { font-family: var(--display); font-size: 11px; letter-spacing: var(--track-wide); color: #BDBDBD; }
+    .ad-facts dd { margin: 4px 0 0; font-size: 14px; font-weight: 500; color: var(--white); }
+    .ad-close {
+      position: absolute; top: 20px; right: 20px; width: 44px; height: 44px;
+      background: var(--white); color: var(--black); border: 2px solid var(--white);
+      font-size: 24px; line-height: 1; cursor: pointer; display: grid; place-items: center;
+    }
+    .ad-close:hover { background: var(--primary); border-color: var(--primary); }
+
+    .ad-tabs { display: flex; border-bottom: var(--rule); background: var(--bg); overflow-x: auto; }
+    .ad-tab {
+      flex: 0 0 auto; padding: 16px 22px; border: 0; border-right: var(--line); background: transparent;
+      font-family: var(--display); font-weight: 600; font-size: 13px; letter-spacing: var(--track-wide);
+      color: var(--secondary); cursor: pointer; position: relative;
+    }
+    .ad-tab:hover { color: var(--black); background: var(--white); }
+    .ad-tab[aria-selected="true"] { color: var(--black); background: var(--white); }
+    .ad-tab[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; background: var(--primary); }
+    .ad-tab .ad-count { margin-left: 8px; font-size: 11px; color: var(--secondary); }
+
+    .ad-body { overflow-y: auto; padding: 32px; }
+    .ad-panel[hidden] { display: none; }
+    .ad-panel h3 { margin: 0 0 14px; font-size: 15px; letter-spacing: var(--track-wide); display: flex; align-items: center; gap: 10px; }
+    .ad-panel h3::before { content: ''; width: 10px; height: 10px; background: var(--primary); flex-shrink: 0; }
+    .ad-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+    .ad-block + .ad-block, .ad-cols + .ad-block { margin-top: 28px; }
+    .ad-cols > .ad-block { margin-top: 0; }
+    .ad-list { list-style: none; margin: 0; padding: 0; border: var(--line); }
+    .ad-list li { display: flex; gap: 12px; padding: 11px 14px; border-bottom: 1px dashed var(--border-gray); font-size: 14px; line-height: 1.5; color: var(--black); margin: 0; }
+    .ad-list li:last-child { border-bottom: 0; }
+    .ad-list li::before { font-family: var(--display); font-weight: 700; flex-shrink: 0; width: 16px; }
+    .ad-list.pain li::before { content: '!'; color: var(--critical); }
+    .ad-list.does li::before { content: '✓'; color: var(--black); }
+    .ad-list.gain li::before { content: '↑'; color: var(--black); }
+    .ad-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .ad-chips li { margin: 0; padding: 6px 10px; border: var(--line); font-size: 13px; background: var(--white); }
+
+    .ad-steps { list-style: none; margin: 0; padding: 0; counter-reset: step; }
+    .ad-steps li { counter-increment: step; display: grid; grid-template-columns: 44px 1fr; gap: 16px; margin: 0; position: relative; padding-bottom: 18px; font-size: 15px; line-height: 1.5; color: var(--black); }
+    .ad-steps li::before {
+      content: counter(step, decimal-leading-zero); font-family: var(--display); font-weight: 700; font-size: 13px;
+      height: 32px; display: grid; place-items: center; border: var(--rule); background: var(--white); position: relative; z-index: 1;
+    }
+    .ad-steps li::after { content: ''; position: absolute; left: 21px; top: 32px; bottom: 0; width: 2px; background: var(--border-gray); }
+    .ad-steps li:last-child::after { display: none; }
+    .ad-steps li > span { padding-top: 5px; }
+    .ad-steps li.gate::before { background: var(--primary); }
+    .ad-gate-tag { display: inline-block; margin-left: 8px; font-family: var(--display); font-size: 11px; font-weight: 700; letter-spacing: var(--track-wide); background: var(--black); color: var(--primary); padding: 2px 6px; vertical-align: 1px; }
+
+    .ad-pipeline { display: flex; flex-wrap: wrap; gap: 8px 0; margin: 0; padding: 0; list-style: none; }
+    .ad-pipeline li { margin: 0; display: flex; align-items: center; font-family: var(--display); font-size: 12px; }
+    .ad-pipeline li span { padding: 6px 10px; border: var(--rule); background: var(--white); }
+    .ad-pipeline li:not(:last-child)::after { content: ''; width: 14px; height: 2px; background: var(--black); }
+
+    .ad-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); border-top: var(--line); border-left: var(--line); margin: 0; padding: 0; list-style: none; }
+    .ad-fields li { margin: 0; padding: 10px 12px; border-right: var(--line); border-bottom: var(--line); font-family: var(--display); font-size: 12px; display: flex; gap: 10px; }
+    .ad-fields li span { color: var(--secondary); min-width: 20px; }
+    .ad-copy { margin-top: 14px; padding: 10px 16px; border: var(--rule); background: var(--white); font-family: var(--display); font-weight: 600; font-size: 12px; letter-spacing: var(--track-wide); cursor: pointer; }
+    .ad-copy:hover { background: var(--primary); }
+
+    .ad-callout { border: var(--rule); border-left: 8px solid var(--primary); background: var(--primary-tint); padding: 18px 20px; }
+    .ad-callout p { margin: 0 0 10px; font-size: 14px; color: var(--black); }
+
+    .ad-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; border-top: var(--rule); background: var(--bg); }
+    .ad-nav { padding: 10px 16px; border: var(--rule); background: var(--white); font-family: var(--display); font-weight: 600; font-size: 12px; cursor: pointer; max-width: 42%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ad-nav:hover:not(:disabled) { background: var(--primary); }
+    .ad-nav:disabled { opacity: .35; cursor: default; }
+    .ad-pos { font-family: var(--display); font-size: 12px; color: var(--secondary); letter-spacing: var(--track-wide); }
+    .agent-modal button:focus-visible { outline: 3px solid var(--highlight); outline-offset: 2px; }
+
+    @media (max-width: 760px) {
+      .agent-modal { padding: 0; }
+      .agent-dialog { height: 100%; border: 0; box-shadow: none; }
+      .ad-head { padding: 20px 16px 18px; }
+      .ad-head h2 { font-size: 26px; }
+      .ad-head p { font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      .ad-facts { grid-template-columns: 1fr; }
+      .ad-facts div:nth-child(n+2) { display: none; }
+      .agent-dialog.condensed .ad-head h2 { font-size: 20px; }
+      .ad-facts div { border-right: 0; border-bottom: 2px solid #505050; }
+      .ad-facts div:last-child { border-bottom: 0; }
+      .ad-close { top: 14px; right: 14px; }
+      .ad-body { padding: 20px 16px; }
+      .ad-cols { grid-template-columns: 1fr; }
+      .ad-tab { padding: 14px 16px; }
+      .ad-foot { padding: 10px 12px; }
     }
 
 @media (max-width: 900px) {
@@ -1472,14 +1544,9 @@
   </main>
 
   <div class="agent-modal" id="agentModal">
-    <div style="position: relative; width: 100%;">
-      <button class="agent-modal-close" id="agentModalClose">×</button>
-      <div class="agent-modal-content" id="agentModalContent"></div>
-    </div>
+    <div class="agent-dialog" id="agentDialog" role="dialog" aria-modal="true" aria-labelledby="adTitle"></div>
   </div>
 
-  <script src="index.html?data=agents"></script>
-  <script src="index.html?data=prompts"></script>
   <script>
     // Agent data and Prompt data will be injected from original file
 
@@ -1967,7 +2034,7 @@ const agents = [
     function renderAgentCards(filterCategory = null) {
       const agentGrid = document.getElementById('agentGrid');
       agentGrid.innerHTML = agents.map(agent => `
-        <article class="agent-card" data-agent-id="${agent.id}" data-category="${agent.category}">
+        <article class="agent-card" data-agent-id="${agent.id}" data-category="${agent.category}" tabindex="0" role="button" aria-label="Open ${agent.name} details">
           <div class="agent-card-header">
             <span class="number">${agent.number}</span>
             <span class="agent-card-badge ${getCategoryClass(agent.category)}">${agent.category}</span>
@@ -1995,10 +2062,10 @@ const agents = [
       }
 
       document.querySelectorAll('.agent-card').forEach(card => {
-        card.addEventListener('click', () => {
-          const agentId = parseInt(card.dataset.agentId);
-          const agent = agents.find(a => a.id === agentId);
-          showAgentModal(agent);
+        const open = () => showAgentModal(agents.find(a => a.id === parseInt(card.dataset.agentId)), card);
+        card.addEventListener('click', open);
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
         });
       });
     }
@@ -2025,35 +2092,163 @@ const agents = [
       });
     }
 
-    function showAgentModal(agent) {
-      const agentModal = document.getElementById('agentModal');
-      const agentModalContent = document.getElementById('agentModalContent');
-      const html = `
-        <h2>${agent.name}</h2>
-        <div class="mono">${agent.category}</div>
-        <div class="section"><h3>Positioning</h3><p>${agent.positioning}</p></div>
-        <div class="section"><h3>Primary Pain Points</h3><ul>${agent.painPoints.map(p => `<li>${p}</li>`).join('')}</ul></div>
-        <div class="section"><h3>What the Agent Does</h3><ul>${agent.whatItDoes.map(w => `<li>${w}</li>`).join('')}</ul></div>
-        <div class="section"><h3>Example Workflow</h3><ol>${agent.exampleWorkflow.map(e => `<li>${e}</li>`).join('')}</ol></div>
-        <div class="section"><h3>Recommended Tracker Fields</h3><ul>${agent.trackerFields.map(f => `<li>${f}</li>`).join('')}</ul></div>
-        <div class="section"><h3>Example Statuses</h3><ul>${agent.statuses.map(s => `<li>${s}</li>`).join('')}</ul></div>
-        <div class="section"><h3>Best Fit</h3><ul>${agent.bestFitTrades.map(b => `<li>${b}</li>`).join('')}</ul></div>
-        <div class="section"><h3>ROI</h3><ul>${agent.roi.map(r => `<li>${r}</li>`).join('')}</ul></div>
-        <div class="section"><h3>Implementation Package</h3><ul>${agent.implementationPackage.map(i => `<li>${i}</li>`).join('')}</ul></div>
-        <div class="section"><h3>Human Approval Gates</h3><ul>${agent.approvalGates.map(a => `<li>${a}</li>`).join('')}</ul></div>
-      `;
-      agentModalContent.innerHTML = html;
-      agentModal.classList.add('show');
+    // Agent detail dialog: fixed header, four tabs, prev/next through the visible agents
+    const AGENT_TABS = [
+      { id: 'overview', label: 'Overview' },
+      { id: 'workflow', label: 'Workflow' },
+      { id: 'tracker', label: 'Tracker setup' },
+      { id: 'rollout', label: 'Rollout & ROI' },
+    ];
+    const agentModal = document.getElementById('agentModal');
+    const agentDialog = document.getElementById('agentDialog');
+    let currentAgentId = null;
+    let currentTab = 'overview';
+    let returnFocusTo = null;
+
+    const isGateStep = (step) => /\b(asks? the human|human|approv|bid or no-bid|review)/i.test(step);
+    const listItems = (items) => items.map(i => `<li>${i}</li>`).join('');
+
+    function visibleAgents() {
+      return agents.filter(a => !activeFilter || a.category === activeFilter);
     }
 
-    const agentModalClose = document.getElementById('agentModalClose');
-    const agentModal = document.getElementById('agentModal');
-    agentModalClose.addEventListener('click', () => agentModal.classList.remove('show'));
+    function agentPanels(agent) {
+      return {
+        overview: `
+          <div class="ad-cols">
+            <div class="ad-block"><h3>Pain it solves</h3><ul class="ad-list pain">${listItems(agent.painPoints)}</ul></div>
+            <div class="ad-block"><h3>What the agent does</h3><ul class="ad-list does">${listItems(agent.whatItDoes)}</ul></div>
+          </div>
+          <div class="ad-block"><h3>Best fit</h3><ul class="ad-chips">${listItems(agent.bestFitTrades)}</ul></div>`,
+        workflow: `
+          <div class="ad-block"><h3>Example workflow</h3>
+            <ol class="ad-steps">${agent.exampleWorkflow.map(step => isGateStep(step)
+              ? `<li class="gate"><span>${step}<span class="ad-gate-tag">Human check</span></span></li>`
+              : `<li><span>${step}</span></li>`).join('')}</ol>
+          </div>
+          <div class="ad-block"><h3>Status pipeline</h3>
+            <ol class="ad-pipeline">${agent.statuses.map(st => `<li><span>${st}</span></li>`).join('')}</ol>
+          </div>`,
+        tracker: `
+          <div class="ad-block"><h3>Recommended tracker fields</h3>
+            <ul class="ad-fields">${agent.trackerFields.map((f, i) => `<li><span>${String(i + 1).padStart(2, '0')}</span>${f}</li>`).join('')}</ul>
+            <button type="button" class="ad-copy" data-copy-fields>Copy field list</button>
+          </div>`,
+        rollout: `
+          <div class="ad-cols">
+            <div class="ad-block"><h3>Implementation package</h3><ol class="ad-steps">${agent.implementationPackage.map(i => `<li><span>${i}</span></li>`).join('')}</ol></div>
+            <div class="ad-block"><h3>Expected ROI</h3><ul class="ad-list gain">${listItems(agent.roi)}</ul></div>
+          </div>
+          <div class="ad-block ad-callout"><h3>Human approval gates</h3>
+            <p>The agent drafts and prepares. A person approves these before anything goes out:</p>
+            <ul class="ad-list does">${listItems(agent.approvalGates)}</ul>
+          </div>`,
+      };
+    }
+
+    function renderAgentDialog(agent) {
+      const list = visibleAgents();
+      const idx = list.findIndex(a => a.id === agent.id);
+      const prev = list[idx - 1], next = list[idx + 1];
+      const panels = agentPanels(agent);
+      const counts = { overview: agent.whatItDoes.length, workflow: agent.exampleWorkflow.length, tracker: agent.trackerFields.length, rollout: agent.implementationPackage.length };
+      agentDialog.innerHTML = `
+        <header class="ad-head">
+          <div class="ad-meta"><span class="ad-num">${agent.number}</span><span class="ad-cat">${agent.category}</span></div>
+          <h2 id="adTitle" tabindex="-1">${agent.name}</h2>
+          <div class="ad-collapse"><div>
+          <p>${agent.positioning}</p>
+          <dl class="ad-facts">
+            <div><dt>Main pain</dt><dd>${agent.painPoints[0]}</dd></div>
+            <div><dt>First win</dt><dd>${agent.roi[0]}</dd></div>
+            <div><dt>Needs your OK on</dt><dd>${agent.approvalGates.length} actions</dd></div>
+          </dl>
+          </div></div>
+          <button type="button" class="ad-close" data-close aria-label="Close">×</button>
+        </header>
+        <div class="ad-tabs" role="tablist" aria-label="${agent.name} details">
+          ${AGENT_TABS.map(t => `<button type="button" class="ad-tab" role="tab" id="adtab-${t.id}" aria-controls="adpanel-${t.id}"
+            aria-selected="${t.id === currentTab}" tabindex="${t.id === currentTab ? 0 : -1}" data-tab="${t.id}">${t.label}<span class="ad-count">${counts[t.id]}</span></button>`).join('')}
+        </div>
+        <div class="ad-body">
+          ${AGENT_TABS.map(t => `<section class="ad-panel" role="tabpanel" id="adpanel-${t.id}" aria-labelledby="adtab-${t.id}" ${t.id === currentTab ? '' : 'hidden'}>${panels[t.id]}</section>`).join('')}
+        </div>
+        <footer class="ad-foot">
+          <button type="button" class="ad-nav" data-goto="${prev ? prev.id : ''}" ${prev ? '' : 'disabled'}>← ${prev ? prev.name : 'Previous'}</button>
+          <span class="ad-pos">${idx + 1} / ${list.length}</span>
+          <button type="button" class="ad-nav" data-goto="${next ? next.id : ''}" ${next ? '' : 'disabled'}>${next ? next.name : 'Next'} →</button>
+        </footer>`;
+    }
+
+    function selectTab(id, focus) {
+      currentTab = id;
+      agentDialog.querySelectorAll('.ad-tab').forEach(t => {
+        const on = t.dataset.tab === id;
+        t.setAttribute('aria-selected', on);
+        t.tabIndex = on ? 0 : -1;
+        if (on && focus) t.focus();
+      });
+      agentDialog.querySelectorAll('.ad-panel').forEach(p => { p.hidden = p.id !== `adpanel-${id}`; });
+      agentDialog.querySelector('.ad-body').scrollTop = 0;
+      agentDialog.classList.remove('condensed');
+    }
+
+    function showAgentModal(agent, opener) {
+      if (!agent) return;
+      if (!agentModal.classList.contains('show')) {
+        returnFocusTo = opener || document.activeElement;
+        currentTab = 'overview';
+      }
+      currentAgentId = agent.id;
+      renderAgentDialog(agent);
+      agentDialog.classList.remove('condensed');
+      // Condense the header while reading so the content gets the room
+      agentDialog.querySelector('.ad-body').addEventListener('scroll', (e) => {
+        agentDialog.classList.toggle('condensed', e.target.scrollTop > 24);
+      }, { passive: true });
+      agentModal.classList.add('show');
+      document.body.classList.add('dialog-open');
+      agentDialog.querySelector('#adTitle').focus();
+    }
+
+    function closeAgentModal() {
+      if (!agentModal.classList.contains('show')) return;
+      agentModal.classList.remove('show');
+      document.body.classList.remove('dialog-open');
+      const target = document.querySelector(`.agent-card[data-agent-id="${currentAgentId}"]`) || returnFocusTo;
+      target?.focus();
+    }
+
     agentModal.addEventListener('click', (e) => {
-      if (e.target === agentModal) agentModal.classList.remove('show');
+      if (e.target === agentModal || e.target.closest('[data-close]')) return closeAgentModal();
+      const tab = e.target.closest('.ad-tab');
+      if (tab) return selectTab(tab.dataset.tab);
+      const nav = e.target.closest('.ad-nav');
+      if (nav && nav.dataset.goto) return showAgentModal(agents.find(a => a.id === Number(nav.dataset.goto)));
+      const copy = e.target.closest('[data-copy-fields]');
+      if (copy) {
+        const agent = agents.find(a => a.id === currentAgentId);
+        navigator.clipboard?.writeText(agent.trackerFields.join('\n')).then(() => {
+          copy.textContent = 'Copied ✓';
+          setTimeout(() => { copy.textContent = 'Copy field list'; }, 1600);
+        });
+      }
     });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') agentModal.classList.remove('show');
+
+    agentModal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { e.preventDefault(); return closeAgentModal(); }
+      const tab = e.target.closest('.ad-tab');
+      if (tab && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+        const ids = AGENT_TABS.map(t => t.id);
+        const i = ids.indexOf(tab.dataset.tab) + (e.key === 'ArrowRight' ? 1 : -1);
+        return selectTab(ids[(i + ids.length) % ids.length], true);
+      }
+      if (e.key === 'Tab') {
+        const focusable = [...agentDialog.querySelectorAll('button:not([disabled]):not([tabindex="-1"]), [href]')].filter(el => el.offsetParent !== null);
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (e.shiftKey && (document.activeElement === first || document.activeElement.id === 'adTitle')) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
     });
 
     // Render discovery questions
