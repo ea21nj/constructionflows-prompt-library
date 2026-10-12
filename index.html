@@ -1369,10 +1369,37 @@
       .dv-q { font-size: 22px; }
       .dv-doc { padding: 24px 18px; }
     }
+    /* ---- Discovery document: print / save as PDF ----------------------- */
+    #dvPrint { display: none; }
+    @page { margin: 0.7in 0.75in 0.85in; }
+    @page {
+      @bottom-left { content: var(--dv-footer, ''); font: 8pt 'IBM Plex Mono', monospace; color: #505050; }
+      @bottom-right { content: "Page " counter(page) " of " counter(pages); font: 8pt 'IBM Plex Mono', monospace; color: #505050; }
+    }
     @media print {
-      body * { visibility: hidden; }
-      .dv-doc, .dv-doc * { visibility: visible; }
-      .dv-doc { position: absolute; left: 0; top: 0; border: 0; max-width: none; padding: 0; }
+      html.dv-printing, html.dv-printing body { background: #fff !important; margin: 0; overflow: visible !important; height: auto !important; }
+      html.dv-printing body > *:not(#dvPrint) { display: none !important; }
+      html.dv-printing #dvPrint { display: block; }
+      #dvPrint { font: 10.5pt/1.5 'IBM Plex Sans', Arial, sans-serif; color: #1A1A1A; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      #dvPrint .pr-bar { height: 6pt; background: #FFB81C; border-top: 2pt solid #1A1A1A; margin-bottom: 14pt; }
+      #dvPrint .pr-kicker { font: 600 8pt 'IBM Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: #505050; margin: 0 0 4pt; }
+      #dvPrint h1 { font: 700 22pt/1.15 'IBM Plex Mono', monospace; letter-spacing: -.02em; margin: 0 0 12pt; }
+      #dvPrint .pr-meta { width: 100%; border-collapse: collapse; margin: 0 0 16pt; font-size: 9.5pt; }
+      #dvPrint .pr-meta th, #dvPrint .pr-meta td { border: 1pt solid #1A1A1A; padding: 5pt 8pt; text-align: left; vertical-align: top; }
+      #dvPrint .pr-meta th { font: 600 7.5pt 'IBM Plex Mono', monospace; letter-spacing: .08em; text-transform: uppercase; background: #F5F5F5; width: 18%; color: #505050; }
+      #dvPrint h2 { font: 700 13pt 'IBM Plex Mono', monospace; margin: 20pt 0 8pt; padding: 0 0 4pt; border-bottom: 2pt solid #1A1A1A; break-after: avoid; page-break-after: avoid; display: flex; justify-content: space-between; align-items: baseline; }
+      #dvPrint h2 small { font: 500 8.5pt 'IBM Plex Mono', monospace; color: #505050; }
+      #dvPrint .pr-summary { width: 100%; border-collapse: collapse; font-size: 9.5pt; break-inside: avoid; }
+      #dvPrint .pr-summary th, #dvPrint .pr-summary td { border-bottom: 1pt solid #BDBDBD; padding: 4pt 6pt; text-align: left; }
+      #dvPrint .pr-summary th { font: 600 7.5pt 'IBM Plex Mono', monospace; letter-spacing: .08em; text-transform: uppercase; color: #505050; border-bottom: 1.5pt solid #1A1A1A; }
+      #dvPrint .pr-summary td.num { font-family: 'IBM Plex Mono', monospace; text-align: right; width: 22%; }
+      #dvPrint .pr-qa { break-inside: avoid; page-break-inside: avoid; padding: 7pt 0 8pt; border-bottom: 0.75pt dashed #BDBDBD; display: grid; grid-template-columns: 30pt 1fr; column-gap: 6pt; }
+      #dvPrint .pr-qa:last-child { border-bottom: 0; }
+      #dvPrint .pr-n { font: 700 8.5pt 'IBM Plex Mono', monospace; color: #505050; padding-top: 1.5pt; }
+      #dvPrint .pr-q { font-weight: 600; margin: 0 0 2pt; }
+      #dvPrint .pr-a { margin: 0; white-space: pre-wrap; orphans: 3; widows: 3; }
+      #dvPrint .pr-a.empty { color: #8A8A8A; font-style: italic; }
+      #dvPrint .pr-end { margin-top: 18pt; font: 8pt 'IBM Plex Mono', monospace; color: #8A8A8A; }
     }
 
 @media (max-width: 900px) {
@@ -2568,7 +2595,7 @@ const agents = [
           <button type="button" class="dv-btn primary" data-dv="word">Download Word</button>
           <button type="button" class="dv-btn" data-dv="md">Download Markdown</button>
           <button type="button" class="dv-btn" data-dv="copy">Copy text</button>
-          <button type="button" class="dv-btn" data-dv="print">Print / save PDF</button>
+          <button type="button" class="dv-btn" data-dv="print">Print / save as PDF</button>
           <button type="button" class="dv-btn link" data-dv="areas">← Keep editing</button>
         </div>
         <article class="dv-doc" id="dvDoc">
@@ -2600,6 +2627,52 @@ const agents = [
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
     const docFileName = (ext) => `discovery-${(dv.data.details.company || 'notes').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'notes'}.${ext}`;
+
+    // Print: a clean, paginated copy of the document lives at the top level only while printing
+    let dvTitleBefore = null;
+    function buildPrintDoc() {
+      if (dv.view !== 'document' || !totalAnswered()) return;
+      const d = dv.data.details;
+      const today = new Date();
+      const used = DISCOVERY_AREAS.map((area, a) => ({ area, a })).filter(({ a }) => answeredIn(a));
+      const title = 'Workflow discovery' + (d.company ? ' — ' + d.company : '');
+      const meta = [['Company', d.company], ['Contact', [d.name, d.role].filter(Boolean).join(', ')],
+        ['Date', today.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })],
+        ['Answers', `${totalAnswered()} across ${used.length} area${used.length === 1 ? '' : 's'}`]].filter(([, v]) => v);
+      const root = document.createElement('div');
+      root.id = 'dvPrint';
+      root.innerHTML = `
+        <div class="pr-bar"></div>
+        <p class="pr-kicker">Workflow discovery</p>
+        <h1>${esc(d.company || 'Discovery notes')}</h1>
+        <table class="pr-meta">${meta.map(([k, v]) => `<tr><th>${k}</th><td>${esc(v)}</td></tr>`).join('')}</table>
+        <table class="pr-summary">
+          <thead><tr><th>Area</th><th style="text-align:right">Answered</th></tr></thead>
+          <tbody>${used.map(({ area, a }) => `<tr><td>${area.title}</td><td class="num">${answeredIn(a)} / ${area.questions.length}</td></tr>`).join('')}</tbody>
+        </table>
+        ${used.map(({ area, a }, s) => `
+          <section>
+            <h2>${s + 1}. ${area.title}<small>${answeredIn(a)} / ${area.questions.length} answered</small></h2>
+            ${area.questions.map((q, i) => `<div class="pr-qa"><span class="pr-n">${s + 1}.${i + 1}</span><div><p class="pr-q">${q}</p>${answerOf(a, i)
+              ? `<p class="pr-a">${esc(answerOf(a, i))}</p>` : '<p class="pr-a empty">Not answered</p>'}</div></div>`).join('')}
+          </section>`).join('')}
+        <p class="pr-end">Prepared with Workflow Playbook · ${today.toISOString().slice(0, 10)}</p>`;
+      document.getElementById('dvPrint')?.remove();
+      document.body.appendChild(root);
+      document.documentElement.classList.add('dv-printing');
+      document.documentElement.style.setProperty('--dv-footer', JSON.stringify(title));
+      // The PDF's default file name comes from the page title
+      if (dvTitleBefore === null) dvTitleBefore = document.title;
+      document.title = `Discovery - ${d.company || 'notes'} - ${today.toISOString().slice(0, 10)}`;
+    }
+    function cleanupPrintDoc() {
+      document.getElementById('dvPrint')?.remove();
+      document.documentElement.classList.remove('dv-printing');
+      document.documentElement.style.removeProperty('--dv-footer');
+      if (dvTitleBefore !== null) { document.title = dvTitleBefore; dvTitleBefore = null; }
+    }
+    window.addEventListener('beforeprint', buildPrintDoc);
+    window.addEventListener('afterprint', cleanupPrintDoc);
 
     function dvGo(view, focusSel) {
       stopListening();
@@ -2648,7 +2721,7 @@ const agents = [
         });
         return;
       }
-      if (act === 'print') return window.print();
+      if (act === 'print') { buildPrintDoc(); window.print(); return; }
     });
     // Leaving the page or switching sections stops the microphone
     document.querySelectorAll('[data-face]').forEach(link => link.addEventListener('click', stopListening));
