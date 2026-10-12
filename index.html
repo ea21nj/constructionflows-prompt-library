@@ -7,37 +7,38 @@
   <meta name="description" content="Free prompts and agent ideas for building AI workflows in construction." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <style>
     :root {
-      /* Architecture monograph */
-      --bg: #FAF8F4;            /* surface 1 */
+      /* Industrial / technical */
+      --bg: #F5F5F5;            /* light gray background */
       --white: #FFFFFF;
-      --surface-2: #F0EDE6;
-      --black: #1A1410;         /* foreground */
-      --gray: #6B5E52;
-      --secondary: #6B5E52;
-      --border-gray: #D9D3C9;
-      --light-gray: #F0EDE6;
-      --primary: #D4500A;       /* burnt sienna: rules, marks, large numerals */
-      --primary-strong: #B5430A;/* AA-safe for text and white-on-fill */
-      --primary-tint: #FBEADF;
-      --healthy: #B5430A;
+      --surface-2: #EBEBEB;
+      --black: #1A1A1A;         /* steel black (primary) */
+      --gray: #505050;
+      --secondary: #505050;
+      --border-gray: #505050;   /* medium gray borders */
+      --light-gray: #EBEBEB;
+      --primary: #FFB81C;       /* industrial yellow: fills, marks */
+      --primary-strong: #1A1A1A;/* fills that carry white text */
+      --primary-tint: #FFF1CC;
+      --highlight: #00A0DF;     /* steel blue: focus, progress, hover marks */
+      --healthy: #1A1A1A;
       --moderate: #F5A623;
       --weak: #F97316;
       --critical: #D92D20;
       --unknown: #9CA3AF;
-      --line: 1px solid var(--border-gray);
-      --rule: 1px solid var(--black);
-      --display: 'Neue Haas Grotesk Display Pro', 'Neue Haas Grotesk Display', 'Inter Tight', 'Helvetica Neue', Arial, sans-serif;
-      --serif: 'Source Serif 4', 'Source Serif Pro', Georgia, serif;
-      --body: var(--serif);
+      --line: 2px solid var(--border-gray);
+      --rule: 2px solid var(--black);
+      --display: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+      --sans: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+      --body: var(--sans);
       --hero: var(--display);
       --section: var(--display);
       --headline: var(--display);
       --mono: var(--display);
-      --track: 0.02em;
-      --track-wide: 0.12em;
+      --track: -0.01em;
+      --track-wide: 0.08em;
     }
 
     * { box-sizing: border-box; }
@@ -181,7 +182,7 @@
       font-weight: 700;
       letter-spacing: 0;
       padding-bottom: 20px;
-      border-bottom: 1px solid var(--border-gray);
+      border-bottom: var(--rule);
       display: inline-block;
       color: var(--black);
     }
@@ -329,7 +330,7 @@
       overflow: hidden;
       margin-top: 8px;
       padding-top: 8px;
-      border-top: 1px solid rgba(0,0,0,0.1);
+      border-top: 1px dashed var(--border-gray);
       font-size: 12px;
       color: var(--secondary);
       line-height: 1.4;
@@ -444,7 +445,7 @@
       font-family: var(--section);
       font-size: 20px;
       padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-gray);
+      border-bottom: var(--rule);
       display: inline-block;
       font-weight: 700;
     }
@@ -1035,81 +1036,113 @@
     .contact-submit:hover { background: var(--black); }
 
 
-    /* ---- Monograph layer ------------------------------------------------ */
-    body { font-size: 17px; line-height: 1.6; }
+    /* ---- Industrial layer ----------------------------------------------- */
+    body { font-size: 16px; line-height: 1.6; font-weight: 400; }
     h1, h2, h3, h4, .hero-headline, .preview-card h3, .stack-item strong,
-    .sidebar-brand, .step h4, .rollout-left h2, .feature-box h3 {
+    .sidebar-brand, .step h4, .rollout-left h2, .feature-box h3, .step-number, .stat-number {
       font-family: var(--display);
       font-weight: 700;
       letter-spacing: var(--track);
     }
-    .hero-headline { font-size: 68px; line-height: 1.02; letter-spacing: 0.01em; }
-    .face h1 { font-size: 52px; border-bottom: var(--rule); }
+    .hero-headline { font-size: 54px; line-height: 1.08; letter-spacing: -0.03em; }
+    .face h1 { font-size: 44px; letter-spacing: -0.03em; border-bottom: 0; padding-bottom: 0; }
+    .face h1::after { content: ''; display: block; width: 64px; height: 8px; margin-top: 18px; background: var(--primary); }
+    .agent-card h3 { font-size: 22px; line-height: 1.15; }
+    .agent-modal h2, .result-header h2 { letter-spacing: -0.03em; }
 
-    /* Small labels: display face, wide tracking */
+    /* Labels: monospace, tracked caps-free */
     .sidebar-nav a, .filter-btn, .hero-btn, .tag, .audit-submit, .quiz-control-btn,
     .quiz-submit, .result-retake, .contact-submit, .agent-card .explore, .preview-card-header,
     .stat-label, .quiz-progress, .quiz-question p.q-label, .result-header .result-label,
     .result-secondary .sec-label, .result-workflow strong, .form-group label, .agent-card-badge,
-    .hero-badge, .agent-card .number {
+    .hero-badge, .agent-card .number, .quiz-option-letter {
       font-family: var(--display);
       letter-spacing: var(--track-wide);
+      font-weight: 600;
     }
-    .sidebar-nav a { font-size: 13px; letter-spacing: 0.08em; }
-    .sidebar-nav a.active { background: transparent; color: var(--black); }
-    .sidebar-logo { border-radius: 999px; background: var(--primary-strong); font-family: var(--display); }
-    .sidebar { background: var(--bg); border-bottom: var(--rule); }
+    .preview-card-header::before, .quiz-progress::before, .result-header .result-label::before {
+      content: ''; display: inline-block; width: 8px; height: 8px; margin-right: 10px; background: var(--primary); vertical-align: 1px;
+    }
 
-    /* Pills: buttons and terracotta badges */
+    /* Top bar */
+    .sidebar { background: var(--white); border-bottom: var(--rule); }
+    .sidebar-logo { border-radius: 0; background: var(--primary); color: var(--black); font-family: var(--display); }
+    .sidebar-nav a { font-size: 12px; border-right: var(--line); }
+    .sidebar-nav a.active { background: var(--black); color: var(--white); }
+    .nav-link::before { background: var(--primary); height: 4px; }
+
+    /* Sharp, 2px everything */
     .hero-btn, .filter-btn, .tag, .audit-submit, .quiz-control-btn, .quiz-submit,
-    .result-retake, .contact-submit { border-radius: 999px; }
-    .hero-badge, .agent-card-badge, .agent-card .number {
-      border-radius: 999px;
-      border: 1px solid var(--primary);
-      background: var(--primary-tint);
-      color: var(--primary-strong);
+    .result-retake, .contact-submit, .hero-badge, .agent-card-badge, .agent-card .number,
+    .sidebar-logo, .quiz-option, .form-group input { border-radius: 0; }
+    .hero-btn.primary, .quiz-submit, .contact-submit, .audit-submit {
+      background: var(--primary); color: var(--black); border: var(--rule);
     }
-    .agent-card-badge.win-work, .agent-card-badge.run-work, .agent-card-badge.protect-margin,
-    .agent-card-badge.get-paid, .agent-card-badge.build-memory {
-      background: var(--primary-tint); color: var(--primary-strong);
+    .hero-btn.primary:hover, .quiz-submit:hover:not(:disabled), .contact-submit:hover, .audit-submit:hover {
+      background: var(--black); color: var(--primary); border-color: var(--black);
     }
-    .agent-card .number { height: 28px; font-size: 13px; }
-    .tag { background: transparent; }
+    .hero-btn.secondary, .quiz-control-btn, .result-retake, .filter-btn, .tag { border: var(--rule); background: var(--white); }
     .hero-btn.secondary:hover, .quiz-control-btn:hover:not(:disabled), .result-retake:hover,
     .filter-btn:hover { background: var(--surface-2); }
-
-    /* Surfaces and rules */
-    .hero-section { background: var(--bg); border-bottom: var(--rule); padding: 96px 44px 88px; }
-    .preview-card, .stat-item, .stack-item, .quiz-question { background: var(--white); }
-    .preview-card { max-width: none; border-top: 2px solid var(--primary); }
-    .steps-section { background: var(--surface-2); border-top: 0; }
-    .steps-container { grid-template-columns: minmax(0, 5fr) repeat(2, minmax(0, 4fr)); }
-    .step { text-align: left; border-top: var(--rule); padding-top: 20px; }
-    .step-number, .stat-number { font-family: var(--display); color: var(--primary); }
-    .stats-container { grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); }
-    .stat-item { text-align: left; }
-    .rollout-section { background: var(--black); }
-    .rollout-left { max-width: 760px; margin-left: auto; margin-right: 8%; }
-    .features-section { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
-    .feature-box li::before { color: var(--primary-strong); }
-    .agent-card:hover, .stack-item:hover { background: var(--bg); }
-    .agent-card:hover { box-shadow: inset 3px 0 0 var(--primary); }
-    .stack-item:hover { border-color: var(--black); }
-    .quiz-option.selected { background: var(--primary-tint); color: var(--black); border-color: var(--primary-strong); box-shadow: inset 3px 0 0 var(--primary); }
-    .quiz-option-letter { font-family: var(--display); color: var(--primary-strong); }
-    .result-header { border-top: 3px solid var(--primary); }
-    .result-workflow, .result-secondary, .result-contact { background: var(--surface-2); }
-    .form-group input { font-family: var(--body); border-radius: 0; }
-    .form-group input:focus { background: var(--white); border-color: var(--black); }
-    .agent-modal-content, .modal-content { border-top: 3px solid var(--primary); }
-    a:focus-visible, button:focus-visible, input:focus-visible {
-      outline: 2px solid var(--primary-strong); outline-offset: 2px;
+    .filter-btn.active { background: var(--black); color: var(--white); }
+    .hero-badge, .agent-card-badge, .agent-card .number,
+    .agent-card-badge.win-work, .agent-card-badge.run-work, .agent-card-badge.protect-margin,
+    .agent-card-badge.get-paid, .agent-card-badge.build-memory {
+      border: 2px solid var(--black); background: var(--primary); color: var(--black);
     }
+    .agent-card .number { background: var(--black); color: var(--primary); height: 28px; font-size: 13px; }
 
-    /* Asymmetric inner pages: heading column on the left */
-    @media (min-width: 901px) {
-      .face:not(#face-home) > h1 { display: block; max-width: 62%; }
-      .face:not(#face-home) > p { margin-left: 34%; }
+    /* Blueprint grid surfaces */
+    .hero-section {
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(rgba(80,80,80,.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(80,80,80,.09) 1px, transparent 1px);
+      background-size: 32px 32px;
+      border-bottom: var(--rule);
+      padding: 88px 44px;
+    }
+    .preview-card, .stat-item, .stack-item, .quiz-question, .agent-modal-content, .modal-content { background: var(--white); border: var(--rule); }
+    .preview-card { max-width: none; box-shadow: 8px 8px 0 var(--black); }
+    .preview-bullets li::before { content: '■'; font-size: 9px; top: 12px; color: var(--primary); }
+    .steps-section { background: var(--white); border-top: 0; border-bottom: var(--rule); }
+    .step { text-align: left; border: var(--rule); padding: 28px; background: var(--bg); }
+    .step-number { color: var(--black); font-size: 44px; display: inline-block; background: var(--primary); padding: 6px 12px; }
+    .stats-section { border: 0; border-bottom: var(--rule); }
+    .stat-item { text-align: left; border-left: 8px solid var(--primary); }
+    .stat-number { color: var(--black); }
+    .rollout-section { background: var(--black); border: 0; position: relative; }
+    .rollout-section::before {
+      content: ''; position: absolute; left: 0; right: 0; top: 0; height: 10px;
+      background: repeating-linear-gradient(-45deg, var(--primary) 0 14px, var(--black) 14px 28px);
+    }
+    .rollout-left h2 { color: var(--primary); }
+    .features-section { border: 0; border-bottom: var(--rule); }
+    .feature-box { border-right: var(--rule); }
+    .feature-box:first-child::before { display: none; }
+    .feature-box li { border-bottom: 1px dashed var(--border-gray); }
+    .feature-box li::before { color: var(--black); font-weight: 700; }
+    .agent-grid, .discovery-grid { border: var(--rule); }
+    .agent-card:hover, .stack-item:hover { background: var(--bg); }
+    .agent-card:hover { box-shadow: inset 6px 0 0 var(--highlight); }
+    .stack-item::before { background: var(--highlight); width: 6px; }
+    .stack-item:hover { border-color: var(--black); }
+    .quiz-progress-bar { height: 8px; background: var(--white); border: var(--rule); }
+    .quiz-progress-bar-fill { background: var(--highlight); }
+    .quiz-option { border: var(--line); }
+    .quiz-option:hover { background: var(--bg); border-color: var(--black); }
+    .quiz-option.selected { background: var(--primary); color: var(--black); border-color: var(--black); box-shadow: none; }
+    .quiz-option-letter { color: var(--black); }
+    .result-header { background: var(--black); border: var(--rule); border-top: 8px solid var(--primary); }
+    .result-header .result-label { color: var(--primary); }
+    .result-body { border: var(--rule); border-top: 0; }
+    .result-workflow, .result-secondary { background: var(--bg); border: var(--rule); }
+    .form-group input { font-family: var(--body); border: var(--line); }
+    .form-group input:focus { background: var(--white); border-color: var(--highlight); }
+    .agent-modal-content, .modal-content { border-top: 8px solid var(--primary); box-shadow: 10px 10px 0 var(--black); }
+    .agent-modal-close, .modal-close { border-radius: 0; border: var(--rule); }
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 3px solid var(--highlight); outline-offset: 2px;
     }
 
 @media (max-width: 900px) {
