@@ -19,14 +19,14 @@
       --secondary: #505050;
       --border-gray: #505050;   /* medium gray borders */
       --light-gray: #EBEBEB;
-      --primary: #FFB81C;       /* industrial yellow: fills, marks */
+      --primary: #1A1A1A;       /* monochrome: accents are black */
       --primary-strong: #1A1A1A;/* fills that carry white text */
-      --primary-tint: #FFF1CC;
-      --highlight: #00A0DF;     /* steel blue: focus, progress, hover marks */
+      --primary-tint: #EDEDED;
+      --highlight: #1A1A1A;     /* focus, progress, hover marks */
       --healthy: #1A1A1A;
       --moderate: #F5A623;
       --weak: #F97316;
-      --critical: #D92D20;
+      --critical: #1A1A1A;
       --unknown: #9CA3AF;
       --line: 2px solid var(--border-gray);
       --rule: 2px solid var(--black);
@@ -1356,7 +1356,31 @@
     .dv-doc dd.empty { color: var(--secondary); font-style: italic; }
     .dv-doc .dv-summary { margin: 0; padding: 14px 16px; background: var(--bg); border: var(--line); font-size: 14px; }
 
-    @media (max-width: 900px) {
+    
+    /* ---- Monochrome: black fills carry white text ---------------------- */
+    .sidebar-logo, .hero-btn.primary, .quiz-submit, .contact-submit, .audit-submit,
+    .hero-badge, .agent-card-badge, .agent-card-badge.win-work, .agent-card-badge.run-work,
+    .agent-card-badge.protect-margin, .agent-card-badge.get-paid, .agent-card-badge.build-memory,
+    .step-number, .quiz-option.selected, .quiz-option.selected .quiz-option-letter, .ad-steps li.gate::before,
+    .ad-pipeline li:first-child span, .dv-btn.primary { color: var(--white); }
+    .hero-btn.primary:hover, .quiz-submit:hover:not(:disabled), .contact-submit:hover, .audit-submit:hover,
+    .dv-btn.primary:hover:not(:disabled) { background: var(--white); color: var(--black); border-color: var(--black); }
+    .agent-card .number, .ad-num { background: var(--white); color: var(--black); border: 2px solid var(--black); }
+    .ad-num { border-color: var(--white); }
+    .rollout-left h2, .result-header .result-label, .ad-cat, .ad-gate-tag, .dv-rail button.done::before { color: var(--white); }
+    .ad-cat { border-color: var(--white); }
+    .rollout-section::before { background: repeating-linear-gradient(-45deg, var(--white) 0 14px, var(--black) 14px 28px); }
+    .ad-head { border-bottom-color: #505050; }
+    .ad-close:hover { background: #D6D6D6; border-color: #D6D6D6; }
+    .ad-copy:hover, .ad-nav:hover:not(:disabled) { color: var(--white); }
+    .agent-card:hover .explore, .dv-area:hover .dv-start, .dv-start:focus-visible, .dv-mic:hover { background: var(--white); color: var(--black); box-shadow: inset 0 0 0 2px var(--black); }
+    .dv-mic.listening { background: var(--white); color: var(--black); border-color: var(--black); }
+    .dv-mic.listening:hover { background: var(--surface-2); }
+    .ad-steps li.gate::before { color: var(--white); }
+    .preview-card { box-shadow: 8px 8px 0 #BDBDBD; }
+    .agent-dialog { box-shadow: 10px 10px 0 #BDBDBD; }
+
+@media (max-width: 900px) {
       .dv-details, .dv-areas { grid-template-columns: minmax(0, 1fr); }
       .dv-details label { border-right: 0; border-bottom: var(--line); }
       .dv-interview { grid-template-columns: minmax(0, 1fr); }
@@ -1381,7 +1405,7 @@
       html.dv-printing body > *:not(#dvPrint) { display: none !important; }
       html.dv-printing #dvPrint { display: block; }
       #dvPrint { font: 10.5pt/1.5 'IBM Plex Sans', Arial, sans-serif; color: #1A1A1A; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      #dvPrint .pr-bar { height: 6pt; background: #FFB81C; border-top: 2pt solid #1A1A1A; margin-bottom: 14pt; }
+      #dvPrint .pr-bar { height: 6pt; background: #1A1A1A; border-top: 0; margin-bottom: 14pt; }
       #dvPrint .pr-kicker { font: 600 8pt 'IBM Plex Mono', monospace; letter-spacing: .12em; text-transform: uppercase; color: #505050; margin: 0 0 4pt; }
       #dvPrint h1 { font: 700 22pt/1.15 'IBM Plex Mono', monospace; letter-spacing: -.02em; margin: 0 0 12pt; }
       #dvPrint .pr-meta { width: 100%; border-collapse: collapse; margin: 0 0 16pt; font-size: 9.5pt; }
@@ -2918,9 +2942,9 @@ const agents = [
 
         if (data.success) {
           messageDiv.style.display = 'block';
-          messageDiv.style.background = '#F0F9FF';
-          messageDiv.style.borderColor = '#4CAF50';
-          messageDiv.style.color = '#2E7D32';
+          messageDiv.style.background = '#F5F5F5';
+          messageDiv.style.borderColor = '#1A1A1A';
+          messageDiv.style.color = '#1A1A1A';
           messageDiv.textContent = '✓ Thanks! We\'ll reach out soon to schedule your audit.';
           document.getElementById('auditForm').reset();
           setTimeout(() => {
@@ -2928,18 +2952,18 @@ const agents = [
           }, 2000);
         } else {
           messageDiv.style.display = 'block';
-          messageDiv.style.background = '#FFF3E0';
-          messageDiv.style.borderColor = '#F57C00';
-          messageDiv.style.color = '#E65100';
+          messageDiv.style.background = '#FFFFFF';
+          messageDiv.style.borderColor = '#1A1A1A';
+          messageDiv.style.color = '#1A1A1A';
           messageDiv.textContent = '✕ ' + (data.error || 'Failed to schedule. Please try again.');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Schedule audit →';
         }
       } catch (error) {
         messageDiv.style.display = 'block';
-        messageDiv.style.background = '#FFF3E0';
-        messageDiv.style.borderColor = '#F57C00';
-        messageDiv.style.color = '#E65100';
+        messageDiv.style.background = '#FFFFFF';
+        messageDiv.style.borderColor = '#1A1A1A';
+        messageDiv.style.color = '#1A1A1A';
         messageDiv.textContent = '✕ Error scheduling audit. Please try again.';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Schedule audit →';
