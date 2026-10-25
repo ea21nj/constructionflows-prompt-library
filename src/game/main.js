@@ -3,6 +3,8 @@ import './game.css';
 import { webglAvailable, currentTier } from './quality.js';
 import { createEngine } from './engine.js';
 import { loadManifest, loadAssets } from './assets.js';
+import { buildWorld } from './world.js';
+import { officeOpen } from './state.js';
 import { createLoading } from './ui/loading.js';
 import { createOpening } from './ui/opening.js';
 import { createMenu } from './ui/menu.js';
@@ -14,7 +16,18 @@ const testMode = new URLSearchParams(location.search).has('test');
 const deepLink = /^#(quiz|agents|discovery|about)$/.test(location.hash);
 
 const game = { engine: null, assets: null, state: loadState(), ready: false, started: false };
-if (testMode) window.__siteWalk = { isReady: () => game.ready, state: () => game.state, fps: () => game.engine?.fps() ?? 0, game };
+if (testMode) {
+  window.__siteWalk = {
+    isReady: () => game.ready, state: () => game.state, fps: () => game.engine?.fps() ?? 0, game,
+    // Jump the view to a point on site (Task 7 replaces this with moving the player).
+    teleport(x, z) {
+      const { camera, controls } = game.engine;
+      const offset = camera.position.clone().sub(controls.target);
+      controls.target.set(x, 1.5, z); camera.position.copy(controls.target).add(offset);
+      game.engine.setShadowCenter(x, z);
+    },
+  };
+}
 
 function fallback() {
   WP.openClassic('agents');
@@ -49,6 +62,9 @@ function boot() {
       const manifest = await loadManifest();
       game.engine = createEngine(root, currentTier());
       game.assets = await loadAssets(manifest, loading.progress);
+      game.world = buildWorld(game.engine.scene, game.assets);
+      game.world.setOfficeOpen(officeOpen(game.state));
+      game.engine.onFrame((dt, t) => game.world.update(dt, t));
       loading.hide();
       opening.show({ met: completedCount(game.state) });
       game.ready = true;

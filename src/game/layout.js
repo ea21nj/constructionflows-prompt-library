@@ -14,6 +14,9 @@ export const COLUMN_SIZE = 0.45;
 export const CRANE = { at: [-4.5, -13.5], modelOffset: [3.5, -6.4], base: 4.6 };
 
 export const PLACEMENTS = [
+  // Gate
+  { id: 'gate_booth', model: 'container_office', at: [9, 35.5], rot: 0, size: [3.0, 7.0] },
+
   // Site office compound
   { id: 'office', model: 'office_stack', at: [-43.5, 26.7], rot: 0, size: [11.5, 8.1] },
   { id: 'office_annex', model: 'container_office', at: [-53.5, 26.7], rot: Q, size: [3.0, 7.0] },

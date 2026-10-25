@@ -84,3 +84,37 @@ test.describe('shell', () => {
     await expect(page.locator('#face-quiz')).toBeVisible();
   });
 });
+
+const AREA_CENTRES = { office: [-42, 20], building: [-35, -10], excavation: [30, -18], laydown: [55, 20], parking: [27, 24], gate: [-1.5, 34] };
+const completeThree = () => {
+  const s = { v: 1, answers: { 1: [2, 2, 2], 3: [1, 1, 1], 5: [3, 3, 3] }, lastTalked: { 1: 1, 3: 2, 5: 3 }, officeSeen: false };
+  localStorage.setItem('wp.sitewalk.v1', JSON.stringify(s));
+};
+
+test.describe('world', () => {
+  test('site renders every area', async ({ page }) => {
+    const errors = await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    for (const [id, [x, z]] of Object.entries(AREA_CENTRES)) {
+      await page.evaluate(([x, z]) => window.__siteWalk.teleport(x, z), [x, z]);
+      await page.waitForTimeout(700);
+      await page.screenshot({ path: `test-results/areas/${id}.png` });
+    }
+    // Whole-site overview for review.
+    await page.evaluate(() => { const { camera, controls } = window.__siteWalk.game.engine; controls.maxDistance = 200; controls.target.set(0, 0, 0); camera.position.set(-70, 110, 120); });
+    await page.waitForTimeout(700);
+    await page.screenshot({ path: 'test-results/areas/overview.png' });
+    expect(errors).toEqual([]);
+    const meshes = await page.evaluate(() => { let n = 0; window.__siteWalk.game.world.root.traverse((o) => { if (o.isMesh) n++; }); return n; });
+    expect(meshes).toBeGreaterThan(300);
+  });
+
+  test('office marker hidden until open', async ({ page }) => {
+    await openGame(page);
+    expect(await page.evaluate(() => window.__siteWalk.game.world.officeMarker.visible)).toBe(false);
+    await page.evaluate(completeThree);
+    await page.reload();
+    await page.waitForFunction(() => window.__siteWalk?.isReady());
+    expect(await page.evaluate(() => window.__siteWalk.game.world.officeMarker.visible)).toBe(true);
+  });
+});
