@@ -1,0 +1,62 @@
+/* Site Walk overlays. Uses the tokens on :root in index.html (green #008037, ink, IBM Plex). */
+#siteWalk { font-family: var(--body); color: var(--black); -webkit-user-select: none; user-select: none; touch-action: none; }
+#siteWalk .sw-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+#siteWalk [hidden] { display: none !important; }
+#siteWalk button { font-family: inherit; color: inherit; }
+#siteWalk kbd { font: 700 11px var(--display); border: 2px solid currentColor; padding: 0 5px; margin-left: 6px; }
+
+/* Buttons */
+.sw-btn { padding: 12px 20px; border: var(--rule); background: var(--white); font: 600 13px var(--display); letter-spacing: var(--track-wide); cursor: pointer; }
+.sw-btn:hover { background: var(--surface-2); }
+.sw-btn-primary { background: var(--primary); color: var(--white) !important; border-color: var(--primary-dark); }
+.sw-btn-primary:hover { background: var(--white); color: var(--primary-dark) !important; border-color: var(--primary); }
+#siteWalk button:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+.sw-kicker { margin: 0 0 6px; font: 600 11px var(--display); letter-spacing: var(--track-wide); color: var(--primary-dark); }
+
+/* Loading */
+.sw-loading { position: absolute; inset: 0; z-index: 30; display: grid; place-items: center; padding: 16px;
+  background: #BFE3F2 linear-gradient(180deg, #BFE3F2 0%, #E4EEDC 100%); }
+.sw-loading-card { width: min(420px, 100%); background: var(--white); border: var(--rule); box-shadow: 8px 8px 0 var(--primary); padding: 24px 26px; }
+.sw-loading-kicker { margin: 0 0 6px; font: 600 11px var(--display, monospace); letter-spacing: .08em; color: #006830; }
+.sw-loading-title { margin: 0 0 14px; font: 700 22px var(--display, monospace); letter-spacing: -.02em; }
+.sw-loading-bar { height: 12px; border: 2px solid #1A1A1A; background: #fff; }
+.sw-loading-bar span { display: block; height: 100%; background: #008037; transition: width .25s ease; }
+.sw-loading-note { margin: 10px 0 0; font-size: 13px; color: #505050; }
+
+/* Opening card */
+.sw-opening { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; padding: 16px; background: rgba(26, 26, 26, .35); overflow-y: auto; }
+.sw-opening-card { width: min(640px, 100%); background: var(--white); border: var(--rule); box-shadow: 10px 10px 0 var(--primary); padding: 28px 32px; }
+.sw-opening h1 { margin: 0 0 12px; font-size: 32px; line-height: 1.1; letter-spacing: -.03em; }
+.sw-opening-lede { margin: 0 0 14px; font-size: 16px; line-height: 1.55; }
+.sw-opening-back { margin: 0 0 14px; padding: 8px 12px; background: var(--primary-tint); border-left: 6px solid var(--primary); font-size: 14px; }
+.sw-opening-steps { margin: 0 0 16px; padding-left: 22px; font-size: 14px; line-height: 1.5; color: var(--secondary); }
+.sw-opening-steps b { color: var(--black); }
+.sw-controls { margin: 0 0 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); border-top: var(--line); border-left: var(--line); }
+.sw-controls div { display: flex; gap: 8px; align-items: baseline; padding: 7px 10px; border-right: var(--line); border-bottom: var(--line); }
+.sw-controls dt { font: 700 12px var(--display); white-space: nowrap; }
+.sw-controls dd { margin: 0; font-size: 13px; color: var(--secondary); }
+.sw-opening-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* Menu */
+.sw-menu { position: absolute; top: 14px; right: 14px; z-index: 40; }
+.sw-menu-btn { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--white); border: var(--rule); font: 700 13px var(--display); letter-spacing: var(--track-wide); cursor: pointer; box-shadow: 4px 4px 0 var(--primary); }
+.sw-menu-btn:hover { background: var(--surface-2); }
+.sw-burger, .sw-burger::before, .sw-burger::after { display: block; width: 16px; height: 2px; background: var(--black); position: relative; }
+.sw-burger::before, .sw-burger::after { content: ''; position: absolute; left: 0; }
+.sw-burger::before { top: -5px; } .sw-burger::after { top: 5px; }
+.sw-menu-panel { position: absolute; right: 0; top: calc(100% + 8px); width: 260px; background: var(--white); border: var(--rule); box-shadow: 6px 6px 0 var(--primary); display: flex; flex-direction: column; }
+.sw-menu-title { margin: 0; padding: 10px 14px; font: 600 11px var(--display); letter-spacing: var(--track-wide); color: var(--secondary); border-bottom: var(--line); }
+.sw-menu-panel button { text-align: left; padding: 11px 14px; border: 0; border-bottom: 1px dashed var(--border-gray); background: none; font: 500 14px var(--body); cursor: pointer; }
+.sw-menu-panel button:hover { background: var(--primary); color: var(--white); }
+.sw-menu-panel hr { margin: 0; border: 0; border-top: var(--rule); }
+
+/* Fallback note on the classic pages */
+.sw-fallback-note { margin: 0; padding: 12px 44px; background: var(--primary-tint); border-bottom: var(--rule); font-size: 14px; }
+
+@media (max-width: 640px) {
+  .sw-opening-card { padding: 20px 18px; }
+  .sw-opening h1 { font-size: 24px; }
+  .sw-menu { top: 10px; right: 10px; }
+  .sw-menu-btn kbd { display: none; }
+  .sw-fallback-note { padding: 12px 16px; }
+}

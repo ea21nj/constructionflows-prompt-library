@@ -1486,18 +1486,37 @@
       .hero-section { padding: 48px 16px; }
       .face:not(#face-home) { padding: 28px 16px; }
     }
+    /* ---- Site Walk layer ------------------------------------------------- */
+    #siteWalk { display: none; }
+    html.site-walk-on, html.site-walk-on body { height: 100%; overflow: hidden; }
+    html.site-walk-on #siteWalk { display: block; position: fixed; inset: 0; z-index: 500; background: #BFE3F2; }
+    html.site-walk-on body > .sidebar, html.site-walk-on body > main { display: none; }
   </style>
+  <script>
+    // Site Walk starts first unless the link points at a classic page (#quiz, #agents, #discovery, #about).
+    if (!/^#(quiz|agents|discovery|about)$/.test(location.hash)) document.documentElement.classList.add('site-walk-on');
+  </script>
 </head>
 <body>
+  <div id="siteWalk" aria-label="Site walk">
+    <div class="sw-loading" role="status">
+      <div class="sw-loading-card">
+        <p class="sw-loading-kicker">Workflow Playbook</p>
+        <p class="sw-loading-title">Getting the site ready…</p>
+        <div class="sw-loading-bar"><span style="width:5%"></span></div>
+        <p class="sw-loading-note">Loading the crew, the crane and the food truck.</p>
+      </div>
+    </div>
+  </div>
   <nav class="sidebar">
     <div class="sidebar-brand">
       <span class="sidebar-logo">W</span>
       <span>Workflow Playbook</span>
     </div>
     <div class="sidebar-nav">
-      <a href="#" data-face="home" class="nav-link active">Home</a>
+      <a href="#" data-site-walk class="nav-link">Site walk</a>
       <a href="#" data-face="quiz" class="nav-link">Agent Quiz</a>
-      <a href="#" data-face="agents" class="nav-link">10 Agents</a>
+      <a href="#" data-face="agents" class="nav-link active">10 Agents</a>
       <a href="#" data-face="discovery" class="nav-link">Discovery</a>
       <a href="#" data-face="stack" class="nav-link" style="display:none;">Tech Stack</a>
       <a href="#" data-face="about" class="nav-link">About</a>
@@ -1505,98 +1524,7 @@
   </nav>
 
   <main>
-    <div class="face active" id="face-home">
-      <!-- Hero Section -->
-      <section class="hero-section">
-        <div class="hero-content">
-          <div class="hero-left">
-            <div class="hero-badge">20-question implementation diagnostic</div>
-            <h1 class="hero-headline">Stop guessing where AI fits in your construction business.</h1>
-            <p class="hero-description">In about three minutes, answer practical questions about bids, RFIs, change orders, field reports, billing, documents, and follow-up — then get a ranked recommendation for the first agent your team should actually implement.</p>
-            <div class="hero-buttons">
-              <button class="hero-btn primary" id="heroStartQuiz">Find my first agent →</button>
-            </div>
-            <div class="hero-tags">
-              <span class="tag">3-minute diagnostic</span>
-              <span class="tag">9 agent paths</span>
-              <span class="tag">Human approval first</span>
-              <span class="tag">Built for contractors</span>
-            </div>
-          </div>
-          <div class="hero-right">
-            <div class="preview-card">
-              <h3 id="previewAgentName"></h3>
-              <ul class="preview-bullets" id="previewAgentBullets"></ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- How It Works Section -->
-      <section class="steps-section">
-        <div class="steps-container">
-          <div class="step">
-            <div class="step-number">01</div>
-            <h4>Answer 20 questions</h4>
-            <p>Tell us about your biggest workflow pain points in about 3 minutes.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">02</div>
-            <h4>See your score update</h4>
-            <p>Watch in real-time as each answer refines your agent recommendation.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">03</div>
-            <h4>Get your recommendation</h4>
-            <p>See the best agent to implement first, plus a secondary option and workflow.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Stats Section -->
-      <section class="stats-section">
-        <div class="stats-container">
-          <div class="stat-item">
-            <div class="stat-number">9</div>
-            <div class="stat-label">Agent Types Scored</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">20</div>
-            <div class="stat-label">Workflow Questions</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">3</div>
-            <div class="stat-label">Minute Diagnostic</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Rollout Plan Section -->
-      <section class="rollout-section">
-        <div class="rollout-left">
-          <h2>Your result becomes a rollout plan.</h2>
-          <p>Not a generic score. You'll see the agent to start with, why it fits, and the first workflow to test with your team.</p>
-        </div>
-      </section>
-
-      <!-- Features Section -->
-      <section class="features-section">
-        <div class="feature-box">
-          <h3>Built like a jobsite workflow review.</h3>
-          <p>No generic AI hype. The quiz maps real construction bottlenecks to implementable agents: estimator copilot, PM second brain, change order evidence, RFI/submittal tracking, field reporting, schedule risk, CRM follow-up, billing automation, and project knowledge.</p>
-        </div>
-        <div class="feature-box">
-          <h3>You leave with</h3>
-          <ul>
-            <li>Primary agent recommendation</li>
-            <li>Secondary implementation options</li>
-            <li>Best first workflow</li>
-          </ul>
-        </div>
-      </section>
-    </div>
-
-    <div class="face" id="face-agents">
+    <div class="face active" id="face-agents">
       <h1>10 agent ideas</h1>
       <p>Click any agent to see full positioning, workflow, tracker fields, and implementation details.</p>
       <div class="agent-filters" id="agentFilters"></div>
@@ -1975,37 +1903,6 @@ const agents = [
       }
     ];
 
-    // Preview card agent cycling
-    let previewIndex = 0;
-
-    function updatePreviewCard() {
-      const nameEl = document.getElementById('previewAgentName');
-      const bulletsEl = document.getElementById('previewAgentBullets');
-
-      if (!nameEl || !bulletsEl || !agents || agents.length === 0) return;
-
-      // Fade out
-      nameEl.classList.add('fade-out');
-      bulletsEl.classList.add('fade-out');
-
-      // Update after fade completes
-      setTimeout(() => {
-        const agent = agents[previewIndex];
-        nameEl.textContent = agent.name;
-
-        const bullets = agent.whatItDoes.slice(0, 4).map(item => `<li>${item}</li>`).join('');
-        bulletsEl.innerHTML = bullets;
-
-        // Fade in
-        nameEl.classList.remove('fade-out');
-        bulletsEl.classList.remove('fade-out');
-
-        previewIndex = (previewIndex + 1) % agents.length;
-      }, 400);
-    }
-
-    updatePreviewCard();
-    setInterval(updatePreviewCard, 4500);
 
     // Quiz data
     const quizQuestions = [
@@ -2988,9 +2885,6 @@ const agents = [
 
 
     // Home buttons
-    document.getElementById('heroStartQuiz').addEventListener('click', () => {
-      document.querySelector('[data-face="quiz"]').click();
-    });
 
 
     // Audit modal close
@@ -3011,11 +2905,30 @@ const agents = [
     document.getElementById('quizSubmit').addEventListener('click', submitQuiz);
     document.getElementById('quizRetake').addEventListener('click', retakeQuiz);
 
+    // Site Walk bridge: the game (src/game/main.js) reuses the agent data and dialog, and switches views.
+    function openClassic(faceId = 'agents') {
+      document.documentElement.classList.remove('site-walk-on');
+      const link = document.querySelector(`[data-face="${faceId}"]`) || document.querySelector('[data-face="agents"]');
+      link.click();
+      window.scrollTo(0, 0);
+      window.dispatchEvent(new CustomEvent('sitewalk:hide'));
+    }
+    function showSiteWalk() {
+      document.documentElement.classList.add('site-walk-on');
+      if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+      window.dispatchEvent(new CustomEvent('sitewalk:show'));
+    }
+    document.querySelector('[data-site-walk]').addEventListener('click', (e) => { e.preventDefault(); showSiteWalk(); });
+    const deepLink = location.hash.match(/^#(quiz|agents|discovery|about)$/);
+    if (deepLink) openClassic(deepLink[1]);
+    window.WP = { agents, showAgentModal, openClassic, showSiteWalk };
+
     // Initialize
     renderAgentFilters();
     renderAgentCards();
     renderDiscovery();
     renderQuizFace();
   </script>
+  <script type="module" src="/src/game/main.js"></script>
 </body>
 </html>
