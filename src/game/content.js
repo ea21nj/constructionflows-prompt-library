@@ -11,7 +11,7 @@ export const AREAS = [
 ];
 
 export const OFFICE = {
-  footprint: [-58.5, -37.5, 22.5, 30.9],
+  footprint: [-57, -37.75, 22.65, 30.75],   // office stack + annex (see layout.js)
   door: [-37.5, 27],
   trigger: [-37.5, -34, 25, 29],
 };
@@ -30,7 +30,7 @@ export const CREW = [
   },
   {
     agentId: 8, name: 'Priya', role: 'AIA Billing / Pay Apps', area: 'office', activity: 'laptop',
-    spot: [-35.5, 31.8], route: [[-35.5, 31.8], [-33, 32.5], [-35.5, 33.4]],
+    spot: [-35.5, 31.8], route: [[-35.5, 31.8], [-35, 33.8], [-36.5, 33.2]],
     questions: [
       { q: 'How long does it take to put a pay app together?', answers: ['An hour or two', 'Most of a day', 'Several days of chasing', 'It takes over the whole week'] },
       { q: 'How do you get percent complete from the PMs?', answers: ['A clean report every month', 'A quick email back and forth', 'I chase them until I get it', 'I end up estimating it myself'] },
@@ -48,7 +48,7 @@ export const CREW = [
   },
   {
     agentId: 3, name: 'Dave', role: 'PM Second Brain', area: 'building', activity: 'clipboard',
-    spot: [-46, -17], route: [[-46, -17], [-40, -17], [-40, -21], [-46, -21]],
+    spot: [-44, -17], route: [[-44, -17], [-40, -17], [-40, -19.5], [-44, -19.5]],
     questions: [
       { q: 'How many projects are you juggling right now?', answers: ['One or two', 'Three to five', 'Six to ten', 'More than I can keep in my head'] },
       { q: 'Where do your meeting notes and action items end up?', answers: ['A shared tracker everyone uses', 'A notebook I keep up to date', 'Emails to myself', 'Mostly nowhere'] },
@@ -66,7 +66,7 @@ export const CREW = [
   },
   {
     agentId: 6, name: 'Sam', role: 'Change Order / Margin Protection', area: 'building', activity: 'photo',
-    spot: [-16, -26], route: [[-16, -26], [-13, -23], [-16, -21]],
+    spot: [-18, -27], route: [[-18, -27], [-12.5, -26], [-12.5, -18]],
     questions: [
       { q: 'When extra work comes up on site, how is it captured?', answers: ['Written up and priced right away', 'Noted and passed to the PM', 'Remembered at billing time', 'It often is not'] },
       { q: 'Does work ever start before the change is approved in writing?', answers: ['Never', 'Rarely', 'Fairly often', 'All the time'] },
