@@ -1,0 +1,146 @@
+{
+  "crane": {
+    "file": "crane.glb",
+    "bytes": 31352
+  },
+  "dump_truck": {
+    "file": "dump_truck.glb",
+    "bytes": 24300
+  },
+  "concrete_truck": {
+    "file": "concrete_truck.glb",
+    "bytes": 27152
+  },
+  "small_truck": {
+    "file": "small_truck.glb",
+    "bytes": 21880
+  },
+  "office_stack": {
+    "file": "office_stack.glb",
+    "bytes": 11996
+  },
+  "container_office": {
+    "file": "container_office.glb",
+    "bytes": 7020
+  },
+  "toilet": {
+    "file": "toilet.glb",
+    "bytes": 6028
+  },
+  "container_shipping": {
+    "file": "container_shipping.glb",
+    "bytes": 7468
+  },
+  "skip_red": {
+    "file": "skip_red.glb",
+    "bytes": 5632
+  },
+  "planks": {
+    "file": "planks.glb",
+    "bytes": 5972
+  },
+  "planks_yellow": {
+    "file": "planks_yellow.glb",
+    "bytes": 6692
+  },
+  "box_stack": {
+    "file": "box_stack.glb",
+    "bytes": 5984
+  },
+  "barrel": {
+    "file": "barrel.glb",
+    "bytes": 5856
+  },
+  "helmet": {
+    "file": "helmet.glb",
+    "bytes": 4856
+  },
+  "wheelbarrow": {
+    "file": "wheelbarrow.glb",
+    "bytes": 23888
+  },
+  "cement_mixer": {
+    "file": "cement_mixer.glb",
+    "bytes": 20344
+  },
+  "cone": {
+    "file": "cone.glb",
+    "bytes": 8496
+  },
+  "barrier": {
+    "file": "barrier.glb",
+    "bytes": 15464
+  },
+  "fence": {
+    "file": "fence.glb",
+    "bytes": 16952
+  },
+  "pallet": {
+    "file": "pallet.glb",
+    "bytes": 15196
+  },
+  "cinderblock": {
+    "file": "cinderblock.glb",
+    "bytes": 3964
+  },
+  "bricks": {
+    "file": "bricks.glb",
+    "bytes": 3068
+  },
+  "scaffolding": {
+    "file": "scaffolding.glb",
+    "bytes": 12116
+  },
+  "clipboard": {
+    "file": "clipboard.glb",
+    "bytes": 5936
+  },
+  "skip": {
+    "file": "skip.glb",
+    "bytes": 3812
+  },
+  "work_light": {
+    "file": "work_light.glb",
+    "bytes": 18204
+  },
+  "steel_beam": {
+    "file": "steel_beam.glb",
+    "bytes": 4156
+  },
+  "pipe": {
+    "file": "pipe.glb",
+    "bytes": 3392
+  },
+  "toolbox": {
+    "file": "toolbox.glb",
+    "bytes": 7212
+  },
+  "fuel_tank": {
+    "file": "fuel_tank.glb",
+    "bytes": 14904
+  },
+  "ladder": {
+    "file": "ladder.glb",
+    "bytes": 21148
+  },
+  "cement_bag": {
+    "file": "cement_bag.glb",
+    "bytes": 7896
+  },
+  "radio": {
+    "file": "radio.glb",
+    "bytes": 6956
+  },
+  "character_m": {
+    "file": "character_m.glb",
+    "bytes": 306004
+  },
+  "character_f": {
+    "file": "character_f.glb",
+    "bytes": 410196
+  },
+  "anims": {
+    "file": "anims.glb",
+    "bytes": 484372
+  }
+}
