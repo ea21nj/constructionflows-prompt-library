@@ -92,12 +92,13 @@ export function createEngine(parent, tier) {
 
   const callbacks = [];
   const clock = new THREE.Clock();
-  let running = true, frames = 0, fpsT = 0, fps = 60;
+  let running = true, frames = 0, fps = 60, fpsStart = performance.now();
   function frame() {
     if (!running) return;
     requestAnimationFrame(frame);
     const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
-    frames++; fpsT += dt; if (fpsT >= 1) { fps = frames / fpsT; frames = 0; fpsT = 0; }
+    // Real frames per second (game time is capped per frame, so it can't be used for this).
+    frames++; const now = performance.now(); if (now - fpsStart >= 1000) { fps = (frames * 1000) / (now - fpsStart); frames = 0; fpsStart = now; }
     for (const fn of callbacks) fn(dt, t);
     controls.update();
     if (composer) composer.render(); else renderer.render(scene, camera);

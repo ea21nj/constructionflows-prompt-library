@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test';
 
 const OPENING = 'Walk the site and talk to the crew — each one is an AI agent that could help your business. After you\'ve met 3, head to the site office for your results. Prefer the classic pages? Use the menu.';
 
-async function openGame(page, path = '/?test=1') {
+// Software WebGL in CI is slow: the low tier keeps game time close to real time.
+async function openGame(page, path = '/?test=1&tier=low') {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error' && !/favicon|404/.test(m.text())) errors.push(m.text()); });
@@ -116,5 +117,30 @@ test.describe('world', () => {
     await page.reload();
     await page.waitForFunction(() => window.__siteWalk?.isReady());
     expect(await page.evaluate(() => window.__siteWalk.game.world.officeMarker.visible)).toBe(true);
+  });
+});
+
+test.describe('crew', () => {
+  test('ten crew are on site', async ({ page }) => {
+    await openGame(page);
+    const crew = await page.evaluate(() => window.__siteWalk.crewPositions());
+    expect(crew).toHaveLength(10);
+  });
+
+  test('crew move over time', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    // Wait on game time, not wall time: software WebGL in CI renders only a few frames a second.
+    const before = await page.evaluate(() => window.__siteWalk.crewPositions());
+    await page.waitForFunction((before) => {
+      const now = window.__siteWalk.crewPositions();
+      return now.filter((n, i) => Math.hypot(n.x - before[i].x, n.z - before[i].z) > 0.3).length >= 3;
+    }, before, { timeout: 90_000 });
+    // Close-ups for review.
+    for (const id of [1, 5, 10]) {
+      await page.evaluate((id) => { const m = window.__siteWalk.game.crew.byId(id); const { camera, controls } = window.__siteWalk.game.engine; controls.minDistance = 3; controls.target.set(m.pos.x, 1.1, m.pos.z); camera.position.set(m.pos.x + 3.2, 3.2, m.pos.z + 4.2); }, id);
+      await page.waitForTimeout(600);
+      await page.screenshot({ path: `test-results/crew/${id}.png` });
+    }
   });
 });

@@ -303,5 +303,9 @@ export function buildParking(g, assets) {
     const shade = new THREE.Mesh(new THREE.ConeGeometry(1.3, 0.45, 8, 1, true), new THREE.MeshStandardMaterial({ map: stripeTexture('#008037', '#ffffff', 8), side: THREE.DoubleSide }));
     shade.position.y = 2.45; shade.castShadow = true; t.add(shade);
   }
+  // Tom's bench: he sits facing the middle table (the sitting pose puts his hips ~0.4 m behind his feet).
+  const tomBench = new THREE.Group(); tomBench.position.set(21, 0, 30.78); g.add(tomBench);
+  box(tomBench, 1.4, 0.07, 0.34, mat('#9c7a4e'), 0, 0.44, 0);
+  for (const x of [-0.6, 0.6]) box(tomBench, 0.07, 0.44, 0.3, mat('#7a5634'), x, 0.22, 0);
   instanceModel(g, assets, 'cone', [[13, 16.8], [16, 16.8], [36, 16.8], [40, 16.8]].map(([x, z]) => ({ x, z })));
 }

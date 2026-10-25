@@ -52,9 +52,10 @@ export const PLACEMENTS = [
 
   // Parking + food truck
   { id: 'food_truck', proc: 'food_truck', at: [30.5, 27], rot: Q, size: [2.9, 5.6] },
-  { id: 'picnic_1', proc: 'picnic_table', at: [17, 32.8], rot: 0, size: [1.8, 1.6] },
-  { id: 'picnic_2', proc: 'picnic_table', at: [21, 32.8], rot: 0, size: [1.8, 1.6] },
-  { id: 'picnic_3', proc: 'picnic_table', at: [25, 32.8], rot: 0, size: [1.8, 1.6] },
+  // Picnic tables: only the table top is solid; the benches either side are walk-through.
+  { id: 'picnic_1', proc: 'picnic_table', at: [17, 32.4], rot: 0, size: [1.8, 0.8] },
+  { id: 'picnic_2', proc: 'picnic_table', at: [21, 32.4], rot: 0, size: [1.8, 0.8] },
+  { id: 'picnic_3', proc: 'picnic_table', at: [25, 32.4], rot: 0, size: [1.8, 0.8] },
   { id: 'pickup_1', model: 'small_truck', at: [14, 20], rot: 0, size: [2.9, 5.6] },
   { id: 'pickup_2', model: 'small_truck', at: [39.5, 31], rot: 0, size: [2.9, 5.6] },
 ];

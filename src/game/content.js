@@ -102,7 +102,7 @@ export const CREW = [
   },
   {
     agentId: 10, name: 'Tom', role: 'Company Knowledge / Archiver', area: 'parking', activity: 'sit',
-    spot: [21, 31], route: [[21, 31], [21.6, 31]],
+    spot: [21, 31.2], route: [[21, 31.2], [21.05, 31.2]],
     questions: [
       { q: 'When a new hire has a question, where do they go?', answers: ['A shared playbook', 'Templates in a shared drive', 'Whoever is around', 'Straight to the owner, every time'] },
       { q: 'How are lessons learned captured after a job?', answers: ['Written up at closeout', 'Talked about, sometimes noted', 'Talked about, never written', 'They are not'] },
