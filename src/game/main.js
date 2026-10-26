@@ -17,6 +17,7 @@ import { createHud } from './ui/hud.js';
 import { createMinimap } from './ui/minimap.js';
 import { createResults } from './ui/results.js';
 import { createAudio } from './audio.js';
+import { nextTier } from './perf.js';
 import { OFFICE } from './content.js';
 import { rank } from './scoring.js';
 import * as THREE from 'three';
@@ -68,7 +69,7 @@ const opening = createOpening(root, {
 
 const menu = createMenu(root, {
   onSkip: (face) => WP.openClassic(face),
-  onResume: () => {},
+  onResume: () => { if (game.ready && !game.started) opening.show({ met: completedCount(game.state) }); },
   onReset: () => { game.state = createState(); saveState(game.state); window.dispatchEvent(new CustomEvent('sitewalk:reset')); },
   onToggleSound: () => {
     audio.setMuted(!audio.muted);
@@ -219,12 +220,14 @@ function tickFootsteps(dt) {
 }
 
 // If the device can't keep up (under 30 fps for 4 s), step the quality down one tier.
-const TIER_DOWN = { high: 'medium', medium: 'low' };
 function watchPerformance() {
+  let samples = [];
   setInterval(() => {
     const engine = game.engine;
-    if (!game.started || document.hidden || !document.documentElement.classList.contains('site-walk-on')) return;
-    if (engine.fps() < 30 && TIER_DOWN[engine.tier]) engine.setTier(TIER_DOWN[engine.tier]);
+    if (!game.started || document.hidden || !document.documentElement.classList.contains('site-walk-on')) { samples = []; return; }
+    samples = [...samples, engine.fps()].slice(-2);
+    const next = nextTier(engine.tier, samples);
+    if (next !== engine.tier) { engine.setTier(next); samples = []; }
   }, 4000);
 }
 
@@ -267,6 +270,10 @@ function boot() {
   return booting;
 }
 
-window.addEventListener('sitewalk:show', () => { boot(); game.engine?.resume(); game.engine?.resize(); if (game.started) audio.setAmbient(true); });
-window.addEventListener('sitewalk:hide', () => { game.engine?.pause(); menu.close(); audio.setAmbient(false); });
+window.addEventListener('sitewalk:show', () => {
+  boot(); game.engine?.resume(); game.engine?.resize();
+  if (game.started) audio.setAmbient(true);
+  else if (game.ready && !opening.isOpen()) opening.show({ met: completedCount(game.state) });   // skipped earlier, now back
+});
+window.addEventListener('sitewalk:hide', () => { game.engine?.pause(); menu.close(); audio.setAmbient(false); if (game.talkingId != null) endTalk(); });
 if (!deepLink) boot();

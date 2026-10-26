@@ -8,6 +8,8 @@ const maria = CREW.find((c) => c.agentId === 1);
 const member = { agentId: 1, data: maria };
 let root, calls, talk;
 beforeEach(() => {
+  document.documentElement.classList.add('site-walk-on');
+  talk?.close();
   document.body.innerHTML = '<div id="r"></div>';
   root = document.getElementById('r');
   calls = { onAnswer: vi.fn(), onLeave: vi.fn(), onRestart: vi.fn() };
@@ -56,6 +58,30 @@ describe('talk panel', () => {
     expect(calls.onLeave).toHaveBeenCalledTimes(1);
     root.querySelector('.sw-talk-close').click();
     expect(calls.onLeave).toHaveBeenCalledTimes(2);
+  });
+
+  test('keys are ignored on the classic pages and while typing in a field', () => {
+    talk.open(member, createState());
+    document.documentElement.classList.remove('site-walk-on');
+    key('2');
+    document.documentElement.classList.add('site-walk-on');
+    root.insertAdjacentHTML('beforeend', '<textarea id="t"></textarea>');
+    const t = root.querySelector('#t'); t.focus();
+    t.dispatchEvent(new KeyboardEvent('keydown', { key: '3', code: 'Digit3', bubbles: true }));
+    expect(calls.onAnswer).not.toHaveBeenCalled();
+  });
+
+  test('screen readers get the whole line at once, not the typing', () => {
+    talk.close();
+    const typing = createTalk(root, { ...calls, instant: false });
+    typing.open(member, createState());
+    const panel = root.querySelectorAll('.sw-talk')[1];
+    const sr = panel.querySelector('.sw-talk-sr');
+    expect(sr.textContent).toBe(`Hey, I'm Maria. ${maria.questions[0].q}`);
+    expect(sr.getAttribute('aria-live')).toBe('polite');
+    expect(panel.getAttribute('aria-labelledby')).toBe(sr.id);
+    expect(panel.querySelector('.sw-talk-say').getAttribute('aria-hidden')).toBe('true');
+    typing.close();
   });
 
   test('keys do nothing while closed', () => {

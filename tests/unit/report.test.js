@@ -68,6 +68,27 @@ describe('results board', () => {
     expect(calls.onOpenDetails).toHaveBeenCalledWith(9, expect.any(HTMLElement));
   });
 
+  test('Tab is left alone while the agent details dialog is open over the board', () => {
+    // jsdom has no layout: pretend every element is rendered so the focus trap sees the buttons.
+    const desc = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetParent');
+    Object.defineProperty(HTMLElement.prototype, 'offsetParent', { configurable: true, get() { return document.body; } });
+    board.open(sample());
+    document.body.insertAdjacentHTML('beforeend', '<div id="agentDialog"><button id="inDialog">Tab me</button></div>');
+    document.body.classList.add('dialog-open');
+    document.getElementById('inDialog').focus();
+    const tab = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
+    document.getElementById('inDialog').dispatchEvent(tab);
+    expect(tab.defaultPrevented).toBe(false);
+    document.body.classList.remove('dialog-open');
+    document.getElementById('agentDialog').remove();
+    // Without the dialog, the same Tab from outside is pulled back into the board.
+    const outside = document.createElement('button'); document.body.appendChild(outside); outside.focus();
+    const tab2 = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
+    outside.dispatchEvent(tab2);
+    expect(tab2.defaultPrevented).toBe(true);
+    Object.defineProperty(HTMLElement.prototype, 'offsetParent', desc);
+  });
+
   test('Back to the site and Esc close it', () => {
     board.open(sample());
     root.querySelector('[data-back]').click();

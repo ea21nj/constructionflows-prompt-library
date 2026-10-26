@@ -10,6 +10,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 import { tierSettings } from './quality.js';
+import { createFpsMeter } from './perf.js';
 
 const SUN_DIR = new THREE.Vector3(0.55, 0.75, 0.35).normalize();
 
@@ -59,11 +60,11 @@ export function createEngine(parent, tier) {
   controls.minPolarAngle = 0.55; controls.maxPolarAngle = 1.1;    // the Sims angle
   controls.minDistance = 10; controls.maxDistance = 60;
 
-  let composer = null, fxaa = null;
+  let composer = null, fxaa = null, sao = null;
   if (settings.post) {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    const sao = new SAOPass(scene, camera);
+    sao = new SAOPass(scene, camera);
     Object.assign(sao.params, { saoBias: 0.5, saoIntensity: 0.012, saoScale: 6, saoKernelRadius: 18, saoBlur: true });
     composer.addPass(sao);
     composer.addPass(new OutputPass());
@@ -92,13 +93,14 @@ export function createEngine(parent, tier) {
 
   const callbacks = [];
   const clock = new THREE.Clock();
-  let running = true, frames = 0, fps = 60, fpsStart = performance.now();
+  let running = true;
+  const meter = createFpsMeter();
+  document.addEventListener('visibilitychange', () => meter.reset());
   function frame() {
     if (!running) return;
     requestAnimationFrame(frame);
     const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
-    // Real frames per second (game time is capped per frame, so it can't be used for this).
-    frames++; const now = performance.now(); if (now - fpsStart >= 1000) { fps = (frames * 1000) / (now - fpsStart); frames = 0; fpsStart = now; }
+    meter.frame();   // real frames per second (game time is capped per frame, so it can't be used for this)
     for (const fn of callbacks) fn(dt, t);
     controls.update();
     if (composer) composer.render(); else renderer.render(scene, camera);
@@ -117,7 +119,9 @@ export function createEngine(parent, tier) {
       sun.shadow.mapSize.set(s.shadowMapSize, s.shadowMapSize);
       sun.shadow.map?.dispose(); sun.shadow.map = null;
     }
-    if (!s.post) composer = null;
+    // Dropping post-processing keeps the cheap FXAA pass: the renderer was created without MSAA.
+    if (!s.post && sao && composer) { composer.removePass(sao); sao.dispose?.(); sao = null; }
+    meter.reset();
     settings = s; engine.tier = next;
     resize();
   }
@@ -128,9 +132,10 @@ export function createEngine(parent, tier) {
     setTier,
     onFrame: (fn) => callbacks.push(fn),
     setShadowCenter,
-    fps: () => fps,
+    fps: () => meter.fps(),
+    antialiased: () => renderer.getContextAttributes()?.antialias === true || !!(composer && fxaa),
     pause() { running = false; },
-    resume() { if (!running) { running = true; clock.getDelta(); frame(); } },
+    resume() { if (!running) { running = true; clock.getDelta(); meter.reset(); frame(); } },
     resize,
   };
   return engine;

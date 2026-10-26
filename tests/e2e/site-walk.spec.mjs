@@ -294,6 +294,9 @@ test.describe('site office', () => {
     await expect(page.locator('#agentDialog')).toBeVisible();
     const onTop = await page.evaluate(() => { const r = document.getElementById('agentDialog').getBoundingClientRect(); return !!document.elementFromPoint(r.left + r.width / 2, r.top + 40)?.closest('#agentDialog'); });
     expect(onTop).toBe(true);
+    // Keyboard users can move through the details dialog without being pulled behind it.
+    for (let i = 0; i < 3; i++) await page.keyboard.press('Tab');
+    expect(await page.evaluate(() => !!document.activeElement?.closest('#agentDialog'))).toBe(true);
     await page.keyboard.press('Escape');
     await expect(page.locator('#agentDialog')).toBeHidden();
     await expect(page.locator('.sw-results')).toBeVisible();
@@ -384,5 +387,40 @@ test.describe('polish', () => {
     await page.getByRole('button', { name: 'Start walking' }).click();
     // Software WebGL renders far below 30 fps, so the game should drop to a lighter tier on its own.
     await page.waitForFunction(() => window.__siteWalk.game.engine.tier !== 'high', null, { timeout: 90_000 });
+  });
+});
+
+test.describe('review fixes', () => {
+  test('keyboard works normally on the classic pages after playing', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.locator('.sw-menu-btn').click();
+    await page.locator('.sw-menu-panel').getByRole('button', { name: '10 agents' }).click();
+    await expect(page.locator('#face-agents')).toBeVisible();
+    // Enter on a nav link navigates; E does not start a hidden conversation.
+    await page.locator('[data-face="discovery"]').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#face-discovery')).toBeVisible();
+    await page.keyboard.press('KeyE');
+    expect(await page.evaluate(() => window.__siteWalk.game.talkingId ?? null)).toBe(null);
+    const down = await page.evaluate(() => { const e = new KeyboardEvent('keydown', { key: 'ArrowDown', code: 'ArrowDown', bubbles: true, cancelable: true }); document.body.dispatchEvent(e); return e.defaultPrevented; });
+    expect(down).toBe(false);
+  });
+
+  test('skip to the agents, then come back to the site walk', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Skip to the agents' }).click();
+    await expect(page.locator('#face-agents')).toBeVisible();
+    await page.locator('[data-site-walk]').click();
+    await expect(page.getByRole('button', { name: 'Start walking' })).toBeVisible();
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await expect(page.locator('.sw-objective')).toBeVisible();
+  });
+
+  test('stepping down from high keeps anti-aliasing', async ({ page }) => {
+    await openGame(page, '/?test=1&tier=high');
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.waitForFunction(() => window.__siteWalk.game.engine.tier !== 'high', null, { timeout: 90_000 });
+    expect(await page.evaluate(() => window.__siteWalk.game.engine.antialiased())).toBe(true);
   });
 });

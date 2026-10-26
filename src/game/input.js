@@ -1,3 +1,5 @@
+import { gameActive, typing } from './active.js';
+
 // Keyboard and touch input for walking the site. Movement is an axis (x = right, y = forward,
 // relative to the camera); actions are events: talk, answer(n), leave.
 const MOVE = { KeyW: 'f', ArrowUp: 'f', KeyS: 'b', ArrowDown: 'b', KeyA: 'l', ArrowLeft: 'l', KeyD: 'r', ArrowRight: 'r' };
@@ -12,8 +14,6 @@ export function joystickVector(dx, dy, radius) {
   return { x: x + 0, y: y + 0 };
 }
 
-const typing = (e) => e.target?.closest?.('input, textarea, select, [contenteditable="true"]');
-
 export function createInput(root, { touch = false, blocked = () => false } = {}) {
   const keys = new Set();
   const handlers = { talk: [], answer: [], leave: [] };
@@ -21,13 +21,13 @@ export function createInput(root, { touch = false, blocked = () => false } = {})
   let stick = { x: 0, y: 0 };
 
   function onKeyDown(e) {
-    if (typing(e) || e.defaultPrevented) return;
+    if (!gameActive() || typing(e) || e.defaultPrevented) return;
     if (e.key === 'Shift') keys.add('run');
     if (blocked()) return;
     if (MOVE[e.code]) { keys.add(MOVE[e.code]); e.preventDefault(); return; }
     if (e.repeat) return;
     if (e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter') {
-      if (e.target?.closest?.('button')) return;              // Enter/Space on a focused button is a click
+      if (e.code !== 'KeyE' && e.target?.closest?.('button')) return;   // Enter/Space on a focused button is a click
       emit('talk'); e.preventDefault();
     } else if (/^Digit[1-4]$/.test(e.code)) emit('answer', Number(e.code.slice(5)));
     else if (e.key === 'Escape') emit('leave');
@@ -70,7 +70,7 @@ export function createInput(root, { touch = false, blocked = () => false } = {})
 
   return {
     axis() {
-      if (blocked()) return { x: 0, y: 0 };
+      if (blocked() || !gameActive()) return { x: 0, y: 0 };
       if (stick.x || stick.y) return { ...stick };
       let x = (keys.has('r') ? 1 : 0) - (keys.has('l') ? 1 : 0);
       let y = (keys.has('f') ? 1 : 0) - (keys.has('b') ? 1 : 0);

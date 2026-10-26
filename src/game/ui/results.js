@@ -108,7 +108,8 @@ export function createResults(root, { agents = [], onClose, onOpenDetails, onCla
   });
   // Esc closes the board; listening only while it's open.
   function onKey(e) {
-    if (el.hidden || e.defaultPrevented) return;
+    // The agent details dialog (opened from the board) owns the keyboard while it's open.
+    if (el.hidden || e.defaultPrevented || document.body.classList.contains('dialog-open')) return;
     if (e.key === 'Escape') { e.preventDefault(); onClose(); return; }
     if (e.key !== 'Tab') return;
     const items = [...el.querySelectorAll('button')].filter((b) => b.offsetParent !== null);

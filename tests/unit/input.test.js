@@ -5,7 +5,7 @@ let input;
 const down = (key, code, target = document) => target.dispatchEvent(new KeyboardEvent('keydown', { key, code, bubbles: true, cancelable: true }));
 const up = (key, code) => document.dispatchEvent(new KeyboardEvent('keyup', { key, code, bubbles: true }));
 
-beforeEach(() => { document.body.innerHTML = '<div id="g"></div><input id="field">'; input = createInput(document.getElementById('g'), { touch: false }); });
+beforeEach(() => { document.documentElement.classList.add('site-walk-on'); document.body.innerHTML = '<div id="g"></div><input id="field"><button id="btn">Menu</button>'; input = createInput(document.getElementById('g'), { touch: false }); });
 afterEach(() => input.dispose());
 
 describe('keyboard input', () => {
@@ -57,6 +57,30 @@ describe('keyboard input', () => {
     expect(input.axis()).toEqual({ x: 0, y: 0 });
     expect(talk).not.toHaveBeenCalled();
     blocked = false; up('w', 'KeyW');
+  });
+});
+
+describe('game not on screen', () => {
+  test('keys do nothing on the classic pages (no hijacked Enter, arrows or Space)', () => {
+    const talk = vi.fn(); input.on('talk', talk);
+    document.documentElement.classList.remove('site-walk-on');
+    const enter = new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true, cancelable: true });
+    const arrow = new KeyboardEvent('keydown', { key: 'ArrowDown', code: 'ArrowDown', bubbles: true, cancelable: true });
+    document.dispatchEvent(enter); document.dispatchEvent(arrow); down('e', 'KeyE');
+    expect(enter.defaultPrevented).toBe(false);
+    expect(arrow.defaultPrevented).toBe(false);
+    expect(talk).not.toHaveBeenCalled();
+    expect(input.axis()).toEqual({ x: 0, y: 0 });
+    document.documentElement.classList.add('site-walk-on');
+  });
+
+  test('E starts a talk even when a button has focus; Enter/Space on a button stay clicks', () => {
+    const talk = vi.fn(); input.on('talk', talk);
+    const btn = document.getElementById('btn'); btn.focus();
+    down('e', 'KeyE', btn);
+    expect(talk).toHaveBeenCalledTimes(1);
+    down('Enter', 'Enter', btn); down(' ', 'Space', btn);
+    expect(talk).toHaveBeenCalledTimes(1);
   });
 });
 

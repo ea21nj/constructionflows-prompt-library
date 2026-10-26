@@ -1,4 +1,6 @@
 // The always-available menu: skip the game for the classic pages, start over, sound.
+import { gameActive } from '../active.js';
+
 const ITEMS = [
   ['resume', 'Back to the site walk'],
   ['quiz', 'Agent quiz'],
@@ -47,7 +49,7 @@ export function createMenu(root, { onSkip, onResume, onReset, onToggleSound }) {
     if (id === 'resume') onResume(); else onSkip(id);
   });
   document.addEventListener('keydown', (e) => {
-    if (wrap.hidden || e.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+    if (wrap.hidden || !gameActive() || e.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
     if (e.key === 'm' || e.key === 'M') { isOpen() ? close() : open(); e.preventDefault(); }
     else if (e.key === 'Escape' && isOpen()) { close(); btn.focus(); e.preventDefault(); }   // other handlers skip defaultPrevented keys
   });

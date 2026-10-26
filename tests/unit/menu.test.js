@@ -3,6 +3,7 @@ import { createMenu } from '../../src/game/ui/menu.js';
 
 let root, calls, menu;
 beforeEach(() => {
+  document.documentElement.classList.add('site-walk-on');
   document.body.innerHTML = '<div id="r"></div>';
   root = document.getElementById('r');
   calls = { onSkip: vi.fn(), onResume: vi.fn(), onReset: vi.fn(), onToggleSound: vi.fn() };
@@ -30,6 +31,13 @@ describe('menu', () => {
     const input = root.querySelector('#i'); input.focus();
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'm', bubbles: true }));
     expect(menu.isOpen()).toBe(false);
+  });
+
+  test('M does nothing on the classic pages', () => {
+    document.documentElement.classList.remove('site-walk-on');
+    key('m');
+    expect(menu.isOpen()).toBe(false);
+    document.documentElement.classList.add('site-walk-on');
   });
 
   test('items call the right handlers', () => {

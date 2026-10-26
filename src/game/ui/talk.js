@@ -1,30 +1,39 @@
 // The conversation panel: the crew member asks their three questions in their own voice.
+import { gameActive, typing } from '../active.js';
+
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const SIGN_OFF = 'Thanks — that helps. I\'ll put together what an agent could take off your plate.';
 const UNLOCKED = 'The site office is open — head over when you\'re ready.';
 
+let instances = 0;
+
 export function createTalk(root, { onAnswer, onLeave, onRestart, instant = false }) {
+  const srId = `swTalkSay${instances++ || ''}`;
   const el = document.createElement('section');
   el.className = 'sw-talk';
   el.hidden = true;
   el.setAttribute('role', 'dialog');
-  el.setAttribute('aria-labelledby', 'swTalkSay');
+  el.setAttribute('aria-labelledby', srId);
   el.innerHTML = `
     <div class="sw-talk-face" aria-hidden="true"><span></span></div>
     <div class="sw-talk-body">
       <button type="button" class="sw-talk-close" aria-label="Walk away">×</button>
       <p class="sw-talk-meta"><span class="sw-talk-who"></span><span class="sw-talk-step"></span></p>
-      <p class="sw-talk-say" id="swTalkSay" aria-live="polite"></p>
+      <p class="sw-talk-sr sw-sr-only" id="${srId}" aria-live="polite"></p>
+      <p class="sw-talk-say" aria-hidden="true"></p>
       <div class="sw-talk-answers"></div>
     </div>`;
   root.appendChild(el);
   const say = el.querySelector('.sw-talk-say');
+  const sr = el.querySelector('.sw-talk-sr');
   const answers = el.querySelector('.sw-talk-answers');
   let member = null, step = 0, timer = null;
   const reduced = () => instant || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
+  // Screen readers get the whole line at once; the typed copy on screen is hidden from them.
   function type(text) {
     clearInterval(timer);
+    sr.textContent = text;
     if (reduced()) { say.textContent = text; return; }
     let i = 0; say.textContent = '';
     timer = setInterval(() => { say.textContent = text.slice(0, ++i); if (i >= text.length) clearInterval(timer); }, 14);
@@ -60,7 +69,7 @@ export function createTalk(root, { onAnswer, onLeave, onRestart, instant = false
     if (b) onAnswer(member.agentId, step, Number(b.dataset.choice));
   });
   document.addEventListener('keydown', (e) => {
-    if (!isOpen() || e.defaultPrevented) return;
+    if (!isOpen() || e.defaultPrevented || !gameActive() || typing(e)) return;
     if (e.key === 'Escape') { e.preventDefault(); onLeave(); return; }
     const n = Number(e.key);
     const buttons = answers.querySelectorAll('button');
