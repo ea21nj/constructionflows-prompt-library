@@ -2,12 +2,13 @@
 // well each agent you've met fits.
 import { completedCount, officeOpen, OFFICE_UNLOCK } from '../state.js';
 
-export function createHud(root, { onTalk = () => {} } = {}) {
+export function createHud(root, { onTalk = () => {}, onJump = () => {} } = {}) {
   const el = document.createElement('div');
   el.className = 'sw-hud';
   el.innerHTML = `
     <div class="sw-objective-box"><span class="sw-kicker">Objective</span><p class="sw-objective"></p></div>
     <div class="sw-prompt" hidden></div>
+    <button type="button" class="sw-jump-btn">Jump <kbd>Q</kbd></button>
     <p class="sw-sr-live sw-sr-only" aria-live="polite"></p>
     <div class="sw-toast" role="status" aria-live="polite" hidden></div>
     <details class="sw-clip" open>
@@ -23,6 +24,7 @@ export function createHud(root, { onTalk = () => {} } = {}) {
   let toastTimer = null, promptFor = null;
 
   prompt.addEventListener('click', (e) => { if (e.target.closest('button')) onTalk(); });
+  el.querySelector('.sw-jump-btn').addEventListener('click', onJump);
 
   return {
     el,
@@ -59,5 +61,6 @@ export function createHud(root, { onTalk = () => {} } = {}) {
         </li>`).join('');
     },
     setVisible(v) { el.hidden = !v; },
+    setJumpVisible(v) { el.querySelector('.sw-jump-btn').hidden = !v; },
   };
 }

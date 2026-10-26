@@ -118,3 +118,8 @@ Progress (who you've met, answers, whether the office is open) is saved in the b
 - Progress saved in the browser with a "start over" option.
 - No contact or lead form on the results board for now (owner approved the design without choosing; it can reuse `/api/contact` later).
 - The old homepage content (hero, stats, how-it-works) is retired; its key message moves into the opening card. The other classic pages stay.
+
+## Owner additions (2026-10-26)
+
+- **Faster walker.** Default pace is a brisk jog (7 m/s), Shift sprints (12 m/s); the jog animation speeds up to match.
+- **Jump to anyone, GTA-style.** Q (or the on-screen Jump button) opens a wheel of all ten crew, plus the site office once it's open. Picking one lifts the camera into the sky, sweeps across the site and drops down beside them (an instant cut with reduced motion). The person you picked waits for you; landing at the office opens the results board.

@@ -18,6 +18,8 @@ import { createMinimap } from './ui/minimap.js';
 import { createResults } from './ui/results.js';
 import { createAudio } from './audio.js';
 import { nextTier } from './perf.js';
+import { createJump, landingSpot } from './jump.js';
+import { createWheel } from './ui/wheel.js';
 import { OFFICE } from './content.js';
 import { rank } from './scoring.js';
 import * as THREE from 'three';
@@ -35,6 +37,8 @@ const reducedMotion = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').
 const audio = createAudio();
 
 const game = { engine: null, assets: null, state: loadState(), ready: false, started: false };
+// True from the moment a jump starts until you land.
+Object.defineProperty(game, 'jumping', { get: () => game.jump?.isActive() ?? false });
 if (testMode) {
   window.__siteWalk = {
     isReady: () => game.ready, state: () => game.state,
@@ -108,7 +112,7 @@ function wireTapToTalk() {
 
 // ---- Conversations, HUD and minimap ------------------------------------------------
 const TALK_RANGE = 3.2;
-let talk, hud, minimap, results, nearby = null, officeArmed = true;
+let talk, hud, minimap, results, wheel, nearby = null, officeArmed = true;
 
 function refreshProgress() {
   const ranking = rank(game.state);
@@ -140,7 +144,7 @@ function endTalk() {
 
 function wireConversations() {
   game.startTalk = startTalk;
-  hud = createHud(root, { onTalk: () => nearby && startTalk(nearby.agentId) });
+  hud = createHud(root, { onTalk: () => nearby && startTalk(nearby.agentId), onJump: openWheel });
   minimap = createMinimap(hud.el);
   talk = createTalk(root, {
     onAnswer(agentId, q, choice) {
@@ -169,8 +173,37 @@ function wireConversations() {
     onClassic: (face) => { closeResults(); WP.openClassic(face); },
   });
   game.openOffice = openOffice;
+  wheel = createWheel(root, { onPick: jumpTo, onClose: closeWheel });
+  game.input.on('jump', openWheel);
   window.addEventListener('sitewalk:reset', () => { endTalk(); refreshProgress(); });
   refreshProgress();
+}
+
+// ---- Jump (GTA-style switch) ---------------------------------------------------------
+function openWheel() {
+  if (!game.started || game.jumping || game.talkingId != null || results.isOpen() || menu.isOpen()) return;
+  game.player.cancelWalk();
+  game.input.clear();
+  const list = game.crew.members.map((m) => ({ id: m.agentId, label: m.data.name, sub: m.data.role, met: m.met }));
+  if (officeOpen(game.state)) list.push({ id: 'office', label: 'Site office', sub: 'Your results', met: false });
+  wheel.open(list);
+}
+function closeWheel() {
+  wheel.close();
+  game.engine.renderer.domElement.focus?.();
+}
+function jumpTo(id) {
+  closeWheel();
+  audio.whoosh();
+  if (id === 'office') {
+    const [a, b, c, d] = OFFICE.trigger;
+    officeArmed = true;
+    game.jump.start({ x: (a + b) / 2, z: (c + d) / 2 }, { x: OFFICE.door[0], z: OFFICE.door[1] });
+    return;
+  }
+  const m = game.crew.byId(id);
+  m.pause = Math.max(m.pause, 4);             // they wait for you
+  game.jump.start(landingSpot(m.pos, game.player.pos), m.pos);
 }
 
 function openOffice() {
@@ -198,15 +231,16 @@ let minimapFrame = 0;
 function tickConversations() {
   const p = game.player.pos;
   nearby = null;
-  if (game.started && game.talkingId == null) {
+  if (game.started && game.talkingId == null && !game.jumping) {
     let best = TALK_RANGE;
     for (const m of game.crew.members) { const d = Math.hypot(m.pos.x - p.x, m.pos.z - p.z); if (d < best) { best = d; nearby = m; } }
   }
   hud.setPrompt(nearby, isTouchDevice());
+  hud.setJumpVisible(game.started && game.talkingId == null && !results.isOpen() && !game.jumping);
   // Walking through the site office door opens the results board (once per visit to the doorway).
   const [a, b, c, d] = OFFICE.trigger;
   const inDoor = p.x >= a && p.x <= b && p.z >= c && p.z <= d;
-  if (inDoor && officeArmed && game.started && game.talkingId == null && !results.isOpen()) { officeArmed = false; openOffice(); }
+  if (inDoor && officeArmed && game.started && game.talkingId == null && !results.isOpen() && !game.jumping) { officeArmed = false; openOffice(); }
   if (!inDoor) officeArmed = true;
   if (game.started && ++minimapFrame % 3 === 0) minimap.draw(p, game.player.root.rotation.y, game.crew.members, officeOpen(game.state));
 }
@@ -216,7 +250,7 @@ let stepClock = 0;
 function tickFootsteps(dt) {
   if (!game.player.isMoving()) { stepClock = 0.2; return; }
   stepClock -= dt;
-  if (stepClock <= 0) { audio.step(); stepClock = game.input.running() ? 0.26 : 0.38; }
+  if (stepClock <= 0) { audio.step(); stepClock = game.input.running() ? 0.2 : 0.28; }
 }
 
 // If the device can't keep up (under 30 fps for 4 s), step the quality down one tier.
@@ -245,14 +279,16 @@ function boot() {
       game.world.setOfficeOpen(officeOpen(game.state));
       game.crew = createCrew(game.engine.scene, game.assets, CREW, { reducedMotion });
       game.crew.members.forEach((m) => m.setMet(isComplete(game.state, m.agentId)));
-      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() });
+      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() || wheel?.isOpen() || game.jumping });
       game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input, { reducedMotion });
       game.player.snapCamera();
+      game.jump = createJump({ engine: game.engine, player: game.player, reducedMotion });
       wireTapToTalk();
       wireConversations();
       game.engine.onFrame((dt, t) => {
         game.world.update(dt, t);
-        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null && !results.isOpen());
+        game.jump.update(dt);
+        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null && !results.isOpen() && !wheel.isOpen() && !game.jumping);
         game.crew.update(dt, t, game.player.pos, game.talkingId);
         tickConversations(t);
         tickFootsteps(dt);

@@ -17,8 +17,8 @@ export function createOpening(root, { onStart, onSkip }) {
   function show({ met = 0 } = {}) {
     const touch = isTouchDevice();
     const controls = touch
-      ? [['Joystick', 'walk (bottom left)'], ['Tap a worker', 'walk over and talk'], ['Menu', 'skip to the classic pages']]
-      : [['WASD / arrows', 'walk'], ['Shift', 'run'], ['E', 'talk to someone nearby'], ['1–4', 'answer'], ['Esc', 'walk away'], ['Drag', 'look around'], ['M', 'menu']];
+      ? [['Joystick', 'walk (bottom left)'], ['Tap a worker', 'walk over and talk'], ['Jump', 'fly to anyone on site'], ['Menu', 'skip to the classic pages']]
+      : [['WASD / arrows', 'walk'], ['Shift', 'sprint'], ['Q', 'jump to anyone'], ['E', 'talk to someone nearby'], ['1–4', 'answer'], ['Esc', 'walk away'], ['Drag', 'look around'], ['M', 'menu']];
     el.innerHTML = `
       <div class="sw-opening-card">
         <p class="sw-kicker">Workflow Playbook · Site walk</p>

@@ -16,7 +16,7 @@ export function joystickVector(dx, dy, radius) {
 
 export function createInput(root, { touch = false, blocked = () => false } = {}) {
   const keys = new Set();
-  const handlers = { talk: [], answer: [], leave: [] };
+  const handlers = { talk: [], answer: [], leave: [], jump: [] };
   const emit = (name, arg) => handlers[name].forEach((fn) => fn(arg));
   let stick = { x: 0, y: 0 };
 
@@ -29,7 +29,8 @@ export function createInput(root, { touch = false, blocked = () => false } = {})
     if (e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter') {
       if (e.code !== 'KeyE' && e.target?.closest?.('button')) return;   // Enter/Space on a focused button is a click
       emit('talk'); e.preventDefault();
-    } else if (/^Digit[1-4]$/.test(e.code)) emit('answer', Number(e.code.slice(5)));
+    } else if (e.code === 'KeyQ') { emit('jump'); e.preventDefault(); }
+    else if (/^Digit[1-4]$/.test(e.code)) emit('answer', Number(e.code.slice(5)));
     else if (e.key === 'Escape') emit('leave');
   }
   function onKeyUp(e) {

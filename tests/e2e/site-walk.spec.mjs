@@ -326,12 +326,11 @@ test.describe('polish', () => {
     await page.evaluate(() => window.__siteWalk.game.startTalk(1));
     await expect(page.locator('.sw-talk')).toBeVisible();
     await page.setViewportSize({ width: 844, height: 390 });
-    await page.waitForTimeout(800);
-    const fits = await page.evaluate(() => {
+    // The panel slides in over 0.3 s; poll until it has settled rather than guessing a delay.
+    await expect.poll(() => page.evaluate(() => {
       const r = document.querySelector('.sw-talk').getBoundingClientRect();
       return { scroll: document.documentElement.scrollWidth <= innerWidth, inside: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight };
-    });
-    expect(fits).toEqual({ scroll: true, inside: true });
+    }), { timeout: 10_000 }).toEqual({ scroll: true, inside: true });
     await page.locator('.sw-talk-close').click();
     await expect(page.locator('.sw-joystick')).toBeVisible();
     await context.close();
@@ -422,5 +421,44 @@ test.describe('review fixes', () => {
     await page.getByRole('button', { name: 'Start walking' }).click();
     await page.waitForFunction(() => window.__siteWalk.game.engine.tier !== 'high', null, { timeout: 90_000 });
     expect(await page.evaluate(() => window.__siteWalk.game.engine.antialiased())).toBe(true);
+  });
+});
+
+test.describe('jump to people', () => {
+  test('Q opens the jump wheel and lands you next to the person you pick', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.keyboard.press('KeyQ');
+    await expect(page.locator('.sw-wheel')).toBeVisible();
+    await expect(page.locator('.sw-wheel-item')).toHaveCount(10);              // office not open yet
+    await page.locator('.sw-wheel-item', { hasText: 'Rosa' }).click();
+    await expect(page.locator('.sw-wheel')).toBeHidden();
+    await page.waitForFunction(() => !window.__siteWalk.game.jumping, null, { timeout: 90_000 });
+    const d = await page.evaluate(() => { const p = window.__siteWalk.playerPos(); const m = window.__siteWalk.game.crew.byId(2); return Math.hypot(p.x - m.pos.x, p.z - m.pos.z); });
+    expect(d).toBeLessThan(3.2);
+    await expect(page.locator('.sw-prompt')).toHaveText(/Rosa/);
+  });
+
+  test('phones get a Jump button', async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    const page = await context.newPage();
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.getByRole('button', { name: 'Jump' }).click();
+    await expect(page.locator('.sw-wheel')).toBeVisible();
+    await page.locator('.sw-wheel-item', { hasText: 'Andre' }).click();
+    await page.waitForFunction(() => !window.__siteWalk.game.jumping, null, { timeout: 90_000 });
+    const d = await page.evaluate(() => { const p = window.__siteWalk.playerPos(); const m = window.__siteWalk.game.crew.byId(7); return Math.hypot(p.x - m.pos.x, p.z - m.pos.z); });
+    expect(d).toBeLessThan(3.2);
+    await context.close();
+  });
+
+  test('jump straight to the site office once it is open', async ({ page }) => {
+    await preset(page, { 1: [3, 3, 3], 3: [1, 1, 1], 5: [2, 2, 2] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.keyboard.press('KeyQ');
+    await page.locator('.sw-wheel-item', { hasText: 'Site office' }).click();
+    await expect(page.locator('.sw-results')).toBeVisible({ timeout: 90_000 });
   });
 });

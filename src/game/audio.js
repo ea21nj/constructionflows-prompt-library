@@ -46,6 +46,16 @@ export function createAudio() {
     gain.gain.setValueAtTime(0.0001, start); gain.gain.exponentialRampToValueAtTime(vol, start + 0.015); gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
     osc.connect(gain).connect(master); osc.start(start); osc.stop(start + dur + 0.02);
   }
+  // Rising then falling rush of air for the sky swoop.
+  function whoosh() {
+    if (muted || !ensure()) return;
+    const src = ctx.createBufferSource(); src.buffer = noise; src.loop = true;
+    const filter = ctx.createBiquadFilter(); filter.type = 'bandpass'; filter.Q.value = 0.7;
+    const gain = ctx.createGain(); const t = ctx.currentTime;
+    filter.frequency.setValueAtTime(300, t); filter.frequency.exponentialRampToValueAtTime(2200, t + 1.1); filter.frequency.exponentialRampToValueAtTime(400, t + 2.4);
+    gain.gain.setValueAtTime(0.0001, t); gain.gain.exponentialRampToValueAtTime(0.28, t + 0.9); gain.gain.exponentialRampToValueAtTime(0.0001, t + 2.4);
+    src.connect(filter).connect(gain).connect(master); src.start(t); src.stop(t + 2.5);
+  }
   function blip() { if (!muted && ensure()) tone(740, ctx.currentTime, 0.12); }
   function chime() { if (!muted && ensure()) { const t = ctx.currentTime; tone(660, t, 0.25); tone(880, t + 0.12, 0.25); tone(1320, t + 0.24, 0.4, 0.09); } }
 
@@ -60,7 +70,7 @@ export function createAudio() {
   }
 
   return {
-    step, blip, chime, setAmbient,
+    step, blip, chime, whoosh, setAmbient,
     get muted() { return muted; },
     setMuted(v) {
       muted = v; savePrefs({ ...loadPrefs(), muted: v });

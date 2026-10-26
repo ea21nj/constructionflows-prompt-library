@@ -5,7 +5,9 @@ import { createCharacter } from './characters.js';
 import { moveWithSlide } from './collision.js';
 import { SPAWN } from './content.js';
 
-const WALK = 4.5, RUN = 8.5;
+// Brisk jog by default, sprint with Shift: the site is big and the visitor shouldn't wait.
+export const SPEED = { walk: 7, run: 12 };
+const STRIDE = 5;   // m/s at which the jog animation plays at normal speed
 const turnTo = (from, to, k) => from + Math.atan2(Math.sin(to - from), Math.cos(to - from)) * k;
 
 export function createPlayer(scene, assets, engine, input, { reducedMotion = false } = {}) {
@@ -17,13 +19,14 @@ export function createPlayer(scene, assets, engine, input, { reducedMotion = fal
 
   const pos = { x: SPAWN[0], z: SPAWN[1] };
   root.rotation.y = Math.PI;                          // facing into the site
-  let target = null, stuck = 0, moving = false;
+  let target = null, stuck = 0, moving = false, following = true;
   const fwd = new THREE.Vector3(), right = new THREE.Vector3(), lastTarget = new THREE.Vector3();
   const { camera, controls } = engine;
 
   function follow(snap) {
+    if (!following && !snap) return;               // a jump is flying the camera
     lastTarget.copy(controls.target);
-    controls.target.lerp(new THREE.Vector3(pos.x, 1.4, pos.z), snap || reducedMotion ? 1 : 0.12);
+    controls.target.lerp(new THREE.Vector3(pos.x, 1.4, pos.z), snap || reducedMotion ? 1 : 0.16);
     camera.position.add(controls.target.clone().sub(lastTarget));
     engine.setShadowCenter(pos.x, pos.z);
   }
@@ -44,14 +47,15 @@ export function createPlayer(scene, assets, engine, input, { reducedMotion = fal
     const len = Math.hypot(mx, mz);
     moving = len > 0;
     if (len > 0) {
-      const speed = input.running() ? RUN : WALK;
+      const speed = input.running() ? SPEED.run : SPEED.walk;
       const step = Math.min(1, len) * speed * dt;
       const next = moveWithSlide(pos, (mx / len) * step, (mz / len) * step);
       const moved = Math.hypot(next.x - pos.x, next.z - pos.z);
       if (target) { stuck = moved < step * 0.2 ? stuck + dt : 0; if (stuck > 1) { target = null; stuck = 0; } }
       pos.x = next.x; pos.z = next.z;
       root.rotation.y = turnTo(root.rotation.y, Math.atan2(mx, mz), 0.2);
-      character.play(input.running() ? 'run' : 'walk', 0.15);
+      character.play('run', 0.15);
+      character.setTimeScale('run', speed / STRIDE);
     } else {
       character.play('idle', 0.2);
     }
@@ -71,5 +75,6 @@ export function createPlayer(scene, assets, engine, input, { reducedMotion = fal
     faceTowards(x, z) { root.rotation.y = Math.atan2(x - pos.x, z - pos.z); },
     teleport(x, z) { const p = moveWithSlide({ x, z }, 0, 0); pos.x = p.x; pos.z = p.z; follow(true); },
     snapCamera() { follow(true); },
+    setFollow(v) { following = v; },
   };
 }
