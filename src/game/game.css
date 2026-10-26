@@ -123,3 +123,48 @@ html:not(.sw-playing) .sw-hud { display: none; }
   .sw-talk-say { font-size: 16px; }
   .sw-prompt { bottom: 160px; }
 }
+
+/* Results board (site office) */
+.sw-results { position: absolute; inset: 0; z-index: 35; display: grid; place-items: center; padding: 16px; background: rgba(26, 26, 26, .45); overflow-y: auto; }
+.sw-results-card { width: min(1060px, 100%); max-height: calc(100% - 8px); display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--white); border: var(--rule); box-shadow: 10px 10px 0 var(--primary); }
+.sw-results-head { position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 18px 64px 16px 24px; background: var(--primary); color: var(--white); border-bottom: var(--rule); }
+.sw-results-head .sw-kicker { color: #d7f5e2; }
+.sw-results-head h2 { margin: 0; font-size: 30px; letter-spacing: -.03em; color: var(--white); }
+.sw-results-met { margin: 0; font: 600 13px var(--display); letter-spacing: var(--track-wide); }
+.sw-results-close { position: absolute; top: 14px; right: 14px; width: 38px; height: 38px; background: var(--white); color: var(--black) !important; border: 2px solid var(--white); font: 700 20px var(--display); cursor: pointer; }
+.sw-results-close:hover { background: var(--primary-tint); }
+#siteWalk [tabindex="-1"]:focus { outline: none; }
+.sw-results-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); overflow-y: auto; }
+.sw-results-main { padding: 20px 24px; border-right: var(--rule); }
+.sw-results-side { padding: 20px; display: flex; flex-direction: column; gap: 14px; background: var(--bg); }
+.sw-start-here { border: var(--rule); border-left: 8px solid var(--primary); background: var(--primary-tint); padding: 12px 16px; margin-bottom: 16px; }
+.sw-start-here h3 { margin: 0 0 6px; font-size: 20px; }
+.sw-start-here p { margin: 3px 0; font-size: 14px; }
+.sw-rank { list-style: none; margin: 0; padding: 0; }
+.sw-rank-item { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 14px 0; border-top: var(--line); }
+.sw-rank-n { width: 36px; height: 36px; display: grid; place-items: center; background: var(--primary); color: var(--white); font: 700 16px var(--display); }
+.sw-rank-name { margin: 0; font: 700 17px var(--display); letter-spacing: -.01em; }
+.sw-rank-crew { margin: 2px 0 6px; font-size: 13px; color: var(--secondary); }
+.sw-rank-bar { display: block; height: 8px; max-width: 260px; border: 1.5px solid var(--black); }
+.sw-rank-bar i { display: block; height: 100%; background: var(--primary); }
+.sw-rank-why { margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.45; }
+.sw-rank-why-none { margin: 8px 0 0; font-size: 13px; color: var(--secondary); }
+.sw-unmet ul { list-style: none; margin: 6px 0 0; padding: 0; border: var(--line); background: var(--white); }
+.sw-unmet li { display: flex; justify-content: space-between; gap: 8px; padding: 7px 10px; border-bottom: 1px dashed var(--border-gray); font-size: 13px; }
+.sw-unmet li:last-child { border-bottom: 0; }
+.sw-unmet li span { color: var(--secondary); white-space: nowrap; }
+.sw-unmet-done { margin: 0; font-size: 14px; }
+.sw-report { display: grid; gap: 8px; }
+.sw-report .sw-kicker { margin-bottom: 0; }
+.sw-classic { margin: 0; font-size: 13px; color: var(--secondary); }
+.sw-classic button { border: 0; background: none; padding: 0; font: inherit; color: var(--primary-dark); text-decoration: underline; cursor: pointer; }
+@media (max-width: 760px) {
+  .sw-results { padding: 0; }
+  .sw-results-card { max-height: 100%; height: 100%; box-shadow: none; border: 0; }
+  .sw-results-body { grid-template-columns: 1fr; }
+  .sw-results-main { border-right: 0; border-bottom: var(--rule); padding: 16px; }
+  .sw-results-head { padding: 14px 56px 12px 16px; flex-direction: column; align-items: flex-start; gap: 4px; }
+  .sw-results-head h2 { font-size: 24px; }
+  .sw-rank-item { grid-template-columns: 34px minmax(0, 1fr); }
+  .sw-rank-item .sw-btn { grid-column: 2; justify-self: start; }
+}

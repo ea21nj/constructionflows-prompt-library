@@ -2349,7 +2349,9 @@ const agents = [
       if (!agentModal.classList.contains('show')) return;
       agentModal.classList.remove('show');
       document.body.classList.remove('dialog-open');
-      const target = document.querySelector(`.agent-card[data-agent-id="${currentAgentId}"]`) || returnFocusTo;
+      // Return focus to whatever opened the dialog if it's still on screen (e.g. the Site Walk results board).
+      const card = document.querySelector(`.agent-card[data-agent-id="${currentAgentId}"]`);
+      const target = returnFocusTo && returnFocusTo.isConnected && returnFocusTo.offsetParent !== null ? returnFocusTo : card || returnFocusTo;
       target?.focus();
     }
 

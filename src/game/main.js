@@ -15,6 +15,8 @@ import { isTouchDevice } from './ui/opening.js';
 import { createTalk } from './ui/talk.js';
 import { createHud } from './ui/hud.js';
 import { createMinimap } from './ui/minimap.js';
+import { createResults } from './ui/results.js';
+import { OFFICE } from './content.js';
 import { rank } from './scoring.js';
 import * as THREE from 'three';
 import { CREW } from './content.js';
@@ -77,7 +79,9 @@ function wireTapToTalk() {
     const r = canvas.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
     ray.setFromCamera(ndc, game.engine.camera);
-    return ray.intersectObjects(game.crew.members.map((m) => m.hit), false)[0]?.object.userData.agentId ?? null;
+    const hit = ray.intersectObjects([...game.crew.members.map((m) => m.hit), game.world.officeDoor], false)[0]?.object;
+    if (!hit) return null;
+    return hit === game.world.officeDoor ? 'office' : hit.userData.agentId;
   };
   canvas.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
   canvas.addEventListener('pointermove', (e) => { if (!down) canvas.style.cursor = pick(e) != null ? 'pointer' : 'grab'; });
@@ -87,6 +91,7 @@ function wireTapToTalk() {
     if (!game.started || game.talkingId != null || menu.isOpen()) return;
     const id = pick(e);
     if (id == null) return;
+    if (id === 'office') { game.player.walkTo(OFFICE.door[0] + 2, OFFICE.door[1], () => game.openOffice(), 0.6); return; }
     const m = game.crew.byId(id);
     game.player.walkTo(m.pos.x, m.pos.z, () => game.startTalk?.(id));
   });
@@ -94,7 +99,7 @@ function wireTapToTalk() {
 
 // ---- Conversations, HUD and minimap ------------------------------------------------
 const TALK_RANGE = 3.2;
-let talk, hud, minimap, nearby = null;
+let talk, hud, minimap, results, nearby = null, officeArmed = true;
 
 function refreshProgress() {
   const ranking = rank(game.state);
@@ -148,8 +153,36 @@ function wireConversations() {
     },
   });
   game.input.on('talk', () => { if (nearby) startTalk(nearby.agentId); });
+  results = createResults(root, {
+    agents: WP.agents,
+    onClose: closeResults,
+    onOpenDetails: (id, opener) => WP.showAgentModal(WP.agents.find((a) => a.id === id), opener),
+    onClassic: (face) => { closeResults(); WP.openClassic(face); },
+  });
+  game.openOffice = openOffice;
   window.addEventListener('sitewalk:reset', () => { endTalk(); refreshProgress(); });
   refreshProgress();
+}
+
+function openOffice() {
+  if (!officeOpen(game.state)) {
+    const left = 3 - completedCount(game.state);
+    hud.toast(`Talk to ${left} more of the crew first`);
+    return;
+  }
+  game.player.cancelWalk();
+  game.input.clear();
+  game.input.setJoystickVisible(false);
+  hud.setPrompt(null);
+  if (!game.state.officeSeen) { game.state = { ...game.state, officeSeen: true }; saveState(game.state); }
+  menu.setVisible(false);   // the board has its own ways out; the menu button would cover its close button on phones
+  results.open(game.state);
+}
+function closeResults() {
+  results.close();
+  menu.setVisible(true);
+  game.input.setJoystickVisible(true);
+  game.engine.renderer.domElement.focus?.();
 }
 
 let minimapFrame = 0;
@@ -161,6 +194,11 @@ function tickConversations() {
     for (const m of game.crew.members) { const d = Math.hypot(m.pos.x - p.x, m.pos.z - p.z); if (d < best) { best = d; nearby = m; } }
   }
   hud.setPrompt(nearby, isTouchDevice());
+  // Walking through the site office door opens the results board (once per visit to the doorway).
+  const [a, b, c, d] = OFFICE.trigger;
+  const inDoor = p.x >= a && p.x <= b && p.z >= c && p.z <= d;
+  if (inDoor && officeArmed && game.started && game.talkingId == null && !results.isOpen()) { officeArmed = false; openOffice(); }
+  if (!inDoor) officeArmed = true;
   if (game.started && ++minimapFrame % 3 === 0) minimap.draw(p, game.player.root.rotation.y, game.crew.members, officeOpen(game.state));
 }
 
@@ -178,14 +216,14 @@ function boot() {
       game.world.setOfficeOpen(officeOpen(game.state));
       game.crew = createCrew(game.engine.scene, game.assets, CREW);
       game.crew.members.forEach((m) => m.setMet(isComplete(game.state, m.agentId)));
-      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null });
+      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() });
       game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input);
       game.player.snapCamera();
       wireTapToTalk();
       wireConversations();
       game.engine.onFrame((dt, t) => {
         game.world.update(dt, t);
-        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null);
+        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null && !results.isOpen());
         game.crew.update(dt, t, game.player.pos, game.talkingId);
         tickConversations(t);
       });

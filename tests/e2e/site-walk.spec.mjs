@@ -254,3 +254,61 @@ test.describe('conversations', () => {
     expect(await page.evaluate(() => window.__siteWalk.game.crew.byId(7).met)).toBe(true);
   });
 });
+
+const OFFICE_DOOR = [-35.5, 27];
+
+test.describe('site office', () => {
+  test('closed office explains how many more to meet', async ({ page }) => {
+    await preset(page, { 3: [1, 1, 1] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(([x, z]) => window.__siteWalk.teleport(x, z), OFFICE_DOOR);
+    await expect(page.locator('.sw-toast')).toHaveText('Talk to 2 more of the crew first');
+    await expect(page.locator('.sw-results')).toBeHidden();
+  });
+
+  test('full flow', async ({ page }) => {
+    await preset(page, { 3: [1, 1, 1], 5: [3, 3, 2] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await talkTo(page, 1);
+    for (const k of ['2', '3', '2']) await page.keyboard.press(`Digit${k}`);
+    await page.keyboard.press('Escape');
+    await page.evaluate(([x, z]) => window.__siteWalk.teleport(x, z), OFFICE_DOOR);
+    await expect(page.locator('.sw-results')).toBeVisible();
+    await expect(page.locator('.sw-rank-name')).toHaveText(['Field-to-Office Evidence Agent', 'Bid Desk Agent', 'PM Second Brain']);
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('[data-report="word"]').click()]);
+    expect(download.suggestedFilename()).toMatch(/^site-walk-results-\d{4}-\d{2}-\d{2}\.doc$/);
+    const text = await (await import('fs')).promises.readFile(await download.path(), 'utf8');
+    expect(text).toContain('How do bid invites reach you today?');
+  });
+
+  test('view details from results', async ({ page }) => {
+    await preset(page, { 1: [3, 3, 3], 3: [1, 1, 1], 5: [2, 2, 2] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(([x, z]) => window.__siteWalk.teleport(x, z), OFFICE_DOOR);
+    await expect(page.locator('.sw-results')).toBeVisible();
+    await page.locator('[data-details]').first().click();
+    await expect(page.locator('#agentDialog')).toBeVisible();
+    const onTop = await page.evaluate(() => { const r = document.getElementById('agentDialog').getBoundingClientRect(); return !!document.elementFromPoint(r.left + r.width / 2, r.top + 40)?.closest('#agentDialog'); });
+    expect(onTop).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('#agentDialog')).toBeHidden();
+    await expect(page.locator('.sw-results')).toBeVisible();
+    expect(await page.evaluate(() => document.activeElement?.dataset.details)).toBe('1');
+  });
+
+  test('print copy paginates', async ({ page }) => {
+    await preset(page, { 1: [3, 3, 3], 3: [1, 1, 1], 5: [2, 2, 2] });
+    await page.addInitScript(() => { window.print = () => {}; });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(([x, z]) => window.__siteWalk.teleport(x, z), OFFICE_DOOR);
+    await page.locator('[data-report="print"]').click();
+    await expect(page.locator('#dvPrint')).toContainText('Bid Desk Agent');
+    const pdf = await page.pdf({ format: 'Letter' });
+    expect(pdf.subarray(0, 4).toString()).toBe('%PDF');
+    expect(pdf.length).toBeGreaterThan(5000);
+  });
+});

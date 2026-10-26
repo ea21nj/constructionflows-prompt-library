@@ -47,7 +47,7 @@ export function createMenu(root, { onSkip, onResume, onReset, onToggleSound }) {
     if (id === 'resume') onResume(); else onSkip(id);
   });
   document.addEventListener('keydown', (e) => {
-    if (e.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+    if (wrap.hidden || e.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
     if (e.key === 'm' || e.key === 'M') { isOpen() ? close() : open(); e.preventDefault(); }
     else if (e.key === 'Escape' && isOpen()) { close(); btn.focus(); e.preventDefault(); }   // other handlers skip defaultPrevented keys
   });
