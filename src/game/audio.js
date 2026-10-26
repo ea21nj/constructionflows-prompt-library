@@ -57,6 +57,8 @@ export function createAudio() {
     src.connect(filter).connect(gain).connect(master); src.start(t); src.stop(t + 2.5);
   }
   function blip() { if (!muted && ensure()) tone(740, ctx.currentTime, 0.12); }
+  // Rising four-note fanfare for finishing a level.
+  function fanfare() { if (!muted && ensure()) { const t = ctx.currentTime; [523, 659, 784, 1047].forEach((f, i) => tone(f, t + i * 0.11, i === 3 ? 0.6 : 0.22, i === 3 ? 0.11 : 0.1)); } }
   function chime() { if (!muted && ensure()) { const t = ctx.currentTime; tone(660, t, 0.25); tone(880, t + 0.12, 0.25); tone(1320, t + 0.24, 0.4, 0.09); } }
 
   function setAmbient(on) {
@@ -70,7 +72,7 @@ export function createAudio() {
   }
 
   return {
-    step, blip, chime, whoosh, setAmbient,
+    step, blip, chime, fanfare, whoosh, setAmbient,
     get muted() { return muted; },
     setMuted(v) {
       muted = v; savePrefs({ ...loadPrefs(), muted: v });

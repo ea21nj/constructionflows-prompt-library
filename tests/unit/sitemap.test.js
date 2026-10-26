@@ -32,6 +32,15 @@ describe('site map', () => {
     expect(root.querySelector('.sw-map-office').disabled).toBe(true);    // office not open yet
   });
 
+  test('marks out the four levels as zones on the plan, and says which level each person is in', () => {
+    map.open({ members, player: { x: 0, z: 30 }, heading: 0, officeOpen: false });
+    const svg = root.querySelector('.sw-map-svg');
+    expect(svg.querySelectorAll('.sw-bp-zone')).toHaveLength(6);
+    expect([...svg.querySelectorAll('.sw-bp-zone-label')].map((t) => t.textContent)).toEqual(['LEVEL 1 · PRECONSTRUCTION', 'LEVEL 2 · STRUCTURE', 'LEVEL 3 · FIELD OPERATIONS', 'LEVEL 4 · CLOSEOUT & CASH']);
+    const rosa = [...root.querySelectorAll('.sw-map-list button')].find((b) => b.textContent.includes('Rosa'));
+    expect(rosa.textContent).toContain('Level 1 · Preconstruction');
+  });
+
   test('is drawn as a construction blueprint: grid, title block, north arrow, dimensions, scale, structural grid', () => {
     map.open({ members, player: { x: 0, z: 30 }, heading: 0, officeOpen: false });
     const svg = root.querySelector('.sw-map-svg');

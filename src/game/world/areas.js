@@ -38,19 +38,6 @@ export function buildOffice(g, assets, { reducedMotion = false } = {}) {
   ring.rotation.x = -Q; ring.position.y = 0.06; marker.add(ring);
   marker.visible = false; glow.visible = false;
 
-  // Safety tent with the toolbox-talk board.
-  const t = byId.safety_tent;
-  const tent = new THREE.Group(); tent.position.set(t.at[0], 0, t.at[1]); g.add(tent);
-  for (const [x, z] of [[-1.9, -1.4], [1.9, -1.4], [-1.9, 1.4], [1.9, 1.4]]) cyl(tent, 0.05, 0.05, 2.4, steel, x, 1.2, z, 8);
-  const canopy = new THREE.Mesh(new THREE.ConeGeometry(2.9, 1.1, 4, 1), mat('#f4f4f0', { side: THREE.DoubleSide }));
-  canopy.rotation.y = Math.PI / 4; canopy.scale.set(1, 1, 0.75); canopy.position.y = 2.95; canopy.castShadow = true; tent.add(canopy);
-  const valance = stripeTexture('#008037', '#ffffff', 10);
-  box(tent, 4, 0.25, 3, [new THREE.MeshStandardMaterial({ map: valance }), new THREE.MeshStandardMaterial({ map: valance }), mat('#008037'), mat('#008037'), new THREE.MeshStandardMaterial({ map: valance }), new THREE.MeshStandardMaterial({ map: valance })], 0, 2.35, 0);
-  box(tent, 2.4, 0.06, 0.9, mat('#d9d4cb'), 0, 0.8, -0.6); for (const x of [-1, 1]) box(tent, 0.06, 0.8, 0.8, steel, x, 0.4, -0.6);
-  const board = new THREE.Group(); board.position.set(t.at[0] + 2.6, 0, t.at[1] - 2.2); board.rotation.y = -0.5; g.add(board);
-  box(board, 1.4, 1, 0.06, [mat('#1A1A1A'), mat('#1A1A1A'), mat('#1A1A1A'), mat('#1A1A1A'), new THREE.MeshStandardMaterial({ map: signTexture(['TOOLBOX', 'TALK'], { bg: '#ffffff', fg: '#1A1A1A', sub: 'Today: ladder safety' }) }), mat('#1A1A1A')], 0, 1.4, 0);
-  for (const x of [-0.6, 0.6]) box(board, 0.06, 1.9, 0.06, mat('#8b6a43'), x, 0.95, 0.05);
-
   // Estimator's plan table with drawings and a coffee cup.
   const p = byId.plan_table;
   const table = new THREE.Group(); table.position.set(p.at[0], 0, p.at[1]); g.add(table);
@@ -191,6 +178,20 @@ export function buildExcavation(g, assets) {
     const m = new THREE.Mesh(new THREE.DodecahedronGeometry(0.6 + r() * 0.8, 0), earth);
     m.position.set(22 + r() * 16, 0.2, -31 + r() * 2.5); m.scale.y = 0.5; m.castShadow = m.receiveShadow = true; g.add(m);
   }
+  // Safety tent with the toolbox-talk board, where Kim runs the morning talk.
+  const steel = STEEL();
+  const t = byId.safety_tent;
+  const tent = new THREE.Group(); tent.position.set(t.at[0], 0, t.at[1]); g.add(tent);
+  for (const [x, z] of [[-1.9, -1.4], [1.9, -1.4], [-1.9, 1.4], [1.9, 1.4]]) cyl(tent, 0.05, 0.05, 2.4, steel, x, 1.2, z, 8);
+  const canopy = new THREE.Mesh(new THREE.ConeGeometry(2.9, 1.1, 4, 1), mat('#f4f4f0', { side: THREE.DoubleSide }));
+  canopy.rotation.y = Math.PI / 4; canopy.scale.set(1, 1, 0.75); canopy.position.y = 2.95; canopy.castShadow = true; tent.add(canopy);
+  const valance = stripeTexture('#008037', '#ffffff', 10);
+  box(tent, 4, 0.25, 3, [new THREE.MeshStandardMaterial({ map: valance }), new THREE.MeshStandardMaterial({ map: valance }), mat('#008037'), mat('#008037'), new THREE.MeshStandardMaterial({ map: valance }), new THREE.MeshStandardMaterial({ map: valance })], 0, 2.35, 0);
+  box(tent, 2.4, 0.06, 0.9, mat('#d9d4cb'), 0, 0.8, -0.6); for (const x of [-1, 1]) box(tent, 0.06, 0.8, 0.8, steel, x, 0.4, -0.6);
+  const board = new THREE.Group(); board.position.set(t.at[0] + 2.6, 0, t.at[1] - 2.2); board.rotation.y = -0.5; g.add(board);
+  box(board, 1.4, 1, 0.06, [mat('#1A1A1A'), mat('#1A1A1A'), mat('#1A1A1A'), mat('#1A1A1A'), new THREE.MeshStandardMaterial({ map: signTexture(['TOOLBOX', 'TALK'], { bg: '#ffffff', fg: '#1A1A1A', sub: 'Today: ladder safety' }) }), mat('#1A1A1A')], 0, 1.4, 0);
+  for (const x of [-0.6, 0.6]) box(board, 0.06, 1.9, 0.06, mat('#8b6a43'), x, 0.95, 0.05);
+
   // Pit edge: barriers and tape around the dig.
   const barrierAt = [];
   for (let x = 21.5; x <= 38.5; x += 2.4) barrierAt.push({ x, z: -19.2, rot: Q });

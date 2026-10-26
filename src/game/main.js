@@ -27,6 +27,10 @@ import { createAuditPanel } from './ui/audit-panel.js';
 import { createScorecard } from './ui/scorecard.js';
 import { siteScore, scoreChange } from './score.js';
 import { createScoreboard } from './ui/scoreboard.js';
+import { createLevelBoard } from './ui/level-board.js';
+import { gameActive } from './active.js';
+import { createBeacons } from './world/beacons.js';
+import { zoneAt, starText } from './levels.js';
 import { OFFICE } from './content.js';
 import { rank } from './scoring.js';
 import * as THREE from 'three';
@@ -34,7 +38,7 @@ import { CREW } from './content.js';
 import { createLoading } from './ui/loading.js';
 import { createOpening } from './ui/opening.js';
 import { createMenu } from './ui/menu.js';
-import { loadState, saveState, createState, completedCount, isComplete, officeOpen, recordAnswer, recordAuditAnswer, clearAuditSection, auditCompleted, markReportSaved } from './state.js';
+import { loadState, saveState, createState, completedCount, isComplete, officeOpen, recordAnswer, recordAuditAnswer, clearAuditSection, auditCompleted, markReportSaved, OFFICE_UNLOCK } from './state.js';
 
 const WP = window.WP;
 const root = document.getElementById('siteWalk');
@@ -49,6 +53,7 @@ Object.defineProperty(game, 'jumping', { get: () => game.jump?.isActive() ?? fal
 if (testMode) {
   window.__siteWalk = {
     isReady: () => game.ready, state: () => game.state,
+    score: () => siteScore(game.state), beacons: () => game.beacons.count(), zone: () => lastZone,
     crewPositions: () => game.crew.members.map((m) => ({ agentId: m.agentId, name: m.data.name, x: m.pos.x, z: m.pos.z })), fps: () => game.engine?.fps() ?? 0, game,
     teleport(x, z) { game.player.teleport(x, z); },
     // Where an on-screen icon is drawn, in page pixels (for clicking it in tests).
@@ -142,33 +147,34 @@ function wireTapToTalk() {
   canvas.addEventListener('pointerup', (e) => {
     if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 8) { down = null; return; }   // that was a drag
     down = null;
-    if (!game.started || game.jumping || game.talkingId != null || auditPanel.isOpen() || menu.isOpen()) return;
+    if (!game.started || game.jumping || game.talkingId != null || auditPanel.isOpen() || menu.isOpen() || levelBoard.isOpen()) return;
     const t = pick(e);
     if (t) goToTarget(t);
   });
 }
 
-// "Go" on an objective: head for the nearest place to work on it.
-function goToObjective(id) {
-  const p = game.player.pos;
-  const nearest = (list, pos) => list.sort((a, b) => Math.hypot(pos(a)[0] - p.x, pos(a)[1] - p.z) - Math.hypot(pos(b)[0] - p.x, pos(b)[1] - p.z))[0];
-  if (id === 'crew3' || id === 'crew10') {
-    const m = nearest(game.crew.members.filter((x) => !isComplete(game.state, x.agentId)), (x) => [x.pos.x, x.pos.z]);
-    if (m) jumpTo(m.agentId, { talk: true });
-  } else if (id === 'office') {
-    if (officeOpen(game.state)) jumpTo('office');
-    else { hud.toast(`Talk to ${3 - completedCount(game.state)} more of the crew first`); goToObjective('crew3'); }
-  } else if (id === 'audit1' || id === 'audit7') {
-    const c = nearest(game.checkpoints.items.filter((x) => ((game.state.audit || {})[x.id] || []).length < 5), (x) => [x.pos.x, x.pos.z]);
-    if (c) jumpTo(`audit:${c.id}`, { talk: true });
-  } else if (id === 'report') {
-    if (officeOpen(game.state)) jumpTo('office'); else openScorecard();
+// "Go" on an objective (crew:3, audit:rfis, office, report) or a level (level:2): head straight there.
+function goToObjective(go) {
+  if (go.startsWith('crew:')) return goToTarget({ kind: 'crew', id: Number(go.slice(5)) });
+  if (go.startsWith('audit:')) return goToTarget({ kind: 'audit', id: go.slice(6) });
+  if (go.startsWith('level:')) {
+    const level = siteScore(game.state).levels.find((l) => l.number === Number(go.slice(6)));
+    const next = level?.tasks.find((t) => !t.done);
+    return next && goToObjective(next.go);
   }
+  if (officeOpen(game.state)) return goToTarget({ kind: 'office' });
+  if (go === 'report') return openScorecard();            // the audit report counts too
+  hud.toast(`Talk to ${OFFICE_UNLOCK - completedCount(game.state)} more of the crew first`);
+  const p = game.player.pos;
+  const m = game.crew.members.filter((x) => !isComplete(game.state, x.agentId))
+    .sort((a, b) => Math.hypot(a.pos.x - p.x, a.pos.z - p.z) - Math.hypot(b.pos.x - p.x, b.pos.z - p.z))[0];
+  if (m) goToTarget({ kind: 'crew', id: m.agentId });
 }
 
 // ---- Conversations, HUD and minimap ------------------------------------------------
 const TALK_RANGE = 3.2;
-let talk, hud, minimap, results, wheel, sitemap, auditPanel, scorecard, scoreboard, nearby = null, officeArmed = true;
+let talk, hud, minimap, results, wheel, sitemap, auditPanel, scorecard, scoreboard, levelBoard, nearby = null, officeArmed = true;
+let pendingLevel = null, lastZone = null;
 
 function refreshProgress() {
   const ranking = rank(game.state);
@@ -185,10 +191,66 @@ function commit(next) {
   const change = scoreChange(game.state, next);
   game.state = next;
   saveState(game.state);
-  scoreboard.update(siteScore(game.state), change);
-  for (const label of change.completedNow) hud.toast(`Objective complete: ${label}`);
-  if (change.rankUp) { hud.toast(`Promoted to ${change.rankUp}!`); audio.chime(); }
+  refreshLevels(change);
+  if (change.levelComplete) {
+    hud.toast(`Level ${change.levelComplete} complete · ★★★`);
+    audio.fanfare();
+    pendingLevel = change.levelComplete;
+    showPendingLevel();
+  } else {
+    const star = change.starsUp[0];
+    for (const label of change.completedNow) hud.toast(`Objective complete: ${label}${star ? ` · ${starText(star.stars)}` : ''}`);
+  }
+  if (change.rankUp) { hud.toast(`Promoted to ${change.rankUp}!`); if (!change.levelComplete) audio.chime(); }
   return change;
+}
+
+// The score badge, the level card and the beams over what's left in the current level.
+function refreshLevels(change = {}) {
+  const score = siteScore(game.state);
+  scoreboard.update(score, change);
+  hud.setLevel(score);
+  const spots = [];
+  let office = false;
+  for (const t of score.allComplete ? [] : score.current.tasks.filter((k) => !k.done)) {
+    if (t.id.startsWith('crew:')) { const m = game.crew.byId(Number(t.id.slice(5))); spots.push(() => m.pos); }
+    else if (t.id.startsWith('audit:')) { const c = game.checkpoints.byId(t.id.slice(6)); spots.push(() => c.pos); }
+    else if (officeOpen(game.state) && !office) { office = true; spots.push(() => ({ x: OFFICE.door[0] + 1.5, z: OFFICE.door[1] })); }
+  }
+  game.beacons.set(spots);
+}
+
+// A finished level gets its board as soon as nothing else is on screen.
+const busy = () => !game.started || !gameActive() || game.jumping || game.talkingId != null || auditPanel.isOpen() || results.isOpen() || scorecard.isOpen()
+  || sitemap.isOpen() || wheel.isOpen() || menu.isOpen() || levelBoard.isOpen();
+function showPendingLevel() {
+  if (pendingLevel == null || busy()) return;
+  const completed = pendingLevel; pendingLevel = null;
+  openLevelBoard({ completed });
+}
+function openLevelBoard({ completed = null } = {}) {
+  if (!game.started || game.jumping || game.talkingId != null || auditPanel.isOpen() || results.isOpen()) return;
+  menu.close(); sitemap.close(); wheel.close(); scoreboard.close();
+  if (scorecard.isOpen()) scorecard.close();
+  game.player.cancelWalk(); game.input.clear(); game.input.setJoystickVisible(false);
+  menu.setVisible(false);
+  hud.setPrompt(null);
+  levelBoard.open(siteScore(game.state), { completed });
+}
+function closeLevelBoard() {
+  levelBoard.close();
+  menu.setVisible(true);
+  game.input.setJoystickVisible(true);
+  game.engine.renderer.domElement.focus?.();
+}
+
+// Walking into a level's part of the site shows its title card (once per change of level).
+function tickZone() {
+  if (!game.started || game.jumping) return;
+  const z = zoneAt(game.player.pos.x, game.player.pos.z);
+  if (z == null || z === lastZone) return;
+  lastZone = z;
+  hud.showZone(siteScore(game.state).levels[z - 1]);
 }
 
 function refreshAudit() {
@@ -219,6 +281,7 @@ function endAudit() {
   game.auditingId = null;
   game.input.setJoystickVisible(true);
   game.engine.renderer.domElement.focus?.();
+  showPendingLevel();
 }
 function openScorecard() {
   if (!game.started || game.jumping || game.talkingId != null || results.isOpen()) return;
@@ -232,6 +295,7 @@ function closeScorecard() {
   menu.setVisible(true);
   game.input.setJoystickVisible(true);
   game.engine.renderer.domElement.focus?.();
+  showPendingLevel();
 }
 
 function startTalk(agentId) {
@@ -251,13 +315,15 @@ function endTalk() {
   game.talkingId = null;
   game.input.setJoystickVisible(true);
   game.engine.renderer.domElement.focus?.();
+  showPendingLevel();
 }
 
 function wireConversations() {
   game.startTalk = startTalk;
-  hud = createHud(root, { onTalk: () => interactWithNearby(), onJump: openWheel, onScorecard: openScorecard, onPickAgent: (id) => jumpTo(id, { talk: true }) });
+  hud = createHud(root, { onTalk: () => interactWithNearby(), onJump: openWheel, onScorecard: openScorecard, onPickAgent: (id) => jumpTo(id, { talk: true }), onGo: goToObjective, onLevels: () => openLevelBoard() });
   minimap = createMinimap(hud.left, { onOpen: openSiteMap });
   scoreboard = createScoreboard(hud.el, { onGo: goToObjective });
+  levelBoard = createLevelBoard(root, { onGo: (go) => { closeLevelBoard(); goToObjective(go); }, onClose: closeLevelBoard });
   talk = createTalk(root, {
     onAnswer(agentId, q, choice) {
       const wasOpen = officeOpen(game.state);
@@ -313,14 +379,19 @@ function wireConversations() {
     onClose: closeSiteMap,
   });
   game.input.on('jump', openWheel);
-  window.addEventListener('sitewalk:reset', () => { endTalk(); refreshProgress(); scoreboard.update(siteScore(game.state)); });
+  window.addEventListener('sitewalk:reset', () => {
+    pendingLevel = null; lastZone = null;
+    endTalk();
+    if (levelBoard.isOpen()) closeLevelBoard();
+    refreshProgress(); refreshLevels();
+  });
   refreshProgress();
-  scoreboard.update(siteScore(game.state));
+  refreshLevels();
 }
 
 // ---- Jump (GTA-style switch) ---------------------------------------------------------
 function openWheel() {
-  if (!game.started || game.jumping || game.talkingId != null || results.isOpen() || menu.isOpen()) return;
+  if (!game.started || game.jumping || game.talkingId != null || results.isOpen() || menu.isOpen() || levelBoard.isOpen()) return;
   game.player.cancelWalk();
   game.input.clear();
   const list = game.crew.members.map((m) => ({ id: m.agentId, label: m.data.name, sub: m.data.role, met: m.met }));
@@ -336,7 +407,7 @@ function mapView() {
     checkpoints: AUDIT_SECTIONS.map((s) => ({ id: s.id, title: s.title, spot: s.spot, done: ((game.state.audit || {})[s.id] || []).length === 5 })) };
 }
 function openSiteMap() {
-  if (!game.started || game.jumping || game.talkingId != null || results.isOpen()) return;
+  if (!game.started || game.jumping || game.talkingId != null || results.isOpen() || levelBoard.isOpen()) return;
   menu.close(); wheel.close();
   game.player.cancelWalk();
   game.input.clear();
@@ -389,23 +460,24 @@ function closeResults() {
   menu.setVisible(true);
   game.input.setJoystickVisible(true);
   game.engine.renderer.domElement.focus?.();
+  showPendingLevel();
 }
 
 let minimapFrame = 0;
 function tickConversations() {
   const p = game.player.pos;
   nearby = null;
-  if (game.started && game.talkingId == null && !auditPanel.isOpen() && !game.jumping) {
+  if (game.started && game.talkingId == null && !auditPanel.isOpen() && !levelBoard.isOpen() && !game.jumping) {
     let best = TALK_RANGE;
     for (const m of game.crew.members) { const d = Math.hypot(m.pos.x - p.x, m.pos.z - p.z); if (d < best) { best = d; nearby = m; } }
     for (const c of game.checkpoints.items) { const d = Math.hypot(c.pos.x - p.x, c.pos.z - p.z); if (d < best) { best = d; nearby = c; } }
   }
   hud.setPrompt(nearby, isTouchDevice());
-  hud.setJumpVisible(game.started && game.talkingId == null && !results.isOpen() && !sitemap.isOpen() && !auditPanel.isOpen() && !scorecard.isOpen() && !game.jumping);
+  hud.setJumpVisible(game.started && game.talkingId == null && !results.isOpen() && !sitemap.isOpen() && !auditPanel.isOpen() && !scorecard.isOpen() && !levelBoard.isOpen() && !game.jumping);
   // Walking through the site office door opens the results board (once per visit to the doorway).
   const [a, b, c, d] = OFFICE.trigger;
   const inDoor = p.x >= a && p.x <= b && p.z >= c && p.z <= d;
-  if (inDoor && officeArmed && game.started && game.talkingId == null && !results.isOpen() && !game.jumping) { officeArmed = false; openOffice(); }
+  if (inDoor && officeArmed && game.started && game.talkingId == null && !results.isOpen() && !levelBoard.isOpen() && !game.jumping) { officeArmed = false; openOffice(); }
   if (!inDoor) officeArmed = true;
   if (game.started && ++minimapFrame % 3 === 0) {
     minimap.draw(p, game.player.root.rotation.y, game.crew.members, officeOpen(game.state), mapView().checkpoints);
@@ -447,8 +519,9 @@ function boot() {
       game.world.setOfficeOpen(officeOpen(game.state));
       game.crew = createCrew(game.engine.scene, game.assets, CREW, { reducedMotion });
       game.checkpoints = buildCheckpoints(game.engine.scene, AUDIT_SECTIONS, { reducedMotion });
+      game.beacons = createBeacons(game.engine.scene, { reducedMotion });
       game.crew.members.forEach((m) => m.setMet(isComplete(game.state, m.agentId)));
-      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() || wheel?.isOpen() || sitemap?.isOpen() || auditPanel?.isOpen() || scorecard?.isOpen() || game.jumping });
+      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() || wheel?.isOpen() || sitemap?.isOpen() || auditPanel?.isOpen() || scorecard?.isOpen() || levelBoard?.isOpen() || game.jumping });
       game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input, { reducedMotion });
       game.player.snapCamera();
       game.jump = createJump({ engine: game.engine, player: game.player, reducedMotion });
@@ -457,10 +530,12 @@ function boot() {
       game.engine.onFrame((dt, t) => {
         game.world.update(dt, t);
         game.jump.update(dt);
-        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null && !results.isOpen() && !wheel.isOpen() && !sitemap.isOpen() && !auditPanel.isOpen() && !scorecard.isOpen() && !game.jumping);
+        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null && !results.isOpen() && !wheel.isOpen() && !sitemap.isOpen() && !auditPanel.isOpen() && !scorecard.isOpen() && !levelBoard.isOpen() && !game.jumping);
         game.crew.update(dt, t, game.player.pos, game.talkingId);
         game.checkpoints.update(t);
+        game.beacons.update(t);
         tickConversations(t);
+        tickZone();
         tickFootsteps(dt);
       });
       watchPerformance();
@@ -481,5 +556,5 @@ window.addEventListener('sitewalk:show', () => {
   if (game.started) audio.setAmbient(true);
   else if (game.ready && !opening.isOpen()) opening.show({ met: completedCount(game.state) });   // skipped earlier, now back
 });
-window.addEventListener('sitewalk:hide', () => { game.engine?.pause(); menu.close(); audio.setAmbient(false); if (game.talkingId != null) endTalk(); if (auditPanel?.isOpen()) endAudit(); if (scorecard?.isOpen()) closeScorecard(); });
+window.addEventListener('sitewalk:hide', () => { game.engine?.pause(); menu.close(); audio.setAmbient(false); if (game.talkingId != null) endTalk(); if (auditPanel?.isOpen()) endAudit(); if (scorecard?.isOpen()) closeScorecard(); if (levelBoard?.isOpen()) closeLevelBoard(); });
 if (!deepLink) boot();

@@ -225,7 +225,7 @@ test.describe('conversations', () => {
     expect(await page.evaluate(() => window.__siteWalk.state().answers[1])).toEqual([0, 1, 2]);
     await page.keyboard.press('Escape');
     await expect(page.locator('.sw-talk')).toBeHidden();
-    await expect(page.locator('.sw-objective')).toHaveText('Talk to the crew · 1 of 3');
+    await expect(page.locator('.sw-objective')).toHaveText('Site office opens after 3 talks · 1 of 3');
     await expect(page.locator('.sw-clip-row')).toHaveCount(1);
   });
 
@@ -233,7 +233,7 @@ test.describe('conversations', () => {
     await preset(page, { 3: [1, 1, 1], 5: [2, 2, 2] });
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
-    await expect(page.locator('.sw-objective')).toHaveText('Talk to the crew · 2 of 3');
+    await expect(page.locator('.sw-objective')).toHaveText('Site office opens after 3 talks · 2 of 3');
     expect(await page.evaluate(() => window.__siteWalk.game.world.officeMarker.visible)).toBe(false);
     await talkTo(page, 1);
     for (const k of ['3', '3', '2']) { await page.keyboard.press(`Digit${k}`); }
@@ -537,14 +537,19 @@ test.describe('site score', () => {
     await page.getByRole('button', { name: 'Start walking' }).click();
     await expect(page.locator('.sw-score-points')).toHaveText('0');
     await expect(page.locator('.sw-score-rank')).toHaveText('Visitor');
-    await expect(page.locator('.sw-score-objectives')).toHaveText('Objectives 0 / 6');
+    await expect(page.locator('.sw-score-level')).toHaveText('Level 1 / 4');
+    await expect(page.locator('.sw-score-stars')).toHaveText('★ 0 / 12');
     await talkTo(page, 1);
     for (const k of ['1', '2', '3']) await page.keyboard.press(`Digit${k}`);
     await expect(page.locator('.sw-score-points')).toHaveText('100');
     await expect(page.locator('.sw-score-float')).toHaveText('+100');
+    await expect(page.locator('.sw-score-stars')).toHaveText('★ 1 / 12');
+    await expect(page.locator('.sw-toast')).toHaveText('Objective complete: Talk to Maria · ★☆☆');
     await page.keyboard.press('Escape');
     await page.locator('.sw-scoreboard-btn').click();
-    await expect(page.locator('.sw-objectives li').first()).toContainText('1 / 3');
+    const level1 = page.locator('.sw-obj-level').first();
+    await expect(level1.locator('.sw-obj-stars')).toHaveText('★☆☆');
+    await expect(level1.locator('li.done')).toHaveText(/Talk to Maria/);
   });
 
   test('visiting the office and saving a report complete their objectives', async ({ page }) => {
@@ -557,7 +562,7 @@ test.describe('site score', () => {
     await expect(page.locator('.sw-score-points')).toHaveText('500');
     await Promise.all([page.waitForEvent('download'), page.locator('[data-report="md"]').click()]);
     await expect(page.locator('.sw-score-points')).toHaveText('600');
-    await expect(page.locator('.sw-score-objectives')).toHaveText('Objectives 3 / 6');
+    await expect(page.locator('.sw-score-stars')).toHaveText('★ 4 / 12');
     await expect(page.locator('.sw-toast')).toContainText('Objective complete');
   });
 });
@@ -576,11 +581,11 @@ test.describe('clickable icons', () => {
   test('clicking a crew marker on screen takes you to them and starts the talk', async ({ page }) => {
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
-    // The camera looks north-east from behind you, so stand south-west of Rosa to have her in view.
+    // The camera looks north-east from behind you, so stand south-west of Priya to have her in view.
     await page.evaluate(() => window.__siteWalk.teleport(24, 29));
-    await clickIcon(page, 'crew', 2);
+    await clickIcon(page, 'crew', 8);
     await expect(page.locator('.sw-talk')).toBeVisible({ timeout: 90_000 });
-    await expect(page.locator('.sw-talk-who')).toHaveText('ROSA · LEAD / SALES FOLLOW-UP');
+    await expect(page.locator('.sw-talk-who')).toHaveText('PRIYA · AIA BILLING / PAY APPS');
   });
 
   test('clicking an audit clipboard on screen starts that audit', async ({ page }) => {
@@ -597,7 +602,7 @@ test.describe('clickable icons', () => {
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
     await page.locator('.sw-scoreboard-btn').click();
-    await page.getByRole('button', { name: 'Go: Finish an audit section' }).click();
+    await page.getByRole('button', { name: 'Go: Audit Bidding & Pipeline' }).click();
     await expect(page.locator('.sw-audit')).toBeVisible({ timeout: 90_000 });
   });
 
@@ -607,5 +612,85 @@ test.describe('clickable icons', () => {
     await page.getByRole('button', { name: 'Start walking' }).click();
     await page.getByRole('button', { name: 'Go to Andre, Vendor / Subcontractor CRM' }).click();
     await expect(page.locator('.sw-talk-who')).toHaveText('ANDRE · VENDOR / SUBCONTRACTOR CRM', { timeout: 90_000 });
+  });
+});
+
+// Start with a saved game: crew answers and audit answers.
+const presetState = (page, state) => page.addInitScript((st) => {
+  if (!sessionStorage.getItem('preset-done')) { localStorage.setItem('wp.sitewalk.v1', JSON.stringify({ v: 1, lastTalked: {}, officeSeen: false, ...st })); sessionStorage.setItem('preset-done', '1'); }
+}, state);
+// Level 1 with one answer to go: Maria, Rosa and Bidding done, Kickoff on its last question.
+const ALMOST_LEVEL_1 = { answers: { 1: [1, 2, 3], 2: [2, 2, 2] }, audit: { bidding: [1, 1, 2, 0, 1], kickoff: [1, 2, 1, 1] } };
+
+test.describe('levels', () => {
+  test('you start on level 1 at the gate, with its title card, objectives and beams over them', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await expect(page.locator('.sw-zone-title')).toHaveText('Preconstruction');
+    await expect(page.locator('.sw-level-kicker')).toHaveText('Level 1 of 4');
+    await expect(page.locator('.sw-level-tasks li')).toHaveText(['Talk to Maria', 'Talk to Rosa', 'Audit Bidding & Pipeline', 'Audit Project Kickoff']);
+    expect(await page.evaluate(() => window.__siteWalk.beacons())).toBe(4);
+  });
+
+  test('walking into another level’s part of the site shows its title card', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(() => window.__siteWalk.teleport(-30, -6));
+    await expect(page.locator('.sw-zone-title')).toHaveText('Structure');
+    await expect(page.locator('.sw-zone-sub')).toHaveText('Main building · 0 of 5 done');
+    await expect(page.locator('.sw-zone-live')).toHaveText('Level 2, Structure. Main building. 0 of 5 objectives done.');
+  });
+
+  test('an objective on the level card takes you straight to it', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.locator('.sw-level-tasks').getByRole('button', { name: 'Talk to Rosa' }).click();
+    await expect(page.locator('.sw-talk-who')).toHaveText('ROSA · LEAD / SALES FOLLOW-UP', { timeout: 90_000 });
+  });
+
+  test('finishing a level shows three stars and leads you on to the next level', async ({ page }) => {
+    await presetState(page, ALMOST_LEVEL_1);
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(() => window.__siteWalk.teleport(-9 + 1.2, 34.5 + 1.2));
+    await expect(page.locator('.sw-prompt')).toHaveText(/Press E to audit Project Kickoff/);
+    await page.keyboard.press('KeyE');
+    await page.keyboard.press('Digit2');
+    await expect(page.locator('.sw-toast')).toHaveText('Level 1 complete · ★★★');
+    await expect(page.locator('.sw-score-points')).toHaveText('750');                  // 200 + 300 + 250 level bonus
+    await expect(page.locator('.sw-lb')).toBeHidden();                                // waits until you leave the board
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.sw-lb-banner')).toContainText('Level 1 complete');
+    await expect(page.locator('.sw-lb-card').first().locator('.sw-lb-stars')).toHaveText('★★★');
+    const scan = await new AxeBuilder({ page }).include('.sw-lb').analyze();
+    expect(scan.violations.filter((v) => ['serious', 'critical'].includes(v.impact)).map((v) => v.id)).toEqual([]);
+    await expect(page.locator('.sw-level-title')).toHaveText('Structure');
+    expect(await page.evaluate(() => window.__siteWalk.beacons())).toBe(5);
+    await page.getByRole('button', { name: 'Start level 2 →' }).click();
+    await expect(page.locator('.sw-lb')).toBeHidden();
+    await expect(page.locator('.sw-talk-who')).toHaveText('DAVE · PM SECOND BRAIN', { timeout: 90_000 });
+  });
+
+  test('Start over takes you back to level 1 with no stars', async ({ page }) => {
+    await presetState(page, { answers: { 1: [1, 1, 1], 2: [1, 1, 1] }, audit: { bidding: [1, 1, 1, 1, 1], kickoff: [1, 1, 1, 1, 1] } });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await expect(page.locator('.sw-level-title')).toHaveText('Structure');
+    await page.getByRole('button', { name: 'Menu' }).click();
+    await page.getByRole('button', { name: 'Start over' }).click();
+    await page.getByRole('button', { name: 'Click again to erase your progress' }).click();
+    await expect(page.locator('.sw-level-title')).toHaveText('Preconstruction');
+    await expect(page.locator('.sw-score-stars')).toHaveText('★ 0 / 12');
+    expect(await page.evaluate(() => window.__siteWalk.beacons())).toBe(4);
+  });
+
+  test('the level card opens the board of all levels; Go on a level heads there', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.locator('.sw-level-head').click();
+    await expect(page.locator('.sw-lb-card')).toHaveCount(4);
+    await expect(page.locator('.sw-lb-banner')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Go to level 3, Field operations' }).click();
+    await expect(page.locator('.sw-talk-who')).toHaveText('LUIS · FIELD-TO-OFFICE EVIDENCE', { timeout: 90_000 });
   });
 });

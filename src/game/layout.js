@@ -22,8 +22,7 @@ export const PLACEMENTS = [
   { id: 'office_annex', model: 'container_office', at: [-53.5, 26.7], rot: Q, size: [3.0, 7.0] },
   { id: 'toilet_1', model: 'toilet', at: [-59.2, 19], rot: 0, size: [1.3, 1.3] },
   { id: 'toilet_2', model: 'toilet', at: [-57.6, 19], rot: 0, size: [1.3, 1.3] },
-  { id: 'safety_tent', proc: 'tent', at: [-31.5, 31.5], rot: 0, size: [4, 3] },
-  { id: 'plan_table', proc: 'plan_table', at: [-31.8, 19.5], rot: 0, size: [1.2, 2.2] },
+    { id: 'plan_table', proc: 'plan_table', at: [-31.8, 19.5], rot: 0, size: [1.2, 2.2] },
   { id: 'office_fuel', model: 'fuel_tank', at: [-60.5, 32], rot: Q, size: [2.0, 4.3] },
 
   // Main building (columns are added separately from the grid)
@@ -41,6 +40,7 @@ export const PLACEMENTS = [
   { id: 'spoil_pile', proc: 'spoil_pile', at: [43, -11], rot: 0, size: [6, 5] },
   { id: 'dump_truck', model: 'dump_truck', at: [17, -27], rot: 0, size: [3.1, 7.0] },
   { id: 'excavation_skip', model: 'skip', at: [11, -8.5], rot: 0, size: [5.5, 2.8] },
+  { id: 'safety_tent', proc: 'tent', at: [44, -19], rot: 0, size: [4, 3] },
 
   // Laydown yard
   { id: 'block_row_1', proc: 'pallet_row', at: [55.5, 10.5], rot: 0, size: [12, 1.4] },

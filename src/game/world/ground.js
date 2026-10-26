@@ -2,6 +2,7 @@
 // buildings around the site.
 import * as THREE from 'three';
 import { mat, box, cyl, groundTexture, groundPatch, signpost, instanceModel, rng } from './kit.js';
+import { LEVELS } from '../levels.js';
 import { AREAS } from '../content.js';
 
 const area = (id) => AREAS.find((a) => a.id === id).rect;
@@ -67,14 +68,15 @@ export function buildGround(scene, assets) {
   box(gate, 5, 0.08, 0.08, metal, 0, 2, 0); box(gate, 5, 0.08, 0.08, metal, 0, 0.3, 0);
   for (let i = 0; i < 9; i++) box(gate, 0.05, 1.7, 0.05, metal, -2.4 + i * 0.6, 1.15, 0);
   signpost(g, 7.5, 41.2, ['SITE WALK'], { sub: 'Hard hats beyond this point', w: 3.2, h: 1.3, post: 2.8 });
-  signpost(g, -10, 41.2, ['WELCOME'], { sub: 'Talk to the crew · results at the site office', w: 3.6, h: 1.3, post: 2.8, bg: '#ffffff', fg: '#1A1A1A' });
+  signpost(g, -10, 41.2, ['WELCOME'], { sub: `${LEVELS.length} levels · talk to the crew · results at the site office`, w: 3.6, h: 1.3, post: 2.8, bg: '#ffffff', fg: '#1A1A1A' });
 
-  // Direction signs where the haul road meets each area.
-  signpost(g, -38, 15, ['SITE OFFICE'], { rot: 0.3, sub: 'Results board' });
-  signpost(g, -9, 1, ['MAIN BUILDING'], { rot: -0.4 });
-  signpost(g, 9, -2, ['EXCAVATION'], { rot: 0.4, sub: 'Keep clear of machines' });
-  signpost(g, 53, 6, ['LAYDOWN YARD'], { rot: -0.3 });
-  signpost(g, 12, 14.5, ['FOOD TRUCK'], { rot: 0.5, sub: 'Parking + break area', bg: '#E86A1C' });
+  // Level signs where the haul road meets each part of the site.
+  const level = (n, place, opts) => signpost(g, ...opts.at, [`LEVEL ${n}`, place], { rot: opts.rot, sub: LEVELS[n - 1].title, w: 2.6, h: 1.2, post: 2.7, bg: opts.bg });
+  level(1, 'SITE OFFICE', { at: [-38, 15], rot: 0.3 });
+  level(2, 'MAIN BUILDING', { at: [-9, 1], rot: -0.4 });
+  level(3, 'EXCAVATION', { at: [9, -2], rot: 0.4 });
+  level(3, 'LAYDOWN YARD', { at: [53, 6], rot: -0.3 });
+  level(4, 'FOOD TRUCK', { at: [12, 14.5], rot: 0.5, bg: '#E86A1C' });
 
   buildSurroundings(g);
   return g;

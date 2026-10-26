@@ -26,7 +26,7 @@ export function createOpening(root, { onStart, onSkip }) {
         <p class="sw-opening-lede">${LEDE}</p>
         ${met ? `<p class="sw-opening-back">You've already met ${met} of the crew. Pick up where you left off.</p>` : ''}
         <ol class="sw-opening-steps">
-          <li><b>Walk the site.</b> Ten crew members are working around the job.</li>
+          <li><b>Play four levels.</b> Each part of the site is a stage of the job, with its own crew, audit checkpoints and 3 stars to earn. Follow them in order or roam freely.</li>
           <li><b>Talk to the crew.</b> Each one asks three quick questions about how you work.</li>
           <li><b>Get your results at the site office.</b> It opens once you've met three of them.</li>
         </ol>

@@ -3,6 +3,7 @@
 import { AREAS, OFFICE } from '../content.js';
 import { PLACEMENTS, COLUMN_X, COLUMN_Z, CRANE, footprint } from '../layout.js';
 import { gameActive } from '../active.js';
+import { LEVELS } from '../levels.js';
 
 const X0 = -66, X1 = 66, Z0 = -40, Z1 = 40;
 const round = (v) => Math.round(v * 100) / 100;
@@ -11,6 +12,7 @@ const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 // Haul roads as [x, z, width, depth] rectangles (matches world/ground.js).
 const ROADS = [[-1.5, 21, 5.5, 37], [3, 3, 110, 5.5], [57, -14.5, 5.5, 36], [-40, 10, 5.5, 14]];
 const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+const levelOf = (agentId) => { const l = LEVELS.find((k) => k.crew.includes(agentId)); return l ? `Level ${l.number} · ${l.title}` : ''; };
 
 // The site plan drawn as a construction blueprint: grid paper, white line work, the building's
 // structural grid, dimensions, a scale bar and a north arrow. Units are metres (viewBox = the site).
@@ -26,6 +28,9 @@ function planSvg() {
   }).join('');
   const areas = AREAS.map((a) => box(a.rect, 'sw-bp-area')).join('');
   const labels = AREAS.map((a) => text((a.rect[0] + a.rect[1]) / 2, a.rect[2] + 2.6, a.label.toUpperCase())).join('');
+  // Each level's part of the site, outlined and tagged at its first corner.
+  const zones = LEVELS.map((l) => l.rects.map((r) => box(r, 'sw-bp-zone')).join('')
+    + `<text class="sw-bp-zone-label" x="${u(l.rects[0][0] + 0.8)}" y="${v(l.rects[0][2] - 0.9)}">${esc(`LEVEL ${l.number} · ${l.title.toUpperCase()}`)}</text>`).join('');
 
   // Everything solid on site, as outlines.
   const solids = PLACEMENTS.filter((p) => p.id !== 'office' && p.id !== 'office_annex').map((p) => box(footprint(p))).join('');
@@ -69,7 +74,7 @@ function planSvg() {
     <rect width="${X1 - X0}" height="${Z1 - Z0}" fill="url(#swBpGrid)"/>
     <rect width="${X1 - X0}" height="${Z1 - Z0}" fill="url(#swBpGridMajor)"/>
     <rect class="sw-bp-fence" x="0.5" y="0.5" width="${X1 - X0 - 1}" height="${Z1 - Z0 - 1}"/>
-    ${roads}${areas}${pit}${crane}${grid}${solids}${office}${gate}
+    ${roads}${areas}${pit}${crane}${grid}${solids}${office}${gate}${zones}
     ${labels}${dims}${scale}${north}
   </svg>`;
 }
@@ -116,7 +121,7 @@ export function createSiteMap(root, { onPick, onClose }) {
         <ul class="sw-map-list" aria-label="Everyone on site">
           ${members.map((m) => `<li><button type="button" class="${m.met ? 'met' : ''}" data-id="${m.agentId}">
             <span class="sw-map-dot" aria-hidden="true">${esc(m.data.name[0])}</span>
-            <span><b>${esc(m.data.name)}</b><small>${esc(m.data.role)} · ${esc(AREAS.find((a) => a.id === m.data.area)?.label)}</small></span>
+            <span><b>${esc(m.data.name)}</b><small>${esc(m.data.role)} · ${esc(levelOf(m.agentId))}</small></span>
           </button></li>`).join('')}
         </ul>
         <footer class="sw-map-foot">

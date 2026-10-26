@@ -95,10 +95,10 @@ describe('hud', () => {
     const hud = createHud(document.body);
     let s = createState();
     hud.setObjective(s);
-    expect(document.querySelector('.sw-objective').textContent).toBe('Talk to the crew · 0 of 3');
+    expect(document.querySelector('.sw-objective').textContent).toBe('Site office opens after 3 talks · 0 of 3');
     [1, 2].forEach((id) => [0, 1, 2].forEach((i) => { s = recordAnswer(s, id, i, 1); }));
     hud.setObjective(s);
-    expect(document.querySelector('.sw-objective').textContent).toBe('Talk to the crew · 2 of 3');
+    expect(document.querySelector('.sw-objective').textContent).toBe('Site office opens after 3 talks · 2 of 3');
     [0, 1, 2].forEach((i) => { s = recordAnswer(s, 3, i, 1); });
     hud.setObjective(s);
     expect(document.querySelector('.sw-objective').textContent).toBe('Site office is open — head there');

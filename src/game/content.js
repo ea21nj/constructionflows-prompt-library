@@ -29,8 +29,8 @@ export const CREW = [
     ],
   },
   {
-    agentId: 8, name: 'Priya', role: 'AIA Billing / Pay Apps', area: 'office', activity: 'laptop',
-    spot: [-35.5, 31.8], route: [[-35.5, 31.8], [-35, 33.8], [-36.5, 33.2]],
+    agentId: 8, name: 'Priya', role: 'AIA Billing / Pay Apps', area: 'parking', activity: 'chat',
+    spot: [31, 22], route: [[31, 22], [34, 20], [36, 23]],
     questions: [
       { q: 'How long does it take to put a pay app together?', answers: ['An hour or two', 'Most of a day', 'Several days of chasing', 'It takes over the whole week'] },
       { q: 'How do you get percent complete from the PMs?', answers: ['A clean report every month', 'A quick email back and forth', 'I chase them until I get it', 'I end up estimating it myself'] },
@@ -38,8 +38,8 @@ export const CREW = [
     ],
   },
   {
-    agentId: 9, name: 'Kim', role: 'Safety / Compliance', area: 'office', activity: 'board',
-    spot: [-28.5, 27], route: [[-28.5, 27], [-26, 28.5], [-28.5, 30.5]],
+    agentId: 9, name: 'Kim', role: 'Safety / Compliance', area: 'excavation', activity: 'board',
+    spot: [47, -23.5], route: [[47, -23.5], [48.5, -21.5], [45, -24.5]],
     questions: [
       { q: 'How do toolbox talks happen on your jobs?', answers: ['Every week, signed and filed', 'Most weeks', 'When someone remembers', 'Mostly after something goes wrong'] },
       { q: 'Where do JHAs, certs and insurance docs live?', answers: ['One organised system', 'A shared drive, mostly current', 'Truck dashboards and inboxes', 'Nobody is quite sure'] },
@@ -92,8 +92,8 @@ export const CREW = [
     ],
   },
   {
-    agentId: 2, name: 'Rosa', role: 'Lead / Sales Follow-Up', area: 'parking', activity: 'chat',
-    spot: [31, 22], route: [[31, 22], [34, 20], [36, 23]],
+    agentId: 2, name: 'Rosa', role: 'Lead / Sales Follow-Up', area: 'office', activity: 'laptop',
+    spot: [-35.5, 31.8], route: [[-35.5, 31.8], [-35, 33.8], [-36.5, 33.2]],
     questions: [
       { q: 'Where do your customer and GC contacts live?', answers: ['A CRM we actually use', 'One shared spreadsheet', 'Email, phones and business cards', 'In the owner’s head'] },
       { q: 'After you send an estimate, what happens next?', answers: ['Follow-up on a schedule', 'A call when we remember', 'We wait to hear back', 'Usually nothing'] },

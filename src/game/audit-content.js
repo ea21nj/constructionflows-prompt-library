@@ -14,7 +14,7 @@ export const AUDIT_SECTIONS = [
     ],
   },
   {
-    id: 'kickoff', title: 'Project Kickoff', spot: [14.5, 36.5], where: 'By the gate',
+    id: 'kickoff', title: 'Project Kickoff', spot: [-9, 34.5], where: 'By the gate',
     questions: [
       { dim: 'Process', q: 'How standardized is your project kickoff process?', answers: ['Every project follows the same documented kickoff workflow', 'A kickoff process exists, but it is not followed consistently', 'The process is mostly informal and varies by PM', 'There is no defined kickoff process'] },
       { dim: 'People Dependency', q: 'If the primary PM became unavailable right after award, what would happen?', answers: ['Another team member could take over with minimal disruption', 'There would be some delay, but the handoff would be manageable', 'Important information would need to be reconstructed or re-explained', 'The project start would stall because too much depends on that person'] },
