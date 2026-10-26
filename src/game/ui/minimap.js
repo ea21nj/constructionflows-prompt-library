@@ -6,13 +6,21 @@ const sx = (x) => ((x - X0) / (X1 - X0)) * W;
 const sz = (z) => ((z - Z0) / (Z1 - Z0)) * H;
 const COLORS = { office: '#d9d4c7', building: '#bdbab3', excavation: '#b39572', laydown: '#d9d4c7', parking: '#8e9196' };
 
-export function createMinimap(root) {
+// The minimap is a button: clicking it opens the full site map.
+export function createMinimap(root, { onOpen = () => {} } = {}) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'sw-minimap-btn';
+  button.setAttribute('aria-label', 'Open the site map');
+  button.innerHTML = '<span class="sw-minimap-tag" aria-hidden="true">Map — click to open</span>';
+  button.addEventListener('click', onOpen);
   const canvas = document.createElement('canvas');
   canvas.className = 'sw-minimap';
   canvas.setAttribute('aria-hidden', 'true');
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = W * dpr; canvas.height = H * dpr;
-  root.appendChild(canvas);
+  button.prepend(canvas);
+  root.appendChild(button);
   const g = canvas.getContext('2d');
   if (!g) return { draw() {} };
   g.scale(dpr, dpr);

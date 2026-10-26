@@ -462,3 +462,31 @@ test.describe('jump to people', () => {
     await expect(page.locator('.sw-results')).toBeVisible({ timeout: 90_000 });
   });
 });
+
+test.describe('site map', () => {
+  test('clicking the minimap opens the site map; clicking someone flies you there and starts the conversation', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.getByRole('button', { name: 'Open the site map' }).click();
+    await expect(page.locator('.sw-map')).toBeVisible();
+    await expect(page.locator('.sw-map-person')).toHaveCount(10);
+    await page.getByRole('button', { name: 'Rosa, Lead / Sales Follow-Up — go and talk' }).click();
+    await expect(page.locator('.sw-map')).toBeHidden();
+    await expect(page.locator('.sw-talk')).toBeVisible({ timeout: 90_000 });
+    await expect(page.locator('.sw-talk-who')).toHaveText('ROSA · LEAD / SALES FOLLOW-UP');
+  });
+
+  test('the site map works by tap on phones', async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    const page = await context.newPage();
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.getByRole('button', { name: 'Open the site map' }).tap();
+    await expect(page.locator('.sw-map')).toBeVisible();
+    const fits = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
+    expect(fits).toBe(true);
+    await page.locator('.sw-map-list button', { hasText: 'Tom' }).tap();
+    await expect(page.locator('.sw-talk')).toBeVisible({ timeout: 90_000 });
+    await context.close();
+  });
+});

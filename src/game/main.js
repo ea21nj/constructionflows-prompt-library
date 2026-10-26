@@ -20,6 +20,7 @@ import { createAudio } from './audio.js';
 import { nextTier } from './perf.js';
 import { createJump, landingSpot } from './jump.js';
 import { createWheel } from './ui/wheel.js';
+import { createSiteMap } from './ui/sitemap.js';
 import { OFFICE } from './content.js';
 import { rank } from './scoring.js';
 import * as THREE from 'three';
@@ -112,7 +113,7 @@ function wireTapToTalk() {
 
 // ---- Conversations, HUD and minimap ------------------------------------------------
 const TALK_RANGE = 3.2;
-let talk, hud, minimap, results, wheel, nearby = null, officeArmed = true;
+let talk, hud, minimap, results, wheel, sitemap, nearby = null, officeArmed = true;
 
 function refreshProgress() {
   const ranking = rank(game.state);
@@ -145,7 +146,7 @@ function endTalk() {
 function wireConversations() {
   game.startTalk = startTalk;
   hud = createHud(root, { onTalk: () => nearby && startTalk(nearby.agentId), onJump: openWheel });
-  minimap = createMinimap(hud.el);
+  minimap = createMinimap(hud.el, { onOpen: openSiteMap });
   talk = createTalk(root, {
     onAnswer(agentId, q, choice) {
       const wasOpen = officeOpen(game.state);
@@ -174,6 +175,10 @@ function wireConversations() {
   });
   game.openOffice = openOffice;
   wheel = createWheel(root, { onPick: jumpTo, onClose: closeWheel });
+  sitemap = createSiteMap(root, {
+    onPick: (id) => { closeSiteMap(); jumpTo(id, { talk: true }); },   // fly there and start talking
+    onClose: closeSiteMap,
+  });
   game.input.on('jump', openWheel);
   window.addEventListener('sitewalk:reset', () => { endTalk(); refreshProgress(); });
   refreshProgress();
@@ -192,7 +197,25 @@ function closeWheel() {
   wheel.close();
   game.engine.renderer.domElement.focus?.();
 }
-function jumpTo(id) {
+function mapView() {
+  return { members: game.crew.members, player: game.player.pos, heading: game.player.root.rotation.y, officeOpen: officeOpen(game.state) };
+}
+function openSiteMap() {
+  if (!game.started || game.jumping || game.talkingId != null || results.isOpen()) return;
+  menu.close(); wheel.close();
+  game.player.cancelWalk();
+  game.input.clear();
+  game.input.setJoystickVisible(false);
+  menu.setVisible(false);    // the menu button would sit over the map's close button on phones
+  sitemap.open(mapView());
+}
+function closeSiteMap() {
+  sitemap.close();
+  menu.setVisible(true);
+  game.input.setJoystickVisible(true);
+  game.engine.renderer.domElement.focus?.();
+}
+function jumpTo(id, { talk = false } = {}) {
   closeWheel();
   audio.whoosh();
   if (id === 'office') {
@@ -203,7 +226,7 @@ function jumpTo(id) {
   }
   const m = game.crew.byId(id);
   m.pause = Math.max(m.pause, 4);             // they wait for you
-  game.jump.start(landingSpot(m.pos, game.player.pos), m.pos);
+  game.jump.start(landingSpot(m.pos, game.player.pos), m.pos, talk ? () => startTalk(id) : undefined);
 }
 
 function openOffice() {
@@ -236,13 +259,16 @@ function tickConversations() {
     for (const m of game.crew.members) { const d = Math.hypot(m.pos.x - p.x, m.pos.z - p.z); if (d < best) { best = d; nearby = m; } }
   }
   hud.setPrompt(nearby, isTouchDevice());
-  hud.setJumpVisible(game.started && game.talkingId == null && !results.isOpen() && !game.jumping);
+  hud.setJumpVisible(game.started && game.talkingId == null && !results.isOpen() && !sitemap.isOpen() && !game.jumping);
   // Walking through the site office door opens the results board (once per visit to the doorway).
   const [a, b, c, d] = OFFICE.trigger;
   const inDoor = p.x >= a && p.x <= b && p.z >= c && p.z <= d;
   if (inDoor && officeArmed && game.started && game.talkingId == null && !results.isOpen() && !game.jumping) { officeArmed = false; openOffice(); }
   if (!inDoor) officeArmed = true;
-  if (game.started && ++minimapFrame % 3 === 0) minimap.draw(p, game.player.root.rotation.y, game.crew.members, officeOpen(game.state));
+  if (game.started && ++minimapFrame % 3 === 0) {
+    minimap.draw(p, game.player.root.rotation.y, game.crew.members, officeOpen(game.state));
+    sitemap.update(mapView());
+  }
 }
 
 // Gravel footsteps while you walk (faster when running).
@@ -279,7 +305,7 @@ function boot() {
       game.world.setOfficeOpen(officeOpen(game.state));
       game.crew = createCrew(game.engine.scene, game.assets, CREW, { reducedMotion });
       game.crew.members.forEach((m) => m.setMet(isComplete(game.state, m.agentId)));
-      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() || wheel?.isOpen() || game.jumping });
+      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() || wheel?.isOpen() || sitemap?.isOpen() || game.jumping });
       game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input, { reducedMotion });
       game.player.snapCamera();
       game.jump = createJump({ engine: game.engine, player: game.player, reducedMotion });
@@ -288,7 +314,7 @@ function boot() {
       game.engine.onFrame((dt, t) => {
         game.world.update(dt, t);
         game.jump.update(dt);
-        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null && !results.isOpen() && !wheel.isOpen() && !game.jumping);
+        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null && !results.isOpen() && !wheel.isOpen() && !sitemap.isOpen() && !game.jumping);
         game.crew.update(dt, t, game.player.pos, game.talkingId);
         tickConversations(t);
         tickFootsteps(dt);
