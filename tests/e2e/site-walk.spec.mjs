@@ -144,3 +144,51 @@ test.describe('crew', () => {
     }
   });
 });
+
+const playerPos = (page) => page.evaluate(() => window.__siteWalk.playerPos());
+
+test.describe('player', () => {
+  test('keyboard walks the player and the camera follows', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    const start = await playerPos(page);
+    const camStart = await page.evaluate(() => window.__siteWalk.game.engine.controls.target.toArray());
+    await page.keyboard.down('KeyW');
+    await page.waitForFunction((s) => { const p = window.__siteWalk.playerPos(); return Math.hypot(p.x - s.x, p.z - s.z) > 2; }, start, { timeout: 90_000 });
+    await page.keyboard.up('KeyW');
+    const end = await playerPos(page);
+    expect(end.z).toBeLessThan(start.z);                     // W walks away from the camera (north)
+    // The camera eases after the player, so give it a moment to catch up.
+    await page.waitForFunction((c) => { const t = window.__siteWalk.game.engine.controls.target; return Math.hypot(t.x - c[0], t.z - c[2]) > 1.5; }, camStart, { timeout: 60_000 });
+  });
+
+  test('player cannot walk through the trailer', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    // Stand east of the office door and walk west, straight at the trailer wall (x = -37.75).
+    await page.evaluate(() => window.__siteWalk.teleport(-33, 24));
+    await page.evaluate(() => window.__siteWalk.faceCamera(-1, 0));   // camera looks west, so W walks west
+    await page.keyboard.down('KeyW');
+    await page.waitForFunction(() => window.__siteWalk.playerPos().x < -36.5, null, { timeout: 90_000 });
+    await page.waitForTimeout(3000);
+    await page.keyboard.up('KeyW');
+    expect((await playerPos(page)).x).toBeGreaterThan(-37.75 + 0.4);
+  });
+
+  test('phone joystick walks the player', async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    const page = await context.newPage();
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    const knob = page.locator('.sw-joystick');
+    await expect(knob).toBeVisible();
+    const box = await knob.boundingBox();
+    const start = await playerPos(page);
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2, box.y - 40, { steps: 4 });
+    await page.waitForFunction((s) => { const p = window.__siteWalk.playerPos(); return Math.hypot(p.x - s.x, p.z - s.z) > 1.5; }, start, { timeout: 90_000 });
+    await page.mouse.up();
+    await context.close();
+  });
+});

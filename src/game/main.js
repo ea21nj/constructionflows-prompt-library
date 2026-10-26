@@ -9,6 +9,10 @@ import { createEngine } from './engine.js';
 import { loadManifest, loadAssets } from './assets.js';
 import { buildWorld } from './world.js';
 import { createCrew } from './crew.js';
+import { createInput } from './input.js';
+import { createPlayer } from './player.js';
+import { isTouchDevice } from './ui/opening.js';
+import * as THREE from 'three';
 import { CREW } from './content.js';
 import { isComplete } from './state.js';
 import { officeOpen } from './state.js';
@@ -27,12 +31,14 @@ if (testMode) {
   window.__siteWalk = {
     isReady: () => game.ready, state: () => game.state,
     crewPositions: () => game.crew.members.map((m) => ({ agentId: m.agentId, name: m.data.name, x: m.pos.x, z: m.pos.z })), fps: () => game.engine?.fps() ?? 0, game,
-    // Jump the view to a point on site (Task 7 replaces this with moving the player).
-    teleport(x, z) {
+    teleport(x, z) { game.player.teleport(x, z); },
+    playerPos: () => ({ x: game.player.pos.x, z: game.player.pos.z }),
+    // Point the camera along (dx, dz) behind the player, keeping its distance and height.
+    faceCamera(dx, dz) {
       const { camera, controls } = game.engine;
-      const offset = camera.position.clone().sub(controls.target);
-      controls.target.set(x, 1.5, z); camera.position.copy(controls.target).add(offset);
-      game.engine.setShadowCenter(x, z);
+      const off = camera.position.clone().sub(controls.target);
+      const flat = Math.hypot(off.x, off.z), len = Math.hypot(dx, dz);
+      camera.position.set(controls.target.x - (dx / len) * flat, controls.target.y + off.y, controls.target.z - (dz / len) * flat);
     },
   };
 }
@@ -49,7 +55,7 @@ function fallback() {
 }
 
 const opening = createOpening(root, {
-  onStart: () => { game.started = true; },
+  onStart: () => { game.started = true; document.documentElement.classList.add('sw-playing'); },
   onSkip: () => WP.openClassic('agents'),
 });
 
@@ -59,6 +65,30 @@ const menu = createMenu(root, {
   onReset: () => { game.state = createState(); saveState(game.state); window.dispatchEvent(new CustomEvent('sitewalk:reset')); },
   onToggleSound: () => window.dispatchEvent(new CustomEvent('sitewalk:sound')),
 });
+
+// Tap or click a worker: walk over to them, then talk (game.startTalk is wired by the HUD step).
+function wireTapToTalk() {
+  const canvas = game.engine.renderer.domElement;
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let down = null;
+  const pick = (e) => {
+    const r = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, game.engine.camera);
+    return ray.intersectObjects(game.crew.members.map((m) => m.hit), false)[0]?.object.userData.agentId ?? null;
+  };
+  canvas.addEventListener('pointerdown', (e) => { down = [e.clientX, e.clientY]; });
+  canvas.addEventListener('pointermove', (e) => { if (!down) canvas.style.cursor = pick(e) != null ? 'pointer' : 'grab'; });
+  canvas.addEventListener('pointerup', (e) => {
+    if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 8) { down = null; return; }   // that was a drag
+    down = null;
+    if (!game.started || game.talkingId != null || menu.isOpen()) return;
+    const id = pick(e);
+    if (id == null) return;
+    const m = game.crew.byId(id);
+    game.player.walkTo(m.pos.x, m.pos.z, () => game.startTalk?.(id));
+  });
+}
 
 let booting = null;
 function boot() {
@@ -74,7 +104,15 @@ function boot() {
       game.world.setOfficeOpen(officeOpen(game.state));
       game.crew = createCrew(game.engine.scene, game.assets, CREW);
       game.crew.members.forEach((m) => m.setMet(isComplete(game.state, m.agentId)));
-      game.engine.onFrame((dt, t) => { game.world.update(dt, t); game.crew.update(dt, t, game.player?.pos, game.talkingId); });
+      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null });
+      game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input);
+      game.player.snapCamera();
+      wireTapToTalk();
+      game.engine.onFrame((dt, t) => {
+        game.world.update(dt, t);
+        game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null);
+        game.crew.update(dt, t, game.player.pos, game.talkingId);
+      });
       loading.hide();
       opening.show({ met: completedCount(game.state) });
       game.ready = true;
