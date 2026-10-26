@@ -27,7 +27,7 @@ test.describe('shell', () => {
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
     await expect(page.locator('.sw-opening')).toBeHidden();
-    await expect(page.locator('#siteWalk canvas')).toBeVisible();
+    await expect(page.locator('#siteWalk canvas.sw-canvas')).toBeVisible();
     await expect(page.locator('.sidebar')).toBeHidden();
   });
 
@@ -47,7 +47,7 @@ test.describe('shell', () => {
       await page.locator('.sw-menu-panel').getByRole('button', { name: item }).click();
       await expect(page.locator(`#face-${face}`)).toBeVisible();
       await page.locator('[data-site-walk]').click();                 // nav link back to the game
-      await expect(page.locator('#siteWalk canvas')).toBeVisible();
+      await expect(page.locator('#siteWalk canvas.sw-canvas')).toBeVisible();
     }
   });
 
@@ -190,5 +190,67 @@ test.describe('player', () => {
     await page.waitForFunction((s) => { const p = window.__siteWalk.playerPos(); return Math.hypot(p.x - s.x, p.z - s.z) > 1.5; }, start, { timeout: 90_000 });
     await page.mouse.up();
     await context.close();
+  });
+});
+
+// Stand next to a crew member wherever their route has taken them.
+async function goTo(page, agentId) {
+  await page.evaluate((id) => {
+    const m = window.__siteWalk.game.crew.byId(id);
+    window.__siteWalk.teleport(m.pos.x + 1.2, m.pos.z + 1.2);
+  }, agentId);
+}
+const preset = (page, answers) => page.addInitScript((a) => {
+  if (!sessionStorage.getItem('preset-done')) { localStorage.setItem('wp.sitewalk.v1', JSON.stringify({ v: 1, answers: a, lastTalked: {}, officeSeen: false })); sessionStorage.setItem('preset-done', '1'); }
+}, answers);
+async function talkTo(page, agentId) {
+  await goTo(page, agentId);
+  await page.waitForFunction((id) => document.querySelector('.sw-prompt:not([hidden])') && window.__siteWalk.game.crew.byId(id), agentId);
+  await page.keyboard.press('KeyE');
+  await expect(page.locator('.sw-talk')).toBeVisible();
+}
+
+test.describe('conversations', () => {
+  test('talk to a worker by keyboard', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await goTo(page, 1);
+    await expect(page.locator('.sw-prompt')).toHaveText(/Press E to talk to Maria — Bid Desk/);
+    await page.keyboard.press('KeyE');
+    await expect(page.locator('.sw-talk')).toBeVisible();
+    await expect(page.locator('.sw-talk-say')).toHaveText(/^Hey, I'm Maria\./);
+    for (const k of ['1', '2', '3']) { await page.keyboard.press(`Digit${k}`); }
+    await expect(page.locator('.sw-talk-say')).toHaveText(/^Thanks — that helps\./);
+    expect(await page.evaluate(() => window.__siteWalk.state().answers[1])).toEqual([0, 1, 2]);
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.sw-talk')).toBeHidden();
+    await expect(page.locator('.sw-objective')).toHaveText('Talk to the crew · 1 of 3');
+    await expect(page.locator('.sw-clip-row')).toHaveCount(1);
+  });
+
+  test('third conversation unlocks the office', async ({ page }) => {
+    await preset(page, { 3: [1, 1, 1], 5: [2, 2, 2] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await expect(page.locator('.sw-objective')).toHaveText('Talk to the crew · 2 of 3');
+    expect(await page.evaluate(() => window.__siteWalk.game.world.officeMarker.visible)).toBe(false);
+    await talkTo(page, 1);
+    for (const k of ['3', '3', '2']) { await page.keyboard.press(`Digit${k}`); }
+    await expect(page.locator('.sw-talk-say')).toHaveText(/The site office is open — head over when you're ready\.$/);
+    await expect(page.locator('.sw-toast')).toHaveText('The site office is open');
+    await expect(page.locator('.sw-objective')).toHaveText('Site office is open — head there');
+    expect(await page.evaluate(() => window.__siteWalk.game.world.officeMarker.visible)).toBe(true);
+  });
+
+  test('progress survives reload', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await talkTo(page, 7);
+    for (const k of ['2', '2', '2']) { await page.keyboard.press(`Digit${k}`); }
+    await expect(page.locator('.sw-talk-say')).toHaveText(/^Thanks — that helps\./);
+    await page.reload();
+    await page.waitForFunction(() => window.__siteWalk?.isReady());
+    await expect(page.locator('.sw-opening-back')).toContainText('met 1 of the crew');
+    expect(await page.evaluate(() => window.__siteWalk.game.crew.byId(7).met)).toBe(true);
   });
 });

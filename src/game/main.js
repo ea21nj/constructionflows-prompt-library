@@ -12,14 +12,16 @@ import { createCrew } from './crew.js';
 import { createInput } from './input.js';
 import { createPlayer } from './player.js';
 import { isTouchDevice } from './ui/opening.js';
+import { createTalk } from './ui/talk.js';
+import { createHud } from './ui/hud.js';
+import { createMinimap } from './ui/minimap.js';
+import { rank } from './scoring.js';
 import * as THREE from 'three';
 import { CREW } from './content.js';
-import { isComplete } from './state.js';
-import { officeOpen } from './state.js';
 import { createLoading } from './ui/loading.js';
 import { createOpening } from './ui/opening.js';
 import { createMenu } from './ui/menu.js';
-import { loadState, saveState, createState, completedCount } from './state.js';
+import { loadState, saveState, createState, completedCount, isComplete, officeOpen, recordAnswer } from './state.js';
 
 const WP = window.WP;
 const root = document.getElementById('siteWalk');
@@ -90,6 +92,78 @@ function wireTapToTalk() {
   });
 }
 
+// ---- Conversations, HUD and minimap ------------------------------------------------
+const TALK_RANGE = 3.2;
+let talk, hud, minimap, nearby = null;
+
+function refreshProgress() {
+  const ranking = rank(game.state);
+  hud.setObjective(game.state);
+  hud.updateClipboard(ranking, ranking.filter((r) => r.complete).length);
+  const top = new Set(ranking.filter((r) => r.complete).slice(0, 3).map((r) => r.agentId));
+  game.crew.members.forEach((m) => { m.setMet(isComplete(game.state, m.agentId)); m.setHighlight(top.has(m.agentId)); });
+  game.world.setOfficeOpen(officeOpen(game.state));
+}
+
+function startTalk(agentId) {
+  if (game.talkingId != null || !game.started) return;
+  const m = game.crew.byId(agentId);
+  game.talkingId = agentId;
+  game.player.cancelWalk();
+  game.player.faceTowards(m.pos.x, m.pos.z);
+  game.input.clear();
+  hud.setPrompt(null);
+  game.input.setJoystickVisible(false);
+  talk.open(m, game.state);
+}
+
+function endTalk() {
+  talk.close();
+  game.talkingId = null;
+  game.input.setJoystickVisible(true);
+  game.engine.renderer.domElement.focus?.();
+}
+
+function wireConversations() {
+  game.startTalk = startTalk;
+  hud = createHud(root, { onTalk: () => nearby && startTalk(nearby.agentId) });
+  minimap = createMinimap(hud.el);
+  talk = createTalk(root, {
+    onAnswer(agentId, q, choice) {
+      const wasOpen = officeOpen(game.state);
+      game.state = recordAnswer(game.state, agentId, q, choice);
+      saveState(game.state);
+      const unlocked = !wasOpen && officeOpen(game.state);
+      refreshProgress();
+      if (unlocked) hud.toast('The site office is open');
+      talk.open(game.crew.byId(agentId), game.state, { unlocked });
+    },
+    onLeave: endTalk,
+    onRestart(agentId) {
+      const answers = { ...game.state.answers }; delete answers[agentId];
+      game.state = { ...game.state, answers };
+      saveState(game.state);
+      refreshProgress();
+      talk.open(game.crew.byId(agentId), game.state);
+    },
+  });
+  game.input.on('talk', () => { if (nearby) startTalk(nearby.agentId); });
+  window.addEventListener('sitewalk:reset', () => { endTalk(); refreshProgress(); });
+  refreshProgress();
+}
+
+let minimapFrame = 0;
+function tickConversations() {
+  const p = game.player.pos;
+  nearby = null;
+  if (game.started && game.talkingId == null) {
+    let best = TALK_RANGE;
+    for (const m of game.crew.members) { const d = Math.hypot(m.pos.x - p.x, m.pos.z - p.z); if (d < best) { best = d; nearby = m; } }
+  }
+  hud.setPrompt(nearby, isTouchDevice());
+  if (game.started && ++minimapFrame % 3 === 0) minimap.draw(p, game.player.root.rotation.y, game.crew.members, officeOpen(game.state));
+}
+
 let booting = null;
 function boot() {
   if (booting) return booting;
@@ -108,10 +182,12 @@ function boot() {
       game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input);
       game.player.snapCamera();
       wireTapToTalk();
+      wireConversations();
       game.engine.onFrame((dt, t) => {
         game.world.update(dt, t);
         game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null);
         game.crew.update(dt, t, game.player.pos, game.talkingId);
+        tickConversations(t);
       });
       loading.hide();
       opening.show({ met: completedCount(game.state) });
