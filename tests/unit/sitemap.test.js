@@ -31,6 +31,26 @@ describe('site map', () => {
     expect(root.querySelector('.sw-map-office').disabled).toBe(true);    // office not open yet
   });
 
+  test('is drawn as a construction blueprint: grid, title block, north arrow, dimensions, scale, structural grid', () => {
+    map.open({ members, player: { x: 0, z: 30 }, heading: 0, officeOpen: false });
+    const svg = root.querySelector('.sw-map-svg');
+    expect(svg.querySelector('pattern#swBpGrid')).toBeTruthy();
+    expect(svg.querySelector('.sw-bp-north')).toBeTruthy();
+    expect([...svg.querySelectorAll('.sw-bp-dim text')].map((t) => t.textContent)).toEqual(['132.0 m', '80.0 m']);
+    expect(svg.querySelector('.sw-bp-scale')).toBeTruthy();
+    expect(svg.querySelectorAll('.sw-bp-gridbubble').length).toBe(9);          // 5 lettered + 4 numbered
+    const block = root.querySelector('.sw-bp-titleblock');
+    expect(block.textContent).toContain('A-101');
+    expect(block.textContent).toContain('SITE PLAN');
+  });
+
+  test('the office gets an OPEN stamp once results are ready', () => {
+    map.open({ members, player: { x: 0, z: 30 }, heading: 0, officeOpen: false });
+    expect(root.querySelector('.sw-map-office .sw-bp-stamp')).toBeNull();
+    map.open({ members, player: { x: 0, z: 30 }, heading: 0, officeOpen: true });
+    expect(root.querySelector('.sw-map-office .sw-bp-stamp').textContent).toBe('OPEN · YOUR RESULTS');
+  });
+
   test('clicking a person picks them; clicking the open office picks the office', () => {
     map.open({ members, player: { x: 0, z: 30 }, heading: 0, officeOpen: true });
     root.querySelector(`.sw-map-person[data-id="${CREW[4].agentId}"]`).click();
