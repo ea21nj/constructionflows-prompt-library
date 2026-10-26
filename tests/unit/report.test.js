@@ -43,7 +43,7 @@ describe('results board', () => {
   beforeEach(() => {
     document.body.innerHTML = '<div id="r"></div>';
     root = document.getElementById('r');
-    calls = { onClose: vi.fn(), onOpenDetails: vi.fn(), onClassic: vi.fn() };
+    calls = { onClose: vi.fn(), onOpenDetails: vi.fn(), onClassic: vi.fn(), onMeet: vi.fn() };
     board = createResults(root, { agents: AGENTS, ...calls });
   });
   afterEach(() => board.close());
@@ -57,9 +57,12 @@ describe('results board', () => {
     expect(root.querySelector('.sw-start-here').textContent).toContain('Less Bid Desk admin');
   });
 
-  test('lists crew not yet met', () => {
+  test('lists crew not yet met, each one a way to go and meet them', () => {
     board.open(sample());
     expect(root.querySelectorAll('.sw-unmet li')).toHaveLength(7);
+    const first = root.querySelector('.sw-unmet [data-meet]');
+    first.click();
+    expect(calls.onMeet).toHaveBeenCalledWith(Number(first.dataset.meet));
   });
 
   test('View details asks for that agent', () => {

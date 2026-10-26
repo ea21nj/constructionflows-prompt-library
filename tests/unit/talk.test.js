@@ -118,6 +118,33 @@ describe('hud', () => {
     expect(document.querySelector('.sw-prompt').hidden).toBe(true);
   });
 
+  test('the site audit tracker counts sections and opens the scorecard', () => {
+    const onScorecard = vi.fn();
+    const hud = createHud(document.body, { onScorecard });
+    hud.setAudit(2);
+    const btn = document.querySelector('.sw-audit-tracker');
+    expect(btn.textContent.replace(/\s+/g, ' ').trim()).toBe('Site audit · 2 of 7 →');
+    btn.click();
+    expect(onScorecard).toHaveBeenCalled();
+  });
+
+  test('prompt names a nearby audit checkpoint', () => {
+    const hud = createHud(document.body);
+    hud.setPrompt({ section: { id: 'scheduling', title: 'Scheduling' } }, false);
+    expect(document.querySelector('.sw-prompt').textContent.replace(/\s+/g, ' ').trim()).toBe('Press E to audit Scheduling');
+    expect(document.querySelector('.sw-sr-live').textContent).toBe('Scheduling audit checkpoint is nearby. Press E to start.');
+  });
+
+  test('clipboard rows take you back to that crew member', () => {
+    const onPickAgent = vi.fn();
+    const hud = createHud(document.body, { onPickAgent });
+    hud.updateClipboard([{ agentId: 5, name: 'Luis', role: 'Field-to-Office Evidence', fit: 7, complete: true, why: [] }], 1);
+    const row = document.querySelector('.sw-clip-row button');
+    expect(row.getAttribute('aria-label')).toBe('Go to Luis, Field-to-Office Evidence');
+    row.click();
+    expect(onPickAgent).toHaveBeenCalledWith(5);
+  });
+
   test('clipboard lists met agents with fit bars', () => {
     const hud = createHud(document.body);
     hud.updateClipboard([{ agentId: 1, name: 'Maria', role: 'Bid Desk', fit: 6, complete: true, why: [] }], 1);

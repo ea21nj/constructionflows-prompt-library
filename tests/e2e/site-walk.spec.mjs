@@ -490,3 +490,122 @@ test.describe('site map', () => {
     await context.close();
   });
 });
+
+test.describe('site audit', () => {
+  test('walk up to a checkpoint and audit a section', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await expect(page.locator('.sw-audit-tracker')).toHaveText(/Site audit · 0 of 7/);
+    await page.evaluate(() => window.__siteWalk.teleport(-48.8, 20.2));
+    await expect(page.locator('.sw-prompt')).toHaveText(/Press E to audit Bidding & Pipeline/);
+    await page.keyboard.press('KeyE');
+    await expect(page.locator('.sw-audit')).toBeVisible();
+    await expect(page.locator('.sw-audit-q')).toHaveText('How easily can your team see the current status of every active bid?');
+    for (const k of ['2', '2', '2', '3', '3']) await page.keyboard.press(`Digit${k}`);
+    await expect(page.locator('.sw-audit-result')).toHaveText('Fair · 8 of 15');
+    await expect(page.locator('.sw-audit-tracker')).toHaveText(/Site audit · 1 of 7/);
+    expect(await page.evaluate(() => window.__siteWalk.state().audit.bidding)).toEqual([1, 1, 1, 2, 2]);
+  });
+
+  test('the scorecard opens from the tracker and downloads the audit report', async ({ page }) => {
+    await page.addInitScript(() => { if (!sessionStorage.getItem('p')) { localStorage.setItem('wp.sitewalk.v1', JSON.stringify({ v: 1, answers: {}, lastTalked: {}, officeSeen: false, audit: { rfis: [0, 0, 1, 0, 0] } })); sessionStorage.setItem('p', '1'); } });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.locator('.sw-audit-tracker').click();
+    await expect(page.locator('.sw-scorecard')).toBeVisible();
+    await expect(page.locator('.sw-score-row')).toHaveCount(7);
+    await expect(page.locator('.sw-score-row').nth(3)).toContainText('Strong');
+    const [download] = await Promise.all([page.waitForEvent('download'), page.locator('[data-audit-report="md"]').click()]);
+    const text = await (await import('fs')).promises.readFile(await download.path(), 'utf8');
+    expect(text).toContain('## RFIs & Submittals — Strong (14 / 15)');
+  });
+
+  test('checkpoints are on the site map and flying to one starts its audit', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.getByRole('button', { name: 'Open the site map' }).click();
+    await expect(page.locator('.sw-map-check')).toHaveCount(7);
+    await page.getByRole('button', { name: 'Closeout audit checkpoint — go and audit' }).click();
+    await expect(page.locator('.sw-audit')).toBeVisible({ timeout: 90_000 });
+    await expect(page.locator('.sw-audit-who')).toHaveText('SITE AUDIT · CLOSEOUT');
+  });
+});
+
+test.describe('site score', () => {
+  test('the score rises and objectives tick off as you play', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await expect(page.locator('.sw-score-points')).toHaveText('0');
+    await expect(page.locator('.sw-score-rank')).toHaveText('Visitor');
+    await expect(page.locator('.sw-score-objectives')).toHaveText('Objectives 0 / 6');
+    await talkTo(page, 1);
+    for (const k of ['1', '2', '3']) await page.keyboard.press(`Digit${k}`);
+    await expect(page.locator('.sw-score-points')).toHaveText('100');
+    await expect(page.locator('.sw-score-float')).toHaveText('+100');
+    await page.keyboard.press('Escape');
+    await page.locator('.sw-scoreboard-btn').click();
+    await expect(page.locator('.sw-objectives li').first()).toContainText('1 / 3');
+  });
+
+  test('visiting the office and saving a report complete their objectives', async ({ page }) => {
+    await preset(page, { 1: [3, 3, 3], 3: [1, 1, 1], 5: [2, 2, 2] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await expect(page.locator('.sw-score-points')).toHaveText('300');
+    await page.evaluate(() => window.__siteWalk.teleport(-35.5, 27));
+    await expect(page.locator('.sw-results')).toBeVisible();
+    await expect(page.locator('.sw-score-points')).toHaveText('500');
+    await Promise.all([page.waitForEvent('download'), page.locator('[data-report="md"]').click()]);
+    await expect(page.locator('.sw-score-points')).toHaveText('600');
+    await expect(page.locator('.sw-score-objectives')).toHaveText('Objectives 3 / 6');
+    await expect(page.locator('.sw-toast')).toContainText('Objective complete');
+  });
+});
+
+test.describe('clickable icons', () => {
+  async function clickIcon(page, kind, id) {
+    // Wait until the icon is on screen, then click exactly where it is drawn.
+    const pt = await page.waitForFunction(([k, i]) => {
+      const p = window.__siteWalk.screenOf(k, i);
+      return p && p.x > 0 && p.y > 0 && p.x < innerWidth && p.y < innerHeight ? p : null;
+    }, [kind, id], { timeout: 30_000 });
+    const { x, y } = await pt.jsonValue();
+    await page.mouse.click(x, y);
+  }
+
+  test('clicking a crew marker on screen takes you to them and starts the talk', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    // The camera looks north-east from behind you, so stand south-west of Rosa to have her in view.
+    await page.evaluate(() => window.__siteWalk.teleport(24, 29));
+    await clickIcon(page, 'crew', 2);
+    await expect(page.locator('.sw-talk')).toBeVisible({ timeout: 90_000 });
+    await expect(page.locator('.sw-talk-who')).toHaveText('ROSA · LEAD / SALES FOLLOW-UP');
+  });
+
+  test('clicking an audit clipboard on screen starts that audit', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(() => window.__siteWalk.teleport(10, 20));
+    await clickIcon(page, 'audit', 'closeout');
+    await expect(page.locator('.sw-audit')).toBeVisible({ timeout: 90_000 });
+    await expect(page.locator('.sw-audit-who')).toHaveText('SITE AUDIT · CLOSEOUT');
+  });
+
+  test('an objective’s Go button takes you to work on it', async ({ page }) => {
+    await preset(page, { 1: [3, 3, 3], 3: [1, 1, 1], 5: [2, 2, 2] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.locator('.sw-scoreboard-btn').click();
+    await page.getByRole('button', { name: 'Go: Finish an audit section' }).click();
+    await expect(page.locator('.sw-audit')).toBeVisible({ timeout: 90_000 });
+  });
+
+  test('a clipboard row takes you back to that crew member', async ({ page }) => {
+    await preset(page, { 7: [2, 2, 2] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.getByRole('button', { name: 'Go to Andre, Vendor / Subcontractor CRM' }).click();
+    await expect(page.locator('.sw-talk-who')).toHaveText('ANDRE · VENDOR / SUBCONTRACTOR CRM', { timeout: 90_000 });
+  });
+});

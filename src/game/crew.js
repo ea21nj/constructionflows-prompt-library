@@ -43,6 +43,7 @@ export function createCrew(scene, assets, crew, { reducedMotion = false } = {}) 
     const plumbobMat = new THREE.MeshStandardMaterial({ color: '#2BD46A', emissive: '#0b8a3a', emissiveIntensity: 0.7, roughness: 0.25, metalness: 0.1, transparent: true, opacity: 0.95 });
     const plumbob = new THREE.Mesh(new THREE.OctahedronGeometry(0.22, 0), plumbobMat);
     plumbob.scale.y = 1.7;
+    plumbob.userData.agentId = c.agentId;   // the marker itself is clickable too
     scene.add(plumbob);
     // Generous invisible click target for tapping a worker.
     const hit = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 2.2, 8), new THREE.MeshBasicMaterial({ visible: false }));

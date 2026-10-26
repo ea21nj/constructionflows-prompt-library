@@ -7,7 +7,7 @@ import { reportMarkdown, reportHtml } from '../report.js';
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const areaLabel = (id) => AREAS.find((a) => a.id === id)?.label || id;
 
-export function createResults(root, { agents = [], onClose, onOpenDetails, onClassic = () => {} }) {
+export function createResults(root, { agents = [], onClose, onOpenDetails, onClassic = () => {}, onSaved = () => {}, onMeet = () => {} }) {
   const el = document.createElement('section');
   el.className = 'sw-results';
   el.hidden = true;
@@ -57,7 +57,7 @@ export function createResults(root, { agents = [], onClose, onOpenDetails, onCla
             ${unmet.length ? `
             <div class="sw-unmet">
               <p class="sw-kicker">Talk to more of the crew to sharpen this</p>
-              <ul>${unmet.map((c) => `<li><b>${esc(c.name)}</b> · ${esc(c.role)}<span>${esc(areaLabel(c.area))}</span></li>`).join('')}</ul>
+              <ul>${unmet.map((c) => `<li><button type="button" data-meet="${c.agentId}"><span class="sw-sr-only">Go and meet </span><b>${esc(c.name)}</b> · ${esc(c.role)}<span>${esc(areaLabel(c.area))} →</span></button></li>`).join('')}</ul>
             </div>` : '<p class="sw-unmet-done">You\'ve met the whole crew.</p>'}
             <button type="button" class="sw-btn" data-back>Back to the site</button>
             <div class="sw-report">
@@ -95,12 +95,15 @@ export function createResults(root, { agents = [], onClose, onOpenDetails, onCla
 
   el.addEventListener('click', (e) => {
     if (e.target.closest('[data-back]')) return onClose();
+    const meet = e.target.closest('[data-meet]');
+    if (meet) return onMeet(Number(meet.dataset.meet));
     const d = e.target.closest('[data-details]');
     if (d) return onOpenDetails(Number(d.dataset.details), d);
     const c = e.target.closest('[data-classic]');
     if (c) return onClassic(c.dataset.classic);
     const r = e.target.closest('[data-report]')?.dataset.report;
     if (!r) return;
+    onSaved();
     if (r === 'md') download(fileName('md'), 'text/markdown', reportMarkdown(state, { agents }));
     if (r === 'word') download(fileName('doc'), 'application/msword', `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Site walk results</title><style>body{font-family:Arial,sans-serif;font-size:11pt;color:#1A1A1A}h1{font-size:20pt}h2{font-size:14pt;border-bottom:2px solid #1A1A1A;padding-bottom:4px;margin-top:18pt}.pr-q{font-weight:bold;margin:8pt 0 2pt}.pr-a{margin:0}.empty{color:#777;font-style:italic}table{border-collapse:collapse}th,td{border:1px solid #1A1A1A;padding:4pt 8pt;text-align:left}.pr-bar,.pr-n{display:none}</style></head><body>${reportHtml(state, { agents })}</body></html>`);
     if (r === 'copy') navigator.clipboard?.writeText(reportMarkdown(state, { agents })).then(() => { const b = el.querySelector('[data-report="copy"]'); b.textContent = 'Copied ✓'; setTimeout(() => { b.textContent = 'Copy text'; }, 1600); });

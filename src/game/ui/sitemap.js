@@ -85,7 +85,7 @@ export function createSiteMap(root, { onPick, onClose }) {
 
   const place = (node, x, z) => { const p = mapPoint(x, z); node.style.left = `${p.left}%`; node.style.top = `${p.top}%`; };
 
-  function render({ members, officeOpen }) {
+  function render({ members, officeOpen, checkpoints = [] }) {
     const [f0, f1, f2, f3] = OFFICE.footprint;
     el.innerHTML = `
       <div class="sw-map-card">
@@ -106,6 +106,11 @@ export function createSiteMap(root, { onPick, onClose }) {
               <span class="sw-map-dot" aria-hidden="true">${esc(m.data.name[0])}</span>
               <span class="sw-map-name">${esc(m.data.name)}<small>${esc(m.data.role)}</small></span>
             </button>`).join('')}
+          ${checkpoints.map((c) => `
+            <button type="button" class="sw-map-check${c.done ? ' done' : ''}" data-check="${c.id}" aria-label="${esc(c.title)} audit checkpoint — go and audit">
+              <span class="sw-map-check-mark" aria-hidden="true">${c.done ? '✓' : '?'}</span>
+              <span class="sw-map-check-name">${esc(c.title)}</span>
+            </button>`).join('')}
           <span class="sw-map-you" aria-hidden="true"><i></i><b>You</b></span>
         </div>
         <ul class="sw-map-list" aria-label="Everyone on site">
@@ -119,6 +124,7 @@ export function createSiteMap(root, { onPick, onClose }) {
             <li><span class="sw-map-key"></span>Not met yet</li>
             <li><span class="sw-map-key met"></span>Talked to</li>
             <li><span class="sw-map-key you"></span>You</li>
+            <li><span class="sw-map-key check"></span>Audit checkpoint</li>
           </ul>
           <dl class="sw-bp-titleblock">
             <div class="wide"><dt>Project</dt><dd>Workflow Playbook · Site walk</dd></div>
@@ -130,6 +136,7 @@ export function createSiteMap(root, { onPick, onClose }) {
         </footer>
       </div>`;
     place(el.querySelector('.sw-map-office'), (f0 + f1) / 2, (f2 + f3) / 2);
+    for (const c of checkpoints) place(el.querySelector(`.sw-map-check[data-check="${c.id}"]`), c.spot[0], c.spot[1]);
   }
 
   function update({ members, player, heading = 0 }) {
@@ -154,6 +161,8 @@ export function createSiteMap(root, { onPick, onClose }) {
 
   el.addEventListener('click', (e) => {
     if (e.target.closest('.sw-map-close') || e.target === el) return onClose();
+    const check = e.target.closest('.sw-map-check');
+    if (check) return onPick(`audit:${check.dataset.check}`);
     const person = e.target.closest('.sw-map-person, .sw-map-list button');
     if (person) return onPick(Number(person.dataset.id));
     if (e.target.closest('.sw-map-office:not([disabled])')) onPick('office');

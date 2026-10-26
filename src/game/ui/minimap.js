@@ -21,13 +21,15 @@ export function createMinimap(root, { onOpen = () => {} } = {}) {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = W * dpr; canvas.height = H * dpr;
   button.prepend(canvas);
-  root.appendChild(button);
+  // Sit right under the objective box when there is one (the HUD's left column).
+  const objective = root.querySelector?.('.sw-objective-box');
+  if (objective) objective.after(button); else root.appendChild(button);
   const g = canvas.getContext('2d');
   if (!g) return { draw() {} };
   g.scale(dpr, dpr);
 
   return {
-    draw(playerPos, playerHeading, members, open) {
+    draw(playerPos, playerHeading, members, open, checkpoints = []) {
       g.fillStyle = BP; g.fillRect(0, 0, W, H);
       g.strokeStyle = FAINT; g.lineWidth = 1;                                // 10 m grid
       for (let x = X0; x <= X1; x += 10) { g.beginPath(); g.moveTo(sx(x) + 0.5, 0); g.lineTo(sx(x) + 0.5, H); g.stroke(); }
@@ -37,6 +39,10 @@ export function createMinimap(root, { onOpen = () => {} } = {}) {
       const [f0, f1, f2, f3] = OFFICE.footprint;
       g.fillStyle = open ? '#2BD46A' : 'rgba(255,255,255,0.35)'; g.fillRect(sx(f0), sz(f2), sx(f1) - sx(f0), sz(f3) - sz(f2));
       g.strokeRect(sx(f0) + 0.5, sz(f2) + 0.5, sx(f1) - sx(f0), sz(f3) - sz(f2));
+      for (const c of checkpoints) {                                     // audit checkpoints: small squares
+        g.fillStyle = c.done ? '#ffffff' : '#F26A1B'; g.fillRect(sx(c.spot[0]) - 3, sz(c.spot[1]) - 3, 6, 6);
+        g.strokeStyle = '#ffffff'; g.lineWidth = 1; g.strokeRect(sx(c.spot[0]) - 3, sz(c.spot[1]) - 3, 6, 6);
+      }
       for (const m of members) {
         g.beginPath(); g.arc(sx(m.pos.x), sz(m.pos.z), 3.2, 0, Math.PI * 2);
         g.fillStyle = m.met ? '#ffffff' : BP; g.fill(); g.strokeStyle = '#ffffff'; g.lineWidth = 1.4; g.stroke();

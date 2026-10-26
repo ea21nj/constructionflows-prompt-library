@@ -1,6 +1,7 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createSiteMap, mapPoint } from '../../src/game/ui/sitemap.js';
 import { CREW } from '../../src/game/content.js';
+import { AUDIT_SECTIONS } from '../../src/game/audit-content.js';
 
 const members = CREW.map((c, i) => ({ agentId: c.agentId, data: c, pos: { x: c.spot[0], z: c.spot[1] }, met: i < 2 }));
 let root, onPick, onClose, map;
@@ -66,6 +67,17 @@ describe('site map', () => {
     expect(items[0].textContent).toContain(CREW[0].name);
     items[2].click();
     expect(onPick).toHaveBeenCalledWith(CREW[2].agentId);
+  });
+
+  test('shows the 7 audit checkpoints; clicking one picks it', () => {
+    const checkpoints = AUDIT_SECTIONS.map((s, i) => ({ id: s.id, title: s.title, spot: s.spot, done: i === 0 }));
+    map.open({ members, checkpoints, player: { x: 0, z: 30 }, heading: 0, officeOpen: false });
+    const checks = [...root.querySelectorAll('.sw-map-check')];
+    expect(checks).toHaveLength(7);
+    expect(checks[0].classList.contains('done')).toBe(true);
+    expect(checks[6].getAttribute('aria-label')).toBe('Closeout audit checkpoint — go and audit');
+    checks[6].click();
+    expect(onPick).toHaveBeenCalledWith('audit:closeout');
   });
 
   test('markers follow the crew while the map is open', () => {

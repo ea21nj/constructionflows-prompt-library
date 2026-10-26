@@ -7,7 +7,7 @@ const finish = (s, id, choices = [1, 1, 1], t = 1) => choices.reduce((acc, c, i)
 describe('progress state', () => {
   test('createState is empty and office closed', () => {
     const s = createState();
-    expect(s).toEqual({ v: 1, answers: {}, lastTalked: {}, officeSeen: false });
+    expect(s).toEqual({ v: 1, answers: {}, lastTalked: {}, officeSeen: false, audit: {}, reportSaved: false });
     expect(officeOpen(s)).toBe(false);
     expect(OFFICE_UNLOCK).toBe(3);
   });
