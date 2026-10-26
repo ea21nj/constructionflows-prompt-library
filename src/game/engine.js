@@ -14,7 +14,7 @@ import { tierSettings } from './quality.js';
 const SUN_DIR = new THREE.Vector3(0.55, 0.75, 0.35).normalize();
 
 export function createEngine(parent, tier) {
-  const settings = tierSettings(tier, window.devicePixelRatio || 1);
+  let settings = tierSettings(tier, window.devicePixelRatio || 1);
   const renderer = new THREE.WebGLRenderer({ antialias: !settings.post, powerPreference: 'high-performance' });
   renderer.setPixelRatio(settings.pixelRatio);
   renderer.setSize(parent.clientWidth, parent.clientHeight);
@@ -105,8 +105,27 @@ export function createEngine(parent, tier) {
   }
   frame();
 
-  return {
-    THREE, scene, camera, controls, renderer, sun, tier, settings,
+  // Step quality down (or up) without rebuilding the scene.
+  function setTier(next) {
+    const s = tierSettings(next, window.devicePixelRatio || 1);
+    renderer.setPixelRatio(s.pixelRatio);
+    if (renderer.shadowMap.enabled !== s.shadows) {
+      renderer.shadowMap.enabled = s.shadows; sun.castShadow = s.shadows;
+      scene.traverse((o) => { if (o.material) [].concat(o.material).forEach((m) => { m.needsUpdate = true; }); });
+    }
+    if (s.shadows && sun.shadow.mapSize.x !== s.shadowMapSize) {
+      sun.shadow.mapSize.set(s.shadowMapSize, s.shadowMapSize);
+      sun.shadow.map?.dispose(); sun.shadow.map = null;
+    }
+    if (!s.post) composer = null;
+    settings = s; engine.tier = next;
+    resize();
+  }
+
+  const engine = {
+    THREE, scene, camera, controls, renderer, sun, tier,
+    get settings() { return settings; },
+    setTier,
     onFrame: (fn) => callbacks.push(fn),
     setShadowCenter,
     fps: () => fps,
@@ -114,4 +133,5 @@ export function createEngine(parent, tier) {
     resume() { if (!running) { running = true; clock.getDelta(); frame(); } },
     resize,
   };
+  return engine;
 }

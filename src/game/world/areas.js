@@ -15,7 +15,7 @@ export function placeModels(g, assets) {
 }
 
 // ---- Site office compound -----------------------------------------------------------
-export function buildOffice(g, assets) {
+export function buildOffice(g, assets, { reducedMotion = false } = {}) {
   const o = byId.office;
   // Sign above the office door side (east face, toward the haul road).
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 1.3), new THREE.MeshStandardMaterial({ map: signTexture(['SITE OFFICE'], { sub: 'Your results are inside' }), roughness: 0.6 }));
@@ -75,7 +75,7 @@ export function buildOffice(g, assets) {
   return {
     door, marker, glow,
     setOpen(open) { marker.visible = open; glow.visible = open; },
-    update(t) { if (!marker.visible) return; arrow.position.y = 4.2 + Math.sin(t * 3) * 0.25; stem.position.y = arrow.position.y + 0.9; ring.material.opacity = 0.45 + Math.sin(t * 4) * 0.25; glowMat.opacity = 0.45 + Math.sin(t * 3) * 0.2; },
+    update(t) { if (!marker.visible || reducedMotion) return; arrow.position.y = 4.2 + Math.sin(t * 3) * 0.25; stem.position.y = arrow.position.y + 0.9; ring.material.opacity = 0.45 + Math.sin(t * 4) * 0.25; glowMat.opacity = 0.45 + Math.sin(t * 3) * 0.2; },
   };
 }
 

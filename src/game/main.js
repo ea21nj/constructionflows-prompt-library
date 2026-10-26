@@ -16,6 +16,7 @@ import { createTalk } from './ui/talk.js';
 import { createHud } from './ui/hud.js';
 import { createMinimap } from './ui/minimap.js';
 import { createResults } from './ui/results.js';
+import { createAudio } from './audio.js';
 import { OFFICE } from './content.js';
 import { rank } from './scoring.js';
 import * as THREE from 'three';
@@ -29,6 +30,8 @@ const WP = window.WP;
 const root = document.getElementById('siteWalk');
 const testMode = params.has('test');
 const deepLink = /^#(quiz|agents|discovery|about)$/.test(location.hash);
+const reducedMotion = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+const audio = createAudio();
 
 const game = { engine: null, assets: null, state: loadState(), ready: false, started: false };
 if (testMode) {
@@ -59,7 +62,7 @@ function fallback() {
 }
 
 const opening = createOpening(root, {
-  onStart: () => { game.started = true; document.documentElement.classList.add('sw-playing'); },
+  onStart: () => { game.started = true; document.documentElement.classList.add('sw-playing'); audio.setAmbient(true); },
   onSkip: () => WP.openClassic('agents'),
 });
 
@@ -67,8 +70,13 @@ const menu = createMenu(root, {
   onSkip: (face) => WP.openClassic(face),
   onResume: () => {},
   onReset: () => { game.state = createState(); saveState(game.state); window.dispatchEvent(new CustomEvent('sitewalk:reset')); },
-  onToggleSound: () => window.dispatchEvent(new CustomEvent('sitewalk:sound')),
+  onToggleSound: () => {
+    audio.setMuted(!audio.muted);
+    menu.setSound(!audio.muted);
+    if (!audio.muted && game.started) audio.setAmbient(true);
+  },
 });
+menu.setSound(!audio.muted);
 
 // Tap or click a worker: walk over to them, then talk (game.startTalk is wired by the HUD step).
 function wireTapToTalk() {
@@ -140,7 +148,7 @@ function wireConversations() {
       saveState(game.state);
       const unlocked = !wasOpen && officeOpen(game.state);
       refreshProgress();
-      if (unlocked) hud.toast('The site office is open');
+      if (unlocked) { hud.toast('The site office is open'); audio.chime(); } else audio.blip();
       talk.open(game.crew.byId(agentId), game.state, { unlocked });
     },
     onLeave: endTalk,
@@ -202,6 +210,24 @@ function tickConversations() {
   if (game.started && ++minimapFrame % 3 === 0) minimap.draw(p, game.player.root.rotation.y, game.crew.members, officeOpen(game.state));
 }
 
+// Gravel footsteps while you walk (faster when running).
+let stepClock = 0;
+function tickFootsteps(dt) {
+  if (!game.player.isMoving()) { stepClock = 0.2; return; }
+  stepClock -= dt;
+  if (stepClock <= 0) { audio.step(); stepClock = game.input.running() ? 0.26 : 0.38; }
+}
+
+// If the device can't keep up (under 30 fps for 4 s), step the quality down one tier.
+const TIER_DOWN = { high: 'medium', medium: 'low' };
+function watchPerformance() {
+  setInterval(() => {
+    const engine = game.engine;
+    if (!game.started || document.hidden || !document.documentElement.classList.contains('site-walk-on')) return;
+    if (engine.fps() < 30 && TIER_DOWN[engine.tier]) engine.setTier(TIER_DOWN[engine.tier]);
+  }, 4000);
+}
+
 let booting = null;
 function boot() {
   if (booting) return booting;
@@ -212,12 +238,12 @@ function boot() {
       const manifest = await loadManifest();
       game.engine = createEngine(root, tier);
       game.assets = await loadAssets(manifest, loading.progress);
-      game.world = buildWorld(game.engine.scene, game.assets);
+      game.world = buildWorld(game.engine.scene, game.assets, { reducedMotion });
       game.world.setOfficeOpen(officeOpen(game.state));
-      game.crew = createCrew(game.engine.scene, game.assets, CREW);
+      game.crew = createCrew(game.engine.scene, game.assets, CREW, { reducedMotion });
       game.crew.members.forEach((m) => m.setMet(isComplete(game.state, m.agentId)));
       game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() });
-      game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input);
+      game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input, { reducedMotion });
       game.player.snapCamera();
       wireTapToTalk();
       wireConversations();
@@ -226,7 +252,9 @@ function boot() {
         game.player.update(dt, t, game.started && !menu.isOpen() && game.talkingId == null && !results.isOpen());
         game.crew.update(dt, t, game.player.pos, game.talkingId);
         tickConversations(t);
+        tickFootsteps(dt);
       });
+      watchPerformance();
       loading.hide();
       opening.show({ met: completedCount(game.state) });
       game.ready = true;
@@ -239,6 +267,6 @@ function boot() {
   return booting;
 }
 
-window.addEventListener('sitewalk:show', () => { boot(); game.engine?.resume(); game.engine?.resize(); });
-window.addEventListener('sitewalk:hide', () => { game.engine?.pause(); menu.close(); });
+window.addEventListener('sitewalk:show', () => { boot(); game.engine?.resume(); game.engine?.resize(); if (game.started) audio.setAmbient(true); });
+window.addEventListener('sitewalk:hide', () => { game.engine?.pause(); menu.close(); audio.setAmbient(false); });
 if (!deepLink) boot();

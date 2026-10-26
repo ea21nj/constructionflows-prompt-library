@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 const OPENING = 'Walk the site and talk to the crew — each one is an AI agent that could help your business. After you\'ve met 3, head to the site office for your results. Prefer the classic pages? Use the menu.';
 
@@ -310,5 +311,78 @@ test.describe('site office', () => {
     const pdf = await page.pdf({ format: 'Letter' });
     expect(pdf.subarray(0, 4).toString()).toBe('%PDF');
     expect(pdf.length).toBeGreaterThan(5000);
+  });
+});
+
+test.describe('polish', () => {
+  test('resize during talk', async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    const page = await context.newPage();
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(() => window.__siteWalk.game.startTalk(1));
+    await expect(page.locator('.sw-talk')).toBeVisible();
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.waitForTimeout(800);
+    const fits = await page.evaluate(() => {
+      const r = document.querySelector('.sw-talk').getBoundingClientRect();
+      return { scroll: document.documentElement.scrollWidth <= innerWidth, inside: r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight };
+    });
+    expect(fits).toEqual({ scroll: true, inside: true });
+    await page.locator('.sw-talk-close').click();
+    await expect(page.locator('.sw-joystick')).toBeVisible();
+    await context.close();
+  });
+
+  test('talk panel and results are keyboard and screen-reader usable', async ({ page }) => {
+    await preset(page, { 1: [3, 3, 3], 3: [1, 1, 1], 5: [2, 2, 2] });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(() => window.__siteWalk.game.startTalk(9));
+    await expect(page.locator('.sw-talk')).toBeVisible();
+    expect(await page.evaluate(() => document.activeElement?.closest('.sw-talk-answers') !== null)).toBe(true);
+    const talkScan = await new AxeBuilder({ page }).include('.sw-talk').analyze();
+    expect(talkScan.violations.filter((v) => ['serious', 'critical'].includes(v.impact)).map((v) => v.id)).toEqual([]);
+    await page.keyboard.press('Escape');
+    await page.evaluate(() => window.__siteWalk.teleport(-35.5, 27));
+    await expect(page.locator('.sw-results')).toBeVisible();
+    const boardScan = await new AxeBuilder({ page }).include('.sw-results').analyze();
+    expect(boardScan.violations.filter((v) => ['serious', 'critical'].includes(v.impact)).map((v) => v.id)).toEqual([]);
+    // Tab stays inside the board.
+    for (let i = 0; i < 25; i++) await page.keyboard.press('Tab');
+    expect(await page.evaluate(() => !!document.activeElement?.closest('.sw-results'))).toBe(true);
+  });
+
+  test('a screen reader hears who is nearby', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await goTo(page, 1);
+    await expect(page.locator('.sw-sr-live')).toHaveText('Maria, Bid Desk, is nearby. Press E to talk.');
+  });
+
+  test('reduced motion disables the typewriter', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.evaluate(() => window.__siteWalk.game.startTalk(1));
+    expect(await page.locator('.sw-talk-say').textContent()).toMatch(/^Hey, I'm Maria\. How do bid invites reach you today\?$/);
+  });
+
+  test('sound toggle persists', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.locator('.sw-menu-btn').click();
+    await page.locator('[data-menu="sound"]').click();
+    await expect(page.locator('[data-menu="sound"]')).toHaveText('Sound: off');
+    await page.reload();
+    await page.waitForFunction(() => window.__siteWalk?.isReady());
+    await expect(page.locator('[data-menu="sound"]')).toHaveText('Sound: off', { useInnerText: false });
+  });
+
+  test('a slow device steps the quality down', async ({ page }) => {
+    await openGame(page, '/?test=1&tier=high');
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    // Software WebGL renders far below 30 fps, so the game should drop to a lighter tier on its own.
+    await page.waitForFunction(() => window.__siteWalk.game.engine.tier !== 'high', null, { timeout: 90_000 });
   });
 });

@@ -34,7 +34,7 @@ const LOOKS = {
   10: { body: 'm', outfit: { vest: '#C6F432', shirt: '#4a5a3a', pants: '#3b3b3b', helmet: '#ffffff' } },
 };
 
-export function createCrew(scene, assets, crew) {
+export function createCrew(scene, assets, crew, { reducedMotion = false } = {}) {
   const members = crew.map((c) => {
     const look = LOOKS[c.agentId] || { body: 'm' };
     const character = createCharacter(assets, look);
@@ -82,8 +82,8 @@ export function createCrew(scene, assets, crew) {
       m.character.update(dt);
       const s = m.highlight ? 1.25 : 1;
       m.plumbob.scale.set(s, 1.7 * s, s);
-      m.plumbob.position.set(m.pos.x, (m.sitting ? 2.3 : 2.75) + Math.sin(t * 2 + m.phase) * 0.08, m.pos.z);
-      m.plumbob.rotation.y = t * 1.6;
+      m.plumbob.position.set(m.pos.x, (m.sitting ? 2.3 : 2.75) + (reducedMotion ? 0 : Math.sin(t * 2 + m.phase) * 0.08), m.pos.z);
+      if (!reducedMotion) m.plumbob.rotation.y = t * 1.6;
     }
   }
 

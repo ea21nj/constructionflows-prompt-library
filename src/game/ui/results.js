@@ -108,8 +108,15 @@ export function createResults(root, { agents = [], onClose, onOpenDetails, onCla
   });
   // Esc closes the board; listening only while it's open.
   function onKey(e) {
-    if (el.hidden || e.defaultPrevented || e.key !== 'Escape') return;
-    e.preventDefault(); onClose();
+    if (el.hidden || e.defaultPrevented) return;
+    if (e.key === 'Escape') { e.preventDefault(); onClose(); return; }
+    if (e.key !== 'Tab') return;
+    const items = [...el.querySelectorAll('button')].filter((b) => b.offsetParent !== null);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    const inside = el.contains(document.activeElement);
+    if (e.shiftKey && (!inside || document.activeElement === first || document.activeElement.id === 'swResultsTitle')) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (!inside || document.activeElement === last)) { e.preventDefault(); first.focus(); }
   }
 
   return {

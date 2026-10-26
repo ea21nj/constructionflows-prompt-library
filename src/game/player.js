@@ -8,7 +8,7 @@ import { SPAWN } from './content.js';
 const WALK = 4.5, RUN = 8.5;
 const turnTo = (from, to, k) => from + Math.atan2(Math.sin(to - from), Math.cos(to - from)) * k;
 
-export function createPlayer(scene, assets, engine, input) {
+export function createPlayer(scene, assets, engine, input, { reducedMotion = false } = {}) {
   const character = createCharacter(assets, { body: 'm', outfit: { vest: '#2BD46A', shirt: '#1A1A1A', pants: '#3b4a5c', helmet: '#008037' } });
   const root = character.root;
   scene.add(root);
@@ -17,13 +17,13 @@ export function createPlayer(scene, assets, engine, input) {
 
   const pos = { x: SPAWN[0], z: SPAWN[1] };
   root.rotation.y = Math.PI;                          // facing into the site
-  let target = null, stuck = 0;
+  let target = null, stuck = 0, moving = false;
   const fwd = new THREE.Vector3(), right = new THREE.Vector3(), lastTarget = new THREE.Vector3();
   const { camera, controls } = engine;
 
   function follow(snap) {
     lastTarget.copy(controls.target);
-    controls.target.lerp(new THREE.Vector3(pos.x, 1.4, pos.z), snap ? 1 : 0.12);
+    controls.target.lerp(new THREE.Vector3(pos.x, 1.4, pos.z), snap || reducedMotion ? 1 : 0.12);
     camera.position.add(controls.target.clone().sub(lastTarget));
     engine.setShadowCenter(pos.x, pos.z);
   }
@@ -42,6 +42,7 @@ export function createPlayer(scene, assets, engine, input) {
       else { mx = dx / d; mz = dz / d; }
     }
     const len = Math.hypot(mx, mz);
+    moving = len > 0;
     if (len > 0) {
       const speed = input.running() ? RUN : WALK;
       const step = Math.min(1, len) * speed * dt;
@@ -64,6 +65,7 @@ export function createPlayer(scene, assets, engine, input) {
   return {
     pos, character, root,
     update,
+    isMoving: () => moving,
     walkTo(x, z, onArrive, stop = 1.8) { target = { x, z, onArrive, stop }; stuck = 0; },
     cancelWalk() { target = null; },
     faceTowards(x, z) { root.rotation.y = Math.atan2(x - pos.x, z - pos.z); },

@@ -8,6 +8,7 @@ export function createHud(root, { onTalk = () => {} } = {}) {
   el.innerHTML = `
     <div class="sw-objective-box"><span class="sw-kicker">Objective</span><p class="sw-objective"></p></div>
     <div class="sw-prompt" hidden></div>
+    <p class="sw-sr-live sw-sr-only" aria-live="polite"></p>
     <div class="sw-toast" role="status" aria-live="polite" hidden></div>
     <details class="sw-clip" open>
       <summary><span>Clipboard</span><span class="sw-clip-count">0 of 10 met</span></summary>
@@ -35,8 +36,10 @@ export function createHud(root, { onTalk = () => {} } = {}) {
       const key = member ? `${member.agentId}:${isTouch}` : null;
       if (key === promptFor) return;
       promptFor = key;
-      if (!member) { prompt.hidden = true; return; }
+      const live = el.querySelector('.sw-sr-live');
+      if (!member) { prompt.hidden = true; live.textContent = ''; return; }
       const { name, role } = member.data;
+      live.textContent = `${name}, ${role}, is nearby. ${isTouch ? 'Use the Talk button.' : 'Press E to talk.'}`;
       prompt.innerHTML = isTouch
         ? `<button type="button">Talk to ${name}</button>`
         : `Press <kbd>E</kbd> to talk to ${name} — ${role}`;
