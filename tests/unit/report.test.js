@@ -1,5 +1,6 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
-import { reportMarkdown, reportHtml } from '../../src/game/report.js';
+import { reportMarkdown, reportHtml, reportPdf } from '../../src/game/report.js';
+import { checkPdf } from './helpers/pdf-check.js';
 import { createResults } from '../../src/game/ui/results.js';
 import { createState, recordAnswer } from '../../src/game/state.js';
 import { CREW } from '../../src/game/content.js';
@@ -38,6 +39,28 @@ describe('report', () => {
   });
 });
 
+describe('results PDF', () => {
+  const src = () => new TextDecoder('latin1').decode(reportPdf(sample(), { agents: AGENTS }, DATE));
+
+  test('is a well-formed PDF with the title, date and how many crew you met', () => {
+    expect(checkPdf(reportPdf(sample(), { agents: AGENTS }, DATE))).toBeGreaterThanOrEqual(1);
+    expect(src()).toContain('(Your site walk results) Tj');
+    expect(src()).toContain('(October 25, 2026 \\267 3 of 10 crew met) Tj');
+    expect(src()).toContain('/Title (Your site walk results)');
+  });
+
+  test('ranks the agents with their fit, starts with the first step, and keeps every answer', () => {
+    const s = src();
+    expect(s).toContain('(Set up Bid Desk) Tj');
+    expect(s).toContain('(Less Bid Desk admin) Tj');
+    expect(s.indexOf('(1. Bid Desk Agent) Tj')).toBeGreaterThan(-1);
+    expect(s.indexOf('(1. Bid Desk Agent) Tj')).toBeLessThan(s.indexOf('(2. Safety / Compliance Agent) Tj'));
+    expect(s).toContain('(Talked to Maria \\267 fit 8 of 9) Tj');
+    expect(s).toContain(`(${CREW.find((c) => c.agentId === 1).questions[0].answers[3]}) Tj`);
+    expect(s).toContain('(Not answered) Tj');                                         // the unfinished RFI talk
+  });
+});
+
 describe('results board', () => {
   let root, calls, board;
   beforeEach(() => {
@@ -55,6 +78,26 @@ describe('results board', () => {
     expect([...root.querySelectorAll('.sw-rank-name')].map((n) => n.textContent)).toEqual(['Bid Desk Agent', 'Safety / Compliance Agent', 'Field-to-Office Evidence Agent']);
     expect(root.querySelector('.sw-start-here').textContent).toContain('Set up Bid Desk');
     expect(root.querySelector('.sw-start-here').textContent).toContain('Less Bid Desk admin');
+  });
+
+  test('Download PDF sits at the top of the board and saves a PDF in one tap', () => {
+    const onSaved = vi.fn();
+    board.close();
+    board = createResults(root, { agents: AGENTS, ...calls, onSaved });
+    const blobs = [];
+    URL.createObjectURL = vi.fn((b) => { blobs.push(b); return 'blob:x'; });
+    URL.revokeObjectURL = vi.fn();
+    const clicked = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function () { clicked.download = this.download; });
+    board.open(sample());
+    const btn = root.querySelector('.sw-results-head [data-report="pdf"]');
+    expect(btn.textContent).toBe('Download PDF');
+    btn.click();
+    expect(onSaved).toHaveBeenCalled();
+    expect(blobs[0].type).toBe('application/pdf');
+    expect(clicked.download).toMatch(/^site-walk-results-\d{4}-\d{2}-\d{2}\.pdf$/);
+    expect(root.querySelector('.sw-results-head [data-report="pdf"]').textContent).toBe('Downloaded ✓');
+    expect(root.querySelector('[data-report="print"]')).toBeNull();                    // no print dialog on a phone
+    clicked.mockRestore();
   });
 
   test('lists crew not yet met, each one a way to go and meet them', () => {

@@ -153,6 +153,9 @@ html:not(.sw-playing) .sw-hud { display: none; }
 .sw-results-met { margin: 0; font: 600 13px var(--display); letter-spacing: var(--track-wide); }
 .sw-results-close { position: absolute; top: 14px; right: 14px; width: 38px; height: 38px; background: var(--white); color: var(--black) !important; border: 2px solid var(--white); font: 700 20px var(--display); cursor: pointer; }
 .sw-results-close:hover { background: var(--primary-tint); }
+/* One-tap PDF, always at the top of the results */
+.sw-results-head .sw-results-pdf { margin-left: auto; background: var(--white); color: var(--black) !important; border: 2px solid var(--black); box-shadow: 3px 3px 0 var(--black); white-space: nowrap; }
+.sw-results-head .sw-results-pdf:hover { background: var(--primary-tint); }
 #siteWalk [tabindex="-1"]:focus { outline: none; }
 .sw-results-body { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); overflow-y: auto; }
 .sw-results-main { padding: 20px 24px; border-right: var(--rule); }
@@ -185,6 +188,7 @@ html:not(.sw-playing) .sw-hud { display: none; }
   .sw-results-main { border-right: 0; border-bottom: var(--rule); padding: 16px; }
   .sw-results-head { padding: 14px 56px 12px 16px; flex-direction: column; align-items: flex-start; gap: 4px; }
   .sw-results-head h2 { font-size: 24px; }
+  .sw-results-head .sw-results-pdf { align-self: stretch; margin: 8px 0 0; padding: 12px; font-size: 14px; }
   .sw-rank-item { grid-template-columns: 34px minmax(0, 1fr); }
   .sw-rank-item .sw-btn { grid-column: 2; justify-self: start; }
 }

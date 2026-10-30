@@ -2,7 +2,7 @@
 // to meet, and the report to take away.
 import { CREW, AREAS } from '../content.js';
 import { rank } from '../scoring.js';
-import { reportMarkdown, reportHtml } from '../report.js';
+import { reportMarkdown, reportHtml, reportPdf } from '../report.js';
 
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const areaLabel = (id) => AREAS.find((a) => a.id === id)?.label || id;
@@ -28,6 +28,7 @@ export function createResults(root, { agents = [], onClose, onOpenDetails, onCla
         <header class="sw-results-head">
           <div><p class="sw-kicker">Site office · results board</p><h2 id="swResultsTitle" tabindex="-1">Your results</h2></div>
           <p class="sw-results-met">${ranking.length} of 10 crew met</p>
+          <button type="button" class="sw-btn sw-btn-primary sw-results-pdf" data-report="pdf">Download PDF</button>
           <button type="button" class="sw-results-close" data-back aria-label="Back to the site">×</button>
         </header>
         <div class="sw-results-body">
@@ -62,10 +63,10 @@ export function createResults(root, { agents = [], onClose, onOpenDetails, onCla
             <button type="button" class="sw-btn" data-back>Back to the site</button>
             <div class="sw-report">
               <p class="sw-kicker">Take your results with you</p>
-              <button type="button" class="sw-btn sw-btn-primary" data-report="word">Download Word</button>
+              <button type="button" class="sw-btn sw-btn-primary" data-report="pdf">Download PDF</button>
+              <button type="button" class="sw-btn" data-report="word">Download Word</button>
               <button type="button" class="sw-btn" data-report="md">Download Markdown</button>
               <button type="button" class="sw-btn" data-report="copy">Copy text</button>
-              <button type="button" class="sw-btn" data-report="print">Print / save as PDF</button>
             </div>
             <p class="sw-classic">Prefer browsing? <button type="button" data-classic="agents">All 10 agents</button> · <button type="button" data-classic="quiz">Agent quiz</button> · <button type="button" data-classic="discovery">Discovery interview</button></p>
           </aside>
@@ -77,21 +78,9 @@ export function createResults(root, { agents = [], onClose, onOpenDetails, onCla
     const url = URL.createObjectURL(new Blob([content], { type }));
     const a = Object.assign(document.createElement('a'), { href: url, download: name });
     document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);   // phones may take a moment to pick the file up
   }
   const fileName = (ext) => `site-walk-results-${new Date().toISOString().slice(0, 10)}.${ext}`;
-
-  // Print a clean copy: the page's #dvPrint styles show only this while printing.
-  function printReport() {
-    document.getElementById('dvPrint')?.remove();
-    const doc = document.createElement('div'); doc.id = 'dvPrint'; doc.innerHTML = reportHtml(state, { agents });
-    document.body.appendChild(doc);
-    document.documentElement.classList.add('dv-printing');
-    const title = document.title; document.title = `Site walk results - ${new Date().toISOString().slice(0, 10)}`;
-    const cleanup = () => { doc.remove(); document.documentElement.classList.remove('dv-printing'); document.title = title; window.removeEventListener('afterprint', cleanup); };
-    window.addEventListener('afterprint', cleanup);
-    window.print();
-  }
 
   el.addEventListener('click', (e) => {
     if (e.target.closest('[data-back]')) return onClose();
@@ -107,7 +96,11 @@ export function createResults(root, { agents = [], onClose, onOpenDetails, onCla
     if (r === 'md') download(fileName('md'), 'text/markdown', reportMarkdown(state, { agents }));
     if (r === 'word') download(fileName('doc'), 'application/msword', `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>Site walk results</title><style>body{font-family:Arial,sans-serif;font-size:11pt;color:#1A1A1A}h1{font-size:20pt}h2{font-size:14pt;border-bottom:2px solid #1A1A1A;padding-bottom:4px;margin-top:18pt}.pr-q{font-weight:bold;margin:8pt 0 2pt}.pr-a{margin:0}.empty{color:#777;font-style:italic}table{border-collapse:collapse}th,td{border:1px solid #1A1A1A;padding:4pt 8pt;text-align:left}.pr-bar,.pr-n{display:none}</style></head><body>${reportHtml(state, { agents })}</body></html>`);
     if (r === 'copy') navigator.clipboard?.writeText(reportMarkdown(state, { agents })).then(() => { const b = el.querySelector('[data-report="copy"]'); b.textContent = 'Copied ✓'; setTimeout(() => { b.textContent = 'Copy text'; }, 1600); });
-    if (r === 'print') printReport();
+    if (r === 'pdf') {
+      download(fileName('pdf'), 'application/pdf', reportPdf(state, { agents }));
+      el.querySelectorAll('[data-report="pdf"]').forEach((b) => { b.textContent = 'Downloaded ✓'; });
+      setTimeout(() => el.querySelectorAll('[data-report="pdf"]').forEach((b) => { b.textContent = 'Download PDF'; }), 2400);
+    }
   });
   // Esc closes the board; listening only while it's open.
   function onKey(e) {

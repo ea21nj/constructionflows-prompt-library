@@ -303,17 +303,24 @@ test.describe('site office', () => {
     expect(await page.evaluate(() => document.activeElement?.dataset.details)).toBe('1');
   });
 
-  test('print copy paginates', async ({ page }) => {
+  test('on a phone, Download PDF at the top of the results saves a real PDF in one tap', async ({ browser }) => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    const page = await context.newPage();
     await preset(page, { 1: [3, 3, 3], 3: [1, 1, 1], 5: [2, 2, 2] });
-    await page.addInitScript(() => { window.print = () => {}; });
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
     await page.evaluate(([x, z]) => window.__siteWalk.teleport(x, z), OFFICE_DOOR);
-    await page.locator('[data-report="print"]').click();
-    await expect(page.locator('#dvPrint')).toContainText('Bid Desk Agent');
-    const pdf = await page.pdf({ format: 'Letter' });
-    expect(pdf.subarray(0, 4).toString()).toBe('%PDF');
-    expect(pdf.length).toBeGreaterThan(5000);
+    await expect(page.locator('.sw-results')).toBeVisible();
+    const btn = page.locator('.sw-results-head [data-report="pdf"]');
+    await expect(btn).toBeInViewport();                                               // no scrolling to find it
+    const [download] = await Promise.all([page.waitForEvent('download'), btn.tap()]);
+    expect(download.suggestedFilename()).toMatch(/^site-walk-results-\d{4}-\d{2}-\d{2}\.pdf$/);
+    const bytes = await (await import('fs')).promises.readFile(await download.path());
+    expect(bytes.subarray(0, 8).toString()).toBe('%PDF-1.4');
+    expect(bytes.toString('latin1')).toContain('(1. Bid Desk Agent) Tj');
+    await expect(btn).toHaveText('Downloaded ✓');
+    await expect(page.locator('[data-report="print"]')).toHaveCount(0);
+    await context.close();
   });
 });
 
