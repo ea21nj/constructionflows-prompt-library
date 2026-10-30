@@ -96,7 +96,7 @@ export function createSiteMap(root, { onPick, onClose }) {
       <div class="sw-map-card">
         <header class="sw-map-head">
           <div><p class="sw-kicker">Sheet A-101 · Site plan</p><h2 id="swMapTitle">Who do you want to talk to?</h2></div>
-          <p class="sw-map-hint">Click someone to go straight to them.</p>
+          <p class="sw-map-hint">Tap someone to go straight to them.</p>
           <button type="button" class="sw-map-close" aria-label="Close the map">×</button>
         </header>
         <div class="sw-map-plan">

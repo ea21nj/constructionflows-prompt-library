@@ -104,12 +104,11 @@ describe('hud', () => {
     expect(document.querySelector('.sw-objective').textContent).toBe('Site office is open — head there');
   });
 
-  test('prompt names the nearby worker for keyboard and touch', () => {
+  test('prompt is a big Talk button naming the nearby worker, on every device', () => {
     const onTalk = vi.fn();
     const hud = createHud(document.body, { onTalk });
-    hud.setPrompt(member, false);
-    expect(document.querySelector('.sw-prompt').textContent.replace(/\s+/g, ' ').trim()).toBe('Press E to talk to Maria — Bid Desk');
-    hud.setPrompt(member, true);
+    hud.setPrompt(member);
+    expect(document.querySelector('.sw-sr-live').textContent).toBe('Maria, Bid Desk, is nearby. Use the Talk button.');
     const btn = document.querySelector('.sw-prompt button');
     expect(btn.textContent).toBe('Talk to Maria');
     btn.click();
@@ -130,9 +129,14 @@ describe('hud', () => {
 
   test('prompt names a nearby audit checkpoint', () => {
     const hud = createHud(document.body);
-    hud.setPrompt({ section: { id: 'scheduling', title: 'Scheduling' } }, false);
-    expect(document.querySelector('.sw-prompt').textContent.replace(/\s+/g, ' ').trim()).toBe('Press E to audit Scheduling');
-    expect(document.querySelector('.sw-sr-live').textContent).toBe('Scheduling audit checkpoint is nearby. Press E to start.');
+    hud.setPrompt({ section: { id: 'scheduling', title: 'Scheduling' } });
+    expect(document.querySelector('.sw-prompt button').textContent).toBe('Audit Scheduling');
+    expect(document.querySelector('.sw-sr-live').textContent).toBe('Scheduling audit checkpoint is nearby. Use the Audit button.');
+  });
+
+  test('the clipboard starts folded away so the site stays clear', () => {
+    createHud(document.body);
+    expect(document.querySelector('.sw-clip').open).toBe(false);
   });
 
   test('clipboard rows take you back to that crew member', () => {

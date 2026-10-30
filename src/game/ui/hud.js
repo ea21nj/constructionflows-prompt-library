@@ -32,8 +32,8 @@ export function createHud(root, { onTalk = () => {}, onJump = () => {}, onScorec
     <p class="sw-zone-live sw-sr-only" aria-live="polite"></p>
     <div class="sw-toast" role="status" aria-live="polite" hidden></div>`;
   root.appendChild(el);
-  // Start the clipboard collapsed on small screens so it doesn't cover the site.
-  if (window.matchMedia?.('(max-width: 640px)').matches) el.querySelector('.sw-clip').open = false;
+  // The clipboard starts folded away so it doesn't cover the site.
+  el.querySelector('.sw-clip').open = false;
   const prompt = el.querySelector('.sw-prompt');
   const toastEl = el.querySelector('.sw-toast');
   const zone = el.querySelector('.sw-zone');
@@ -90,25 +90,23 @@ export function createHud(root, { onTalk = () => {}, onJump = () => {}, onScorec
       zoneTimer = setTimeout(() => { zone.hidden = true; zone.classList.remove('in'); }, 3200);
     },
     setAudit(done) { el.querySelector('.sw-audit-tracker').textContent = `Site audit · ${done} of 7 →`; },
-    // member is a crew member, or { section } for an audit checkpoint.
-    setPrompt(member, isTouch = false) {
-      const key = member ? `${member.agentId ?? member.section.id}:${isTouch}` : null;
+    // A big button for whoever is near: member is a crew member, or { section } for an audit checkpoint.
+    setPrompt(member) {
+      const key = member ? String(member.agentId ?? member.section.id) : null;
       if (key === promptFor) return;
       promptFor = key;
       const live = el.querySelector('.sw-sr-live');
       if (!member) { prompt.hidden = true; live.textContent = ''; return; }
       if (member.section) {
         const { title } = member.section;
-        live.textContent = `${title} audit checkpoint is nearby. ${isTouch ? 'Use the Audit button.' : 'Press E to start.'}`;
-        prompt.innerHTML = isTouch ? `<button type="button">Audit ${title.replace(/&/g, '&amp;')}</button>` : `Press <kbd>E</kbd> to audit ${title.replace(/&/g, '&amp;')}`;
+        live.textContent = `${title} audit checkpoint is nearby. Use the Audit button.`;
+        prompt.innerHTML = `<button type="button">Audit ${esc(title)}</button>`;
         prompt.hidden = false;
         return;
       }
       const { name, role } = member.data;
-      live.textContent = `${name}, ${role}, is nearby. ${isTouch ? 'Use the Talk button.' : 'Press E to talk.'}`;
-      prompt.innerHTML = isTouch
-        ? `<button type="button">Talk to ${name}</button>`
-        : `Press <kbd>E</kbd> to talk to ${name} — ${role}`;
+      live.textContent = `${name}, ${role}, is nearby. Use the Talk button.`;
+      prompt.innerHTML = `<button type="button">Talk to ${esc(name)}</button>`;
       prompt.hidden = false;
     },
     // Messages queue up so none hides another.

@@ -56,7 +56,7 @@ describe('menu', () => {
     const reset = root.querySelector('[data-menu="reset"]');
     reset.click();
     expect(calls.onReset).not.toHaveBeenCalled();
-    expect(reset.textContent).toContain('Click again');
+    expect(reset.textContent).toBe('Tap again to erase your progress');
     reset.click();
     expect(calls.onReset).toHaveBeenCalledTimes(1);
   });

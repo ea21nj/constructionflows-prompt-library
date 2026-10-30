@@ -1105,6 +1105,7 @@
       background: rgba(26,26,26,.72);
     }
     .agent-modal.show { display: flex; }
+    .agent-modal { container: admodal / inline-size; }
     .agent-dialog {
       width: min(1240px, 100%); max-height: 100%; min-height: min(560px, 100%);
       display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr);
@@ -1231,16 +1232,21 @@
       .ad-foot { padding-top: 7px; padding-bottom: 7px; }
     }
     /* Short or narrow screens: fall back to scrolling inside the body */
-    @media (max-height: 700px), (max-width: 1000px) {
+    @media (max-height: 700px) {
       .ad-body { overflow-y: auto; }
     }
-    @media (max-width: 1000px) {
+    @container admodal (max-width: 1000px) {
+      .ad-body { overflow-y: auto; }
+    }
+    @container admodal (max-width: 1000px) {
       .ad-grid.overview, .ad-grid.rollout { grid-template-columns: minmax(0, 1fr); }
       .ad-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .ad-head { grid-template-columns: minmax(0, 1fr); gap: 14px; }
     }
     @media (max-width: 760px) {
       .agent-modal { padding: 0; }
+    }
+    @container admodal (max-width: 760px) {
       .agent-dialog { height: 100%; border: 0; box-shadow: none; }
       .ad-head { padding: 16px 64px 16px 16px; }
       .ad-head h2 { font-size: 22px; }
@@ -1491,6 +1497,31 @@
     html.site-walk-on, html.site-walk-on body { height: 100%; overflow: hidden; }
     html.site-walk-on #siteWalk { display: block; position: fixed; inset: 0; z-index: 500; background: #BFE3F2; }
     html.site-walk-on body > .sidebar, html.site-walk-on body > main { display: none; }
+    /* The site walk is a phone experience. On a laptop or tablet it sits in a phone-shaped screen in
+       the middle of the page (and agent details open inside it); phones and short screens fill it. */
+    @media (min-width: 641px) and (min-height: 600px) {
+      html.site-walk-on {
+        --sw-phone-h: min(calc(100vh - 48px), 900px);
+        --sw-phone-w: clamp(320px, calc(var(--sw-phone-h) * 0.48), 430px);
+      }
+      html.site-walk-on body {
+        background: #101a14 radial-gradient(ellipse at 50% 40%, #1d3a2a 0%, #101a14 70%);
+      }
+      html.site-walk-on body::before {
+        content: 'Workflow Playbook · Site walk'; position: fixed; top: 22px; left: 28px;
+        font: 600 12px var(--display); letter-spacing: .16em; text-transform: uppercase; color: rgba(255, 255, 255, .55);
+      }
+      html.site-walk-on #siteWalk, html.site-walk-on .agent-modal {
+        inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%);
+      }
+      html.site-walk-on #siteWalk {
+        width: var(--sw-phone-w); height: var(--sw-phone-h); overflow: hidden;
+        border: 10px solid #0b0b0b; border-radius: 40px; box-shadow: 0 0 0 2px #2e3b33, 0 30px 80px rgba(0, 0, 0, .55);
+      }
+      html.site-walk-on .agent-modal {
+        width: calc(var(--sw-phone-w) - 20px); height: calc(var(--sw-phone-h) - 20px); padding: 0; border-radius: 30px; overflow: hidden;
+      }
+    }
   </style>
   <script>
     // Site Walk starts first unless the link points at a classic page (#quiz, #agents, #discovery, #about).

@@ -41,7 +41,7 @@ export function createMenu(root, { onSkip, onResume, onReset, onToggleSound }) {
     const id = e.target.closest('[data-menu]')?.dataset.menu;
     if (!id) return;
     if (id === 'reset') {
-      if (!reset.dataset.armed) { reset.dataset.armed = '1'; reset.textContent = 'Click again to erase your progress'; return; }
+      if (!reset.dataset.armed) { reset.dataset.armed = '1'; reset.textContent = 'Tap again to erase your progress'; return; }
       close(); onReset(); return;
     }
     if (id === 'sound') { onToggleSound(); return; }

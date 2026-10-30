@@ -30,6 +30,7 @@ describe('site map', () => {
     expect(maria.style.left).toBe(`${mapPoint(CREW[0].spot[0], CREW[0].spot[1]).left}%`);
     expect(maria.classList.contains('met')).toBe(true);
     expect(root.querySelector('.sw-map-office').disabled).toBe(true);    // office not open yet
+    expect(root.querySelector('.sw-map-hint').textContent).toBe('Tap someone to go straight to them.');
   });
 
   test('marks out the four levels as zones on the plan, and says which level each person is in', () => {

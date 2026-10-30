@@ -11,7 +11,6 @@ import { buildWorld } from './world.js';
 import { createCrew } from './crew.js';
 import { createInput } from './input.js';
 import { createPlayer } from './player.js';
-import { isTouchDevice } from './ui/opening.js';
 import { createTalk } from './ui/talk.js';
 import { createHud } from './ui/hud.js';
 import { createMinimap } from './ui/minimap.js';
@@ -472,7 +471,7 @@ function tickConversations() {
     for (const m of game.crew.members) { const d = Math.hypot(m.pos.x - p.x, m.pos.z - p.z); if (d < best) { best = d; nearby = m; } }
     for (const c of game.checkpoints.items) { const d = Math.hypot(c.pos.x - p.x, c.pos.z - p.z); if (d < best) { best = d; nearby = c; } }
   }
-  hud.setPrompt(nearby, isTouchDevice());
+  hud.setPrompt(nearby);
   hud.setJumpVisible(game.started && game.talkingId == null && !results.isOpen() && !sitemap.isOpen() && !auditPanel.isOpen() && !scorecard.isOpen() && !levelBoard.isOpen() && !game.jumping);
   // Walking through the site office door opens the results board (once per visit to the doorway).
   const [a, b, c, d] = OFFICE.trigger;
@@ -521,7 +520,7 @@ function boot() {
       game.checkpoints = buildCheckpoints(game.engine.scene, AUDIT_SECTIONS, { reducedMotion });
       game.beacons = createBeacons(game.engine.scene, { reducedMotion });
       game.crew.members.forEach((m) => m.setMet(isComplete(game.state, m.agentId)));
-      game.input = createInput(root, { touch: isTouchDevice(), blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() || wheel?.isOpen() || sitemap?.isOpen() || auditPanel?.isOpen() || scorecard?.isOpen() || levelBoard?.isOpen() || game.jumping });
+      game.input = createInput(root, { touch: true, blocked: () => !game.started || menu.isOpen() || opening.isOpen() || game.talkingId != null || results?.isOpen() || wheel?.isOpen() || sitemap?.isOpen() || auditPanel?.isOpen() || scorecard?.isOpen() || levelBoard?.isOpen() || game.jumping });
       game.player = createPlayer(game.engine.scene, game.assets, game.engine, game.input, { reducedMotion });
       game.player.snapCamera();
       game.jump = createJump({ engine: game.engine, player: game.player, reducedMotion });
