@@ -719,6 +719,9 @@ test.describe('phone-first', () => {
     await expect(page.locator('.sw-joystick')).toBeVisible();
     expect(inside(await page.locator('.sw-objective-box').boundingBox(), frame)).toBe(true);
     await expect(page.locator('.sw-minimap-tag')).toHaveText('Map — tap to open');
+    await expect(page.locator('.sw-menu-btn kbd')).toBeHidden();                       // no keyboard hints on the phone
+    const menu = await page.locator('.sw-menu-btn').boundingBox();
+    expect(frame.x + frame.width - (menu.x + menu.width)).toBeLessThan(24);            // Menu sits in the top-right corner
   });
 
   test('on a phone it fills the screen', async ({ browser }) => {

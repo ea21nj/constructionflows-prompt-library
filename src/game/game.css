@@ -66,14 +66,14 @@
   .sw-controls div { display: block; padding: 6px 8px; }
   .sw-controls dd { font-size: 12px; line-height: 1.3; }
   .sw-opening-actions .sw-btn { flex: 1; padding: 12px 10px; }
+  .sw-menu { top: 10px; right: 10px; }
+  .sw-menu-btn kbd { display: none; }
+  .sw-fallback-note { padding: 12px 16px; }
 }
 /* Short phone screens: the intro already covers steps 2 and 3, so keep the Start button in view */
 @container sw (max-width: 640px) and (max-height: 760px) {
   .sw-opening-steps { padding-left: 0; list-style: none; }
   .sw-opening-steps li:not(:first-child) { display: none; }
-  .sw-menu { top: 10px; right: 10px; }
-  .sw-menu-btn kbd { display: none; }
-  .sw-fallback-note { padding: 12px 16px; }
 }
 
 /* Phone joystick */
