@@ -506,8 +506,6 @@ html:not(.sw-playing) .sw-jump-btn { display: none; }
 @container sw (max-width: 640px) {
   .sw-hud-left, .sw-objective-box, .sw-minimap-btn, .sw-clip { width: 160px; }
   .sw-level-title { font-size: 14px; }
-  /* Phones: just the next objective, so the card doesn't cover the site */
-  .sw-level-tasks li.done, .sw-level-tasks li:not(.done) ~ li:not(.done) { display: none; }
   .sw-level-zone { display: none; }
   .sw-objective-box .sw-objective { font-size: 10px; }
   .sw-clip summary { font-size: 10px; gap: 6px; white-space: nowrap; }
@@ -545,3 +543,21 @@ html:not(.sw-playing) .sw-jump-btn { display: none; }
 /* Level zones on the site plan */
 .sw-bp-zone { fill: none; stroke: #f2c230; stroke-width: 0.35; stroke-dasharray: 1.6 0.9; opacity: .9; }
 .sw-bp-zone-label { font-size: 1.6px; font-weight: 700; letter-spacing: 0.12px; fill: #f2c230 !important; paint-order: stroke; stroke: #1f5596; stroke-width: 0.5px; }
+
+/* Desktop and phone views (src/game/device.js). Desktop: full screen, keyboard and mouse.
+   Phone: the bottom bar (Next objective, Map, Jump, Menu) replaces the map, clipboard, Jump and Menu
+   buttons; the joystick and the Talk button sit above it, one for each thumb. */
+.sw-bar { display: none; }
+.sw-mode-desktop .sw-joystick { display: none !important; }
+html.sw-playing.sw-mode-phone .sw-bar { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 11; display: grid; grid-template-columns: 1.7fr 1fr 1fr 1fr; gap: 8px; }
+.sw-bar button { min-height: 56px; padding: 6px 8px; background: var(--white); border: var(--rule); box-shadow: 3px 3px 0 var(--primary); font: 700 13px var(--display); letter-spacing: .04em; cursor: pointer; }
+.sw-bar button:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--primary); }
+.sw-bar .sw-bar-next { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-width: 0; text-align: left; background: var(--primary); color: var(--white) !important; border-color: var(--black); box-shadow: 3px 3px 0 var(--black); }
+.sw-bar-next b { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #d9ffe8; }
+.sw-bar-next small { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 700 13px/1.25 var(--display); }
+.sw-mode-phone .sw-minimap-btn, .sw-mode-phone .sw-clip, .sw-mode-phone .sw-jump-btn, html.sw-playing.sw-mode-phone .sw-menu-btn { display: none !important; }
+html.sw-playing.sw-mode-phone .sw-menu { top: auto; bottom: 76px; right: 10px; }
+.sw-mode-phone .sw-menu-panel { top: auto; bottom: 0; }
+.sw-mode-phone .sw-joystick { left: 14px; bottom: 82px; }
+.sw-mode-phone .sw-prompt { left: auto; right: 10px; bottom: 90px; transform: none; padding: 6px; }
+.sw-mode-phone .sw-level-tasks li.done, .sw-mode-phone .sw-level-tasks li:not(.done) ~ li:not(.done) { display: none; }   /* just the next objective */

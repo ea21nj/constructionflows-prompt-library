@@ -28,6 +28,7 @@ import { siteScore, scoreChange } from './score.js';
 import { createScoreboard } from './ui/scoreboard.js';
 import { createLevelBoard } from './ui/level-board.js';
 import { gameActive } from './active.js';
+import { canUseDesktop, decideView, applyView, viewMode, savedView, saveView, DESKTOP_QUERY } from './device.js';
 import { createBeacons } from './world/beacons.js';
 import { zoneAt, starText } from './levels.js';
 import { OFFICE } from './content.js';
@@ -99,7 +100,25 @@ const menu = createMenu(root, {
     menu.setSound(!audio.muted);
     if (!audio.muted && game.started) audio.setAmbient(true);
   },
+  onToggleView: () => {
+    if (!canUseDesktop()) return;
+    const next = viewMode() === 'desktop' ? 'phone' : 'desktop';
+    saveView(next);
+    showView();
+  },
 });
+// Full screen on a computer, the simplified phone version on phones and tablets (device.js).
+function showView() {
+  applyView(decideView({ capable: canUseDesktop(), saved: savedView() }));
+  menu.setView({ mode: viewMode(), canSwitch: canUseDesktop() });
+  hud?.applyView();
+  window.dispatchEvent(new Event('resize'));                      // the 3D view fits its new screen
+  if (opening.isOpen()) opening.show({ met: completedCount(game.state) });
+}
+applyView(decideView({ capable: canUseDesktop(), saved: savedView() }));
+menu.setView({ mode: viewMode(), canSwitch: canUseDesktop() });
+window.matchMedia?.(DESKTOP_QUERY).addEventListener?.('change', showView);
+
 menu.setSound(!audio.muted);
 
 // Click or tap anything with an icon on screen (a crew member or their marker, an audit board or
@@ -209,6 +228,7 @@ function refreshLevels(change = {}) {
   const score = siteScore(game.state);
   scoreboard.update(score, change);
   hud.setLevel(score);
+  hud.setNext(score.allComplete ? 'Your results' : score.current.tasks.find((t) => !t.done)?.label || 'Your results');
   const spots = [];
   let office = false;
   for (const t of score.allComplete ? [] : score.current.tasks.filter((k) => !k.done)) {
@@ -217,6 +237,14 @@ function refreshLevels(change = {}) {
     else if (officeOpen(game.state) && !office) { office = true; spots.push(() => ({ x: OFFICE.door[0] + 1.5, z: OFFICE.door[1] })); }
   }
   game.beacons.set(spots);
+}
+
+// The phone bar's Next button: straight to the next objective in the current level.
+function goNext() {
+  if (busy()) return;
+  const score = siteScore(game.state);
+  const next = score.allComplete ? null : score.current.tasks.find((t) => !t.done);
+  goToObjective(next ? next.go : 'office');
 }
 
 // A finished level gets its board as soon as nothing else is on screen.
@@ -319,7 +347,8 @@ function endTalk() {
 
 function wireConversations() {
   game.startTalk = startTalk;
-  hud = createHud(root, { onTalk: () => interactWithNearby(), onJump: openWheel, onScorecard: openScorecard, onPickAgent: (id) => jumpTo(id, { talk: true }), onGo: goToObjective, onLevels: () => openLevelBoard() });
+  hud = createHud(root, { onTalk: () => interactWithNearby(), onJump: openWheel, onScorecard: openScorecard, onPickAgent: (id) => jumpTo(id, { talk: true }), onGo: goToObjective, onLevels: () => openLevelBoard(),
+    onNext: goNext, onMap: openSiteMap, onMenu: () => menu.open() });
   minimap = createMinimap(hud.left, { onOpen: openSiteMap });
   scoreboard = createScoreboard(hud.el, { onGo: goToObjective });
   levelBoard = createLevelBoard(root, { onGo: (go) => { closeLevelBoard(); goToObjective(go); }, onClose: closeLevelBoard });

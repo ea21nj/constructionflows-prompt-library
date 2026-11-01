@@ -2,10 +2,12 @@
 // card, toasts, and the clipboard of how well each agent you've met fits.
 import { completedCount, officeOpen, OFFICE_UNLOCK } from '../state.js';
 import { starText } from '../levels.js';
+import { viewMode } from '../device.js';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
-export function createHud(root, { onTalk = () => {}, onJump = () => {}, onScorecard = () => {}, onPickAgent = () => {}, onGo = () => {}, onLevels = () => {} } = {}) {
+export function createHud(root, { onTalk = () => {}, onJump = () => {}, onScorecard = () => {}, onPickAgent = () => {}, onGo = () => {}, onLevels = () => {},
+  onNext = () => {}, onMap = () => {}, onMenu = () => {} } = {}) {
   const el = document.createElement('div');
   el.className = 'sw-hud';
   el.innerHTML = `
@@ -26,18 +28,25 @@ export function createHud(root, { onTalk = () => {}, onJump = () => {}, onScorec
     </div>
     <div class="sw-prompt" hidden></div>
     <button type="button" class="sw-jump-btn">Jump <kbd>Q</kbd></button>
+    <nav class="sw-bar" aria-label="Site walk controls">
+      <button type="button" class="sw-bar-next" data-bar="next" aria-label="Next objective"><b>Next</b> <small></small></button>
+      <button type="button" data-bar="map">Map</button>
+      <button type="button" data-bar="jump">Jump</button>
+      <button type="button" data-bar="menu">Menu</button>
+    </nav>
     <div class="sw-zone" hidden aria-hidden="true"><span class="sw-zone-kicker"></span><span class="sw-zone-title"></span>
       <span class="sw-zone-stars"></span><span class="sw-zone-sub"></span></div>
     <p class="sw-sr-live sw-sr-only" aria-live="polite"></p>
     <p class="sw-zone-live sw-sr-only" aria-live="polite"></p>
     <div class="sw-toast" role="status" aria-live="polite" hidden></div>`;
   root.appendChild(el);
-  // The clipboard starts folded away so it doesn't cover the site.
-  el.querySelector('.sw-clip').open = false;
+  // On a phone the clipboard starts folded away so it doesn't cover the site.
+  const foldClipboard = () => { el.querySelector('.sw-clip').open = viewMode() === 'desktop'; };
+  foldClipboard();
   const prompt = el.querySelector('.sw-prompt');
   const toastEl = el.querySelector('.sw-toast');
   const zone = el.querySelector('.sw-zone');
-  let toastTimer = null, promptFor = null, zoneTimer = null;
+  let toastTimer = null, promptFor = null, promptMember = null, zoneTimer = null;
   const toastQueue = [];
   function nextToast() {
     const item = toastQueue.shift();
@@ -50,6 +59,8 @@ export function createHud(root, { onTalk = () => {}, onJump = () => {}, onScorec
   el.querySelector('.sw-jump-btn').addEventListener('click', onJump);
   el.querySelector('.sw-audit-tracker').addEventListener('click', onScorecard);
   el.querySelector('.sw-level-head').addEventListener('click', onLevels);
+  const bar = { next: onNext, map: onMap, jump: onJump, menu: onMenu };
+  el.querySelector('.sw-bar').addEventListener('click', (e) => { const b = e.target.closest('[data-bar]'); if (b) bar[b.dataset.bar](); });
   el.querySelector('.sw-level-tasks').addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) onGo(b.dataset.go); });
   el.querySelector('.sw-clip-list').addEventListener('click', (e) => { const b = e.target.closest('[data-agent]'); if (b) onPickAgent(Number(b.dataset.agent)); });
 
@@ -90,23 +101,25 @@ export function createHud(root, { onTalk = () => {}, onJump = () => {}, onScorec
       zoneTimer = setTimeout(() => { zone.hidden = true; zone.classList.remove('in'); }, 3200);
     },
     setAudit(done) { el.querySelector('.sw-audit-tracker').textContent = `Site audit · ${done} of 7 →`; },
-    // A big button for whoever is near: member is a crew member, or { section } for an audit checkpoint.
+    // Who is near (a crew member, or { section } for an audit checkpoint): a big button on a phone,
+    // the E key on desktop.
     setPrompt(member) {
-      const key = member ? String(member.agentId ?? member.section.id) : null;
+      const desktop = viewMode() === 'desktop';
+      const key = member ? `${member.agentId ?? member.section.id}:${desktop}` : null;
       if (key === promptFor) return;
-      promptFor = key;
+      promptFor = key; promptMember = member;
       const live = el.querySelector('.sw-sr-live');
       if (!member) { prompt.hidden = true; live.textContent = ''; return; }
       if (member.section) {
         const { title } = member.section;
-        live.textContent = `${title} audit checkpoint is nearby. Use the Audit button.`;
-        prompt.innerHTML = `<button type="button">Audit ${esc(title)}</button>`;
+        live.textContent = `${title} audit checkpoint is nearby. ${desktop ? 'Press E to start.' : 'Use the Audit button.'}`;
+        prompt.innerHTML = desktop ? `Press <kbd>E</kbd> to audit ${esc(title)}` : `<button type="button">Audit ${esc(title)}</button>`;
         prompt.hidden = false;
         return;
       }
       const { name, role } = member.data;
-      live.textContent = `${name}, ${role}, is nearby. Use the Talk button.`;
-      prompt.innerHTML = `<button type="button">Talk to ${esc(name)}</button>`;
+      live.textContent = `${name}, ${role}, is nearby. ${desktop ? 'Press E to talk.' : 'Use the Talk button.'}`;
+      prompt.innerHTML = desktop ? `Press <kbd>E</kbd> to talk to ${esc(name)} — ${esc(role)}` : `<button type="button">Talk to ${esc(name)}</button>`;
       prompt.hidden = false;
     },
     // Messages queue up so none hides another.
@@ -125,6 +138,14 @@ export function createHud(root, { onTalk = () => {}, onJump = () => {}, onScorec
           </button>
         </li>`).join('');
     },
+    // The phone bar's Next button names the next objective.
+    setNext(label) {
+      const b = el.querySelector('[data-bar="next"]');
+      b.querySelector('small').textContent = label.replace(/^(Talk to|Audit|Visit the) /, '').replace(/^Take your results with you$/, 'Your results');
+      b.setAttribute('aria-label', `Next objective: ${label}`);
+    },
+    // After switching between desktop and phone view.
+    applyView() { foldClipboard(); const m = promptMember; promptFor = null; this.setPrompt(m); },
     setVisible(v) { el.hidden = !v; },
     setJumpVisible(v) { el.querySelector('.sw-jump-btn').hidden = !v; },
   };

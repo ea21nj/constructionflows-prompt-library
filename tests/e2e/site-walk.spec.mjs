@@ -216,7 +216,7 @@ test.describe('conversations', () => {
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
     await goTo(page, 1);
-    await expect(page.locator('.sw-prompt')).toHaveText('Talk to Maria');
+    await expect(page.locator('.sw-prompt')).toHaveText(/Press E to talk to Maria — Bid Desk/);
     await page.keyboard.press('KeyE');
     await expect(page.locator('.sw-talk')).toBeVisible();
     await expect(page.locator('.sw-talk-say')).toHaveText(/^Hey, I'm Maria\./);
@@ -366,7 +366,7 @@ test.describe('polish', () => {
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
     await goTo(page, 1);
-    await expect(page.locator('.sw-sr-live')).toHaveText('Maria, Bid Desk, is nearby. Use the Talk button.');
+    await expect(page.locator('.sw-sr-live')).toHaveText('Maria, Bid Desk, is nearby. Press E to talk.');
   });
 
   test('reduced motion disables the typewriter', async ({ page }) => {
@@ -488,7 +488,7 @@ test.describe('site map', () => {
     const page = await context.newPage();
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
-    await page.getByRole('button', { name: 'Open the site map' }).tap();
+    await page.locator('.sw-bar').getByRole('button', { name: 'Map' }).tap();
     await expect(page.locator('.sw-map')).toBeVisible();
     const fits = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth);
     expect(fits).toBe(true);
@@ -504,7 +504,7 @@ test.describe('site audit', () => {
     await page.getByRole('button', { name: 'Start walking' }).click();
     await expect(page.locator('.sw-audit-tracker')).toHaveText(/Site audit · 0 of 7/);
     await page.evaluate(() => window.__siteWalk.teleport(-48.8, 20.2));
-    await expect(page.locator('.sw-prompt')).toHaveText('Audit Bidding & Pipeline');
+    await expect(page.locator('.sw-prompt')).toHaveText(/Press E to audit Bidding & Pipeline/);
     await page.keyboard.press('KeyE');
     await expect(page.locator('.sw-audit')).toBeVisible();
     await expect(page.locator('.sw-audit-q')).toHaveText('How easily can your team see the current status of every active bid?');
@@ -618,7 +618,6 @@ test.describe('clickable icons', () => {
     await preset(page, { 7: [2, 2, 2] });
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
-    await page.locator('.sw-clip summary').click();                                    // the clipboard starts folded away
     await page.getByRole('button', { name: 'Go to Andre, Vendor / Subcontractor CRM' }).click();
     await expect(page.locator('.sw-talk-who')).toHaveText('ANDRE · VENDOR / SUBCONTRACTOR CRM', { timeout: 90_000 });
   });
@@ -650,12 +649,11 @@ test.describe('levels', () => {
     await expect(page.locator('.sw-zone-live')).toHaveText('Level 2, Structure. Main building. 0 of 5 objectives done.');
   });
 
-  test('the level card shows your next objective and takes you straight to it', async ({ page }) => {
+  test('an objective on the level card takes you straight to it', async ({ page }) => {
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
-    await expect(page.locator('.sw-level-tasks button:visible')).toHaveText(['Talk to Maria']);   // just the next one
-    await page.locator('.sw-level-tasks').getByRole('button', { name: 'Talk to Maria' }).click();
-    await expect(page.locator('.sw-talk-who')).toHaveText('MARIA · BID DESK', { timeout: 90_000 });
+    await page.locator('.sw-level-tasks').getByRole('button', { name: 'Talk to Rosa' }).click();
+    await expect(page.locator('.sw-talk-who')).toHaveText('ROSA · LEAD / SALES FOLLOW-UP', { timeout: 90_000 });
   });
 
   test('finishing a level shows three stars and leads you on to the next level', async ({ page }) => {
@@ -663,7 +661,7 @@ test.describe('levels', () => {
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
     await page.evaluate(() => window.__siteWalk.teleport(-9 + 1.2, 34.5 + 1.2));
-    await expect(page.locator('.sw-prompt')).toHaveText('Audit Project Kickoff');
+    await expect(page.locator('.sw-prompt')).toHaveText(/Press E to audit Project Kickoff/);
     await page.keyboard.press('KeyE');
     await page.keyboard.press('Digit2');
     await expect(page.locator('.sw-toast')).toHaveText('Level 1 complete · ★★★');
@@ -688,7 +686,7 @@ test.describe('levels', () => {
     await expect(page.locator('.sw-level-title')).toHaveText('Structure');
     await page.getByRole('button', { name: 'Menu' }).click();
     await page.getByRole('button', { name: 'Start over' }).click();
-    await page.getByRole('button', { name: 'Tap again to erase your progress' }).click();
+    await page.getByRole('button', { name: 'Click again to erase your progress' }).click();
     await expect(page.locator('.sw-level-title')).toHaveText('Preconstruction');
     await expect(page.locator('.sw-score-stars')).toHaveText('★ 0 / 12');
     expect(await page.evaluate(() => window.__siteWalk.beacons())).toBe(4);
@@ -705,41 +703,79 @@ test.describe('levels', () => {
   });
 });
 
-test.describe('phone-first', () => {
+// Phone view on a computer (as if chosen from the Menu before).
+const phoneView = (page) => page.addInitScript(() => localStorage.setItem('wp.sitewalk.prefs', JSON.stringify({ view: 'phone' })));
+const PHONE = { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true };
+
+test.describe('desktop and phone views', () => {
   const inside = (box, frame) => box.x >= frame.x - 0.5 && box.y >= frame.y - 0.5
     && box.x + box.width <= frame.x + frame.width + 0.5 && box.y + box.height <= frame.y + frame.height + 0.5;
 
-  test('on a laptop the site walk sits in a phone-shaped screen in the middle', async ({ page }) => {
+  test('a computer gets the full-screen view with keyboard and mouse controls', async ({ page }) => {
     await openGame(page);
-    const vp = page.viewportSize();
-    const frame = await page.locator('#siteWalk').boundingBox();
-    expect(frame.width).toBeGreaterThanOrEqual(320);
-    expect(frame.width).toBeLessThanOrEqual(450);
-    expect(frame.height).toBeGreaterThan(frame.width * 1.8);           // portrait, like a phone
-    expect(Math.abs(frame.x + frame.width / 2 - vp.width / 2)).toBeLessThan(2);
-    expect(Math.abs(frame.y + frame.height / 2 - vp.height / 2)).toBeLessThan(2);
-    expect(inside(await page.locator('#siteWalk canvas.sw-canvas').boundingBox(), frame)).toBe(true);
-    expect(inside(await page.locator('.sw-opening-card').boundingBox(), frame)).toBe(true);
-    const menuBtn = await page.locator('.sw-menu-btn').boundingBox();                 // the card starts below the Menu button
-    expect((await page.locator('.sw-opening-card').boundingBox()).y).toBeGreaterThanOrEqual(menuBtn.y + menuBtn.height);
+    expect(await page.locator('#siteWalk').boundingBox()).toEqual({ x: 0, y: 0, width: 1440, height: 900 });
+    await expect(page.locator('.sw-controls dt').first()).toHaveText('WASD / arrows');
     await page.getByRole('button', { name: 'Start walking' }).click();
-    await expect(page.locator('.sw-joystick')).toBeVisible();
-    expect(inside(await page.locator('.sw-objective-box').boundingBox(), frame)).toBe(true);
-    await expect(page.locator('.sw-minimap-tag')).toHaveText('Map — tap to open');
-    await expect(page.locator('.sw-menu-btn kbd')).toBeHidden();                       // no keyboard hints on the phone
-    const menu = await page.locator('.sw-menu-btn').boundingBox();
-    expect(frame.x + frame.width - (menu.x + menu.width)).toBeLessThan(24);            // Menu sits in the top-right corner
+    await expect(page.locator('.sw-joystick')).toBeHidden();
+    await expect(page.locator('.sw-bar')).toBeHidden();
+    await expect(page.locator('.sw-level-tasks button:visible')).toHaveCount(4);       // every objective in the level
+    await expect(page.locator('.sw-clip-empty')).toBeVisible();                        // clipboard open
+    await expect(page.locator('.sw-minimap-tag')).toHaveText('Map — click to open');
+    await expect(page.locator('.sw-jump-btn kbd')).toBeVisible();
   });
 
-  test('on a phone it fills the screen', async ({ browser }) => {
-    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  test('a phone gets the simplified view: a bottom bar, and Next takes you to the next objective', async ({ browser }) => {
+    const context = await browser.newContext(PHONE);
     const page = await context.newPage();
     await openGame(page);
     expect(await page.locator('#siteWalk').boundingBox()).toEqual({ x: 0, y: 0, width: 390, height: 844 });
+    await expect(page.locator('.sw-controls dt').first()).toHaveText('Joystick');
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    const bar = page.locator('.sw-bar');
+    await expect(bar.getByRole('button')).toHaveText([/Next\s+Maria/, 'Map', 'Jump', 'Menu']);
+    for (const hidden of ['.sw-minimap-btn', '.sw-clip', '.sw-jump-btn', '.sw-menu-btn']) await expect(page.locator(hidden)).toBeHidden();
+    await expect(page.locator('.sw-level-tasks button:visible')).toHaveText(['Talk to Maria']);   // just the next one
+    await bar.getByRole('button', { name: 'Next objective: Talk to Maria' }).tap();
+    await expect(page.locator('.sw-talk-who')).toHaveText('MARIA · BID DESK', { timeout: 90_000 });
+    await page.locator('.sw-talk-close').tap();
+    await bar.getByRole('button', { name: 'Menu' }).tap();
+    await expect(page.locator('.sw-menu-panel')).toBeInViewport();
+    await expect(page.locator('[data-menu="view"]')).toBeHidden();                     // no view switch on a phone
     await context.close();
   });
 
-  test('with a mouse you drag the joystick to walk and press the Talk button to talk', async ({ page }) => {
+  test('on a computer the Menu switches to phone view, remembers it, and switches back', async ({ page }) => {
+    await openGame(page);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.getByRole('button', { name: /^Menu/ }).click();
+    await page.getByRole('button', { name: 'Switch to phone view' }).click();
+    const frame = await page.locator('#siteWalk').boundingBox();
+    expect(frame.width).toBeLessThanOrEqual(450);
+    expect(Math.abs(frame.x + frame.width / 2 - 720)).toBeLessThan(2);                // a phone-shaped screen in the middle
+    await expect(page.locator('.sw-bar')).toBeVisible();
+    expect(inside(await page.locator('.sw-bar').boundingBox(), frame)).toBe(true);
+    await page.reload();
+    await page.waitForFunction(() => window.__siteWalk?.isReady(), null, { timeout: 90_000 });
+    expect((await page.locator('#siteWalk').boundingBox()).width).toBeLessThanOrEqual(450);
+    await page.getByRole('button', { name: 'Start walking' }).click();
+    await page.locator('.sw-bar').getByRole('button', { name: 'Menu' }).click();
+    await page.getByRole('button', { name: 'Switch to full screen' }).click();
+    expect(await page.locator('#siteWalk').boundingBox()).toEqual({ x: 0, y: 0, width: 1440, height: 900 });
+    await expect(page.locator('.sw-bar')).toBeHidden();
+  });
+
+  test('in phone view on a computer, the opening card fits below the Menu, with no keyboard hints', async ({ page }) => {
+    await phoneView(page);
+    await openGame(page);
+    const frame = await page.locator('#siteWalk').boundingBox();
+    expect(inside(await page.locator('.sw-opening-card').boundingBox(), frame)).toBe(true);
+    const menuBtn = await page.locator('.sw-menu-btn').boundingBox();
+    expect((await page.locator('.sw-opening-card').boundingBox()).y).toBeGreaterThanOrEqual(menuBtn.y + menuBtn.height);
+    await expect(page.locator('.sw-menu-btn kbd')).toBeHidden();
+  });
+
+  test('with a mouse in phone view you drag the joystick to walk and press the Talk button to talk', async ({ page }) => {
+    await phoneView(page);
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
     const box = await page.locator('.sw-joystick').boundingBox();
@@ -754,7 +790,8 @@ test.describe('phone-first', () => {
     await expect(page.locator('.sw-talk-who')).toHaveText('MARIA · BID DESK');
   });
 
-  test('agent details from your results open inside the phone', async ({ page }) => {
+  test('in phone view, agent details from your results open inside the phone', async ({ page }) => {
+    await phoneView(page);
     await preset(page, { 1: [3, 3, 3], 3: [1, 1, 1], 5: [2, 2, 2] });
     await openGame(page);
     await page.getByRole('button', { name: 'Start walking' }).click();
@@ -767,3 +804,4 @@ test.describe('phone-first', () => {
     expect(inside(await page.locator('#agentDialog').boundingBox(), frame)).toBe(true);
   });
 });
+

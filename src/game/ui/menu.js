@@ -1,5 +1,6 @@
 // The always-available menu: skip the game for the classic pages, start over, sound.
 import { gameActive } from '../active.js';
+import { viewMode } from '../device.js';
 
 const ITEMS = [
   ['resume', 'Back to the site walk'],
@@ -9,7 +10,7 @@ const ITEMS = [
   ['about', 'About'],
 ];
 
-export function createMenu(root, { onSkip, onResume, onReset, onToggleSound }) {
+export function createMenu(root, { onSkip, onResume, onReset, onToggleSound, onToggleView = () => {} }) {
   const wrap = document.createElement('div');
   wrap.className = 'sw-menu';
   wrap.innerHTML = `
@@ -22,6 +23,7 @@ export function createMenu(root, { onSkip, onResume, onReset, onToggleSound }) {
       <hr>
       <button type="button" data-menu="reset">Start over</button>
       <button type="button" data-menu="sound">Sound: on</button>
+      <button type="button" data-menu="view" hidden></button>
     </div>`;
   root.appendChild(wrap);
   const btn = wrap.querySelector('.sw-menu-btn');
@@ -41,10 +43,11 @@ export function createMenu(root, { onSkip, onResume, onReset, onToggleSound }) {
     const id = e.target.closest('[data-menu]')?.dataset.menu;
     if (!id) return;
     if (id === 'reset') {
-      if (!reset.dataset.armed) { reset.dataset.armed = '1'; reset.textContent = 'Tap again to erase your progress'; return; }
+      if (!reset.dataset.armed) { reset.dataset.armed = '1'; reset.textContent = `${viewMode() === 'desktop' ? 'Click' : 'Tap'} again to erase your progress`; return; }
       close(); onReset(); return;
     }
     if (id === 'sound') { onToggleSound(); return; }
+    if (id === 'view') { close(); onToggleView(); return; }
     close();
     if (id === 'resume') onResume(); else onSkip(id);
   });
@@ -57,6 +60,12 @@ export function createMenu(root, { onSkip, onResume, onReset, onToggleSound }) {
   return {
     open, close, isOpen,
     setSound(on) { wrap.querySelector('[data-menu="sound"]').textContent = `Sound: ${on ? 'on' : 'off'}`; },
+    // On a computer: switch between the full-screen and phone view.
+    setView({ mode, canSwitch }) {
+      const b = wrap.querySelector('[data-menu="view"]');
+      b.hidden = !canSwitch;
+      b.textContent = mode === 'desktop' ? 'Switch to phone view' : 'Switch to full screen';
+    },
     setVisible(v) { wrap.hidden = !v; },
   };
 }

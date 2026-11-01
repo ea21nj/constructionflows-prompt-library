@@ -13,7 +13,7 @@ export function createMinimap(root, { onOpen = () => {} } = {}) {
   button.type = 'button';
   button.className = 'sw-minimap-btn';
   button.setAttribute('aria-label', 'Open the site map');
-  button.innerHTML = '<span class="sw-minimap-tag" aria-hidden="true">Map — tap to open</span>';
+  button.innerHTML = '<span class="sw-minimap-tag" aria-hidden="true">Map — click to open</span>';
   button.addEventListener('click', onOpen);
   const canvas = document.createElement('canvas');
   canvas.className = 'sw-minimap';

@@ -1,8 +1,20 @@
 // First thing a visitor sees once the site has loaded: how it works, and how to skip it.
 const LEDE = 'Walk the site and talk to the crew — each one is an AI agent that could help your business. After you\'ve met 3, head to the site office for your results. Prefer the classic pages? Use the menu.';
 
-// One set of controls for everyone: the site walk is a phone experience, on a laptop too.
-const CONTROLS = [
+import { viewMode } from '../device.js';
+
+// The controls this visitor has: keyboard and mouse on desktop, touch on a phone.
+const DESKTOP_CONTROLS = [
+  ['WASD / arrows', 'walk'],
+  ['Shift', 'sprint'],
+  ['E', 'talk to someone nearby'],
+  ['Click someone', 'go straight to them'],
+  ['Q', 'jump to anyone on site'],
+  ['1–4', 'answer'],
+  ['Esc', 'walk away'],
+  ['M', 'menu'],
+];
+const PHONE_CONTROLS = [
   ['Joystick', 'drag it to walk (bottom left)'],
   ['Tap someone', 'walk straight over to them'],
   ['Talk / Audit', 'the big button when someone is near'],
@@ -32,7 +44,7 @@ export function createOpening(root, { onStart, onSkip }) {
           <li><b>Talk to the crew.</b> Each one asks three quick questions about how you work.</li>
           <li><b>Get your results at the site office.</b> It opens once you've met three of them.</li>
         </ol>
-        <dl class="sw-controls">${CONTROLS.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+        <dl class="sw-controls">${(viewMode() === 'desktop' ? DESKTOP_CONTROLS : PHONE_CONTROLS).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
         <div class="sw-opening-actions">
           <button type="button" class="sw-btn sw-btn-primary" data-start>Start walking</button>
           <button type="button" class="sw-btn" data-skip>Skip to the agents</button>

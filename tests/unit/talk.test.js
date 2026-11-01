@@ -104,7 +104,16 @@ describe('hud', () => {
     expect(document.querySelector('.sw-objective').textContent).toBe('Site office is open — head there');
   });
 
-  test('prompt is a big Talk button naming the nearby worker, on every device', () => {
+  test('on desktop the prompt names the nearby worker and the E key', () => {
+    document.documentElement.className = 'site-walk-on sw-mode-desktop';
+    const hud = createHud(document.body);
+    hud.setPrompt(member);
+    expect(document.querySelector('.sw-prompt').textContent.replace(/\s+/g, ' ').trim()).toBe('Press E to talk to Maria — Bid Desk');
+    expect(document.querySelector('.sw-sr-live').textContent).toBe('Maria, Bid Desk, is nearby. Press E to talk.');
+  });
+
+  test('on a phone the prompt is a big Talk button naming the nearby worker', () => {
+    document.documentElement.className = 'site-walk-on sw-mode-phone';
     const onTalk = vi.fn();
     const hud = createHud(document.body, { onTalk });
     hud.setPrompt(member);
@@ -128,15 +137,46 @@ describe('hud', () => {
   });
 
   test('prompt names a nearby audit checkpoint', () => {
+    document.documentElement.className = 'site-walk-on sw-mode-phone';
     const hud = createHud(document.body);
     hud.setPrompt({ section: { id: 'scheduling', title: 'Scheduling' } });
     expect(document.querySelector('.sw-prompt button').textContent).toBe('Audit Scheduling');
     expect(document.querySelector('.sw-sr-live').textContent).toBe('Scheduling audit checkpoint is nearby. Use the Audit button.');
   });
 
-  test('the clipboard starts folded away so the site stays clear', () => {
-    createHud(document.body);
+  test('the clipboard starts open on desktop and folded away on a phone', () => {
+    document.documentElement.className = 'site-walk-on sw-mode-desktop';
+    const hud = createHud(document.body);
+    expect(document.querySelector('.sw-clip').open).toBe(true);
+    document.documentElement.className = 'site-walk-on sw-mode-phone';
+    hud.applyView();
     expect(document.querySelector('.sw-clip').open).toBe(false);
+  });
+
+  test('switching view redraws the prompt for the new controls', () => {
+    document.documentElement.className = 'site-walk-on sw-mode-desktop';
+    const hud = createHud(document.body);
+    hud.setPrompt(member);
+    document.documentElement.className = 'site-walk-on sw-mode-phone';
+    hud.applyView();
+    expect(document.querySelector('.sw-prompt button').textContent).toBe('Talk to Maria');
+  });
+
+  test('phones get a bottom bar: Next objective, Map, Jump and Menu', () => {
+    document.documentElement.className = 'site-walk-on sw-mode-phone';
+    const calls = { onNext: vi.fn(), onMap: vi.fn(), onJump: vi.fn(), onMenu: vi.fn() };
+    const hud = createHud(document.body, calls);
+    const bar = document.querySelector('.sw-bar');
+    expect([...bar.querySelectorAll('button')].map((b) => b.dataset.bar)).toEqual(['next', 'map', 'jump', 'menu']);
+    hud.setNext('Talk to Rosa');
+    expect(bar.querySelector('[data-bar="next"]').textContent.replace(/\s+/g, ' ').trim()).toBe('Next Rosa');      // short enough for the bar
+    hud.setNext('Audit Bidding & Pipeline');
+    expect(bar.querySelector('[data-bar="next"] small').textContent).toBe('Bidding & Pipeline');
+    hud.setNext('Talk to Rosa');
+    expect(bar.querySelector('[data-bar="next"]').getAttribute('aria-label')).toBe('Next objective: Talk to Rosa');
+    for (const id of ['next', 'map', 'jump', 'menu']) bar.querySelector(`[data-bar="${id}"]`).click();
+    expect(calls.onNext).toHaveBeenCalled(); expect(calls.onMap).toHaveBeenCalled();
+    expect(calls.onJump).toHaveBeenCalled(); expect(calls.onMenu).toHaveBeenCalled();
   });
 
   test('clipboard rows take you back to that crew member', () => {

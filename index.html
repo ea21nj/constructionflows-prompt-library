@@ -1497,28 +1497,29 @@
     html.site-walk-on, html.site-walk-on body { height: 100%; overflow: hidden; }
     html.site-walk-on #siteWalk { display: block; position: fixed; inset: 0; z-index: 500; background: #BFE3F2; }
     html.site-walk-on body > .sidebar, html.site-walk-on body > main { display: none; }
-    /* The site walk is a phone experience. On a laptop or tablet it sits in a phone-shaped screen in
-       the middle of the page (and agent details open inside it); phones and short screens fill it. */
-    @media (min-width: 641px) and (min-height: 600px) {
-      html.site-walk-on {
+    /* Phone view on a computer (chosen from the Menu): the site walk sits in a phone-shaped screen in
+       the middle of the page, and agent details open inside it. Phones and tablets fill the screen,
+       and computers get the full-screen view by default (see src/game/device.js). */
+    @media (min-height: 600px) {
+      html.sw-framed.site-walk-on {
         --sw-phone-h: min(calc(100vh - 48px), 900px);
         --sw-phone-w: clamp(320px, calc(var(--sw-phone-h) * 0.48), 430px);
       }
-      html.site-walk-on body {
+      html.sw-framed.site-walk-on body {
         background: #101a14 radial-gradient(ellipse at 50% 40%, #1d3a2a 0%, #101a14 70%);
       }
-      html.site-walk-on body::before {
+      html.sw-framed.site-walk-on body::before {
         content: 'Workflow Playbook · Site walk'; position: fixed; top: 22px; left: 28px;
         font: 600 12px var(--display); letter-spacing: .16em; text-transform: uppercase; color: rgba(255, 255, 255, .55);
       }
-      html.site-walk-on #siteWalk, html.site-walk-on .agent-modal {
+      html.sw-framed.site-walk-on #siteWalk, html.sw-framed.site-walk-on .agent-modal {
         inset: auto; left: 50%; top: 50%; transform: translate(-50%, -50%);
       }
-      html.site-walk-on #siteWalk {
+      html.sw-framed.site-walk-on #siteWalk {
         width: var(--sw-phone-w); height: var(--sw-phone-h); overflow: hidden;
         border: 10px solid #0b0b0b; border-radius: 40px; box-shadow: 0 0 0 2px #2e3b33, 0 30px 80px rgba(0, 0, 0, .55);
       }
-      html.site-walk-on .agent-modal {
+      html.sw-framed.site-walk-on .agent-modal {
         width: calc(var(--sw-phone-w) - 20px); height: calc(var(--sw-phone-h) - 20px); padding: 0; border-radius: 30px; overflow: hidden;
       }
     }
@@ -1526,6 +1527,15 @@
   <script>
     // Site Walk starts first unless the link points at a classic page (#quiz, #agents, #discovery, #about).
     if (!/^#(quiz|agents|discovery|about)$/.test(location.hash)) document.documentElement.classList.add('site-walk-on');
+    // Desktop or phone view, decided before the first paint (same rule as decideView in src/game/device.js):
+    // a computer with a mouse and a big screen gets full screen unless phone view was chosen from the Menu.
+    (function () {
+      var saved; try { saved = (JSON.parse(localStorage.getItem('wp.sitewalk.prefs')) || {}).view; } catch (e) {}
+      var capable = !!(window.matchMedia && matchMedia('(hover: hover) and (pointer: fine) and (min-width: 1024px)').matches);
+      var mode = capable && saved !== 'phone' ? 'desktop' : 'phone';
+      document.documentElement.classList.add('sw-mode-' + mode);
+      if (capable && mode === 'phone') document.documentElement.classList.add('sw-framed');
+    })();
   </script>
 </head>
 <body>

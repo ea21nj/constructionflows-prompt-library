@@ -9,13 +9,36 @@ beforeEach(() => {
   calls = { onSkip: vi.fn(), onResume: vi.fn(), onReset: vi.fn(), onToggleSound: vi.fn() };
   menu = createMenu(root, calls);
 });
-const items = () => [...root.querySelectorAll('.sw-menu-panel [data-menu]')].map((b) => b.textContent.trim());
+const items = () => [...root.querySelectorAll('.sw-menu-panel [data-menu]')].filter((b) => !b.hidden).map((b) => b.textContent.trim());
 const key = (k) => document.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true }));
 
 describe('menu', () => {
   test('has a visible Menu button and lists the items in order', () => {
     expect(root.querySelector('.sw-menu-btn').textContent).toContain('Menu');
     expect(items()).toEqual(['Back to the site walk', 'Agent quiz', '10 agents', 'Discovery interview', 'About', 'Start over', 'Sound: on']);
+  });
+
+  test('says click rather than tap on desktop', () => {
+    document.documentElement.classList.add('sw-mode-desktop');
+    menu.open();
+    root.querySelector('[data-menu="reset"]').click();
+    expect(root.querySelector('[data-menu="reset"]').textContent).toBe('Click again to erase your progress');
+    document.documentElement.classList.remove('sw-mode-desktop');
+  });
+
+  test('on a computer the menu can switch between full screen and phone view', () => {
+    document.body.innerHTML = '<div id="r2"></div>';
+    const onToggleView = vi.fn();
+    const m = createMenu(document.getElementById('r2'), { ...calls, onToggleView });
+    m.setView({ mode: 'desktop', canSwitch: true });
+    const view = () => document.querySelector('#r2 [data-menu="view"]');
+    expect(view().textContent).toBe('Switch to phone view');
+    view().click();
+    expect(onToggleView).toHaveBeenCalled();
+    m.setView({ mode: 'phone', canSwitch: true });
+    expect(view().textContent).toBe('Switch to full screen');
+    m.setView({ mode: 'phone', canSwitch: false });                                     // phones and tablets: no switch
+    expect(view().hidden).toBe(true);
   });
 
   test('M toggles and Esc closes', () => {

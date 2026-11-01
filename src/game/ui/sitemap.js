@@ -4,6 +4,7 @@ import { AREAS, OFFICE } from '../content.js';
 import { PLACEMENTS, COLUMN_X, COLUMN_Z, CRANE, footprint } from '../layout.js';
 import { gameActive } from '../active.js';
 import { LEVELS } from '../levels.js';
+import { viewMode } from '../device.js';
 
 const X0 = -66, X1 = 66, Z0 = -40, Z1 = 40;
 const round = (v) => Math.round(v * 100) / 100;
@@ -96,7 +97,7 @@ export function createSiteMap(root, { onPick, onClose }) {
       <div class="sw-map-card">
         <header class="sw-map-head">
           <div><p class="sw-kicker">Sheet A-101 · Site plan</p><h2 id="swMapTitle">Who do you want to talk to?</h2></div>
-          <p class="sw-map-hint">Tap someone to go straight to them.</p>
+          <p class="sw-map-hint">${viewMode() === 'desktop' ? 'Click' : 'Tap'} someone to go straight to them.</p>
           <button type="button" class="sw-map-close" aria-label="Close the map">×</button>
         </header>
         <div class="sw-map-plan">
